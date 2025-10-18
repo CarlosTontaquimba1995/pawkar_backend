@@ -88,7 +88,9 @@ public class WebSecurityConfig {
                         "/error"
                     ).permitAll()
                         .requestMatchers(HttpMethod.POST, "/roles/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/categorias/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/roles/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/categorias/**").permitAll()
                     .anyRequest().authenticated()
             )
             .authenticationProvider(authenticationProvider());

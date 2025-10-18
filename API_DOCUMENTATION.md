@@ -204,6 +204,135 @@
 }
 ```
 
+## Gestión de Categorías
+
+### Obtener Todas las Categorías
+
+**URL**: `/api/categorias`  
+**Método**: `GET`  
+**Roles Requeridos**: `ROLE_USER`, `ROLE_MODERATOR`, `ROLE_ADMIN`
+
+**Response (200 OK)**:
+```json
+[
+  {
+    "categoriaId": 1,
+    "nombre": "Electrónica"
+  },
+  {
+    "categoriaId": 2,
+    "nombre": "Ropa"
+  }
+]
+```
+
+### Obtener una Categoría por ID
+
+**URL**: `/api/categorias/{id}`  
+**Método**: `GET`  
+**Roles Requeridos**: `ROLE_USER`, `ROLE_MODERATOR`, `ROLE_ADMIN`
+
+**Response (200 OK)**:
+```json
+{
+  "categoriaId": 1,
+  "nombre": "Electrónica"
+}
+```
+
+### Crear una Nueva Categoría
+
+**URL**: `/api/categorias`  
+**Método**: `POST`  
+**Roles Requeridos**: `ROLE_MODERATOR`, `ROLE_ADMIN`
+
+**Request Body**:
+```json
+{
+  "nombre": "Electrodomésticos"
+}
+```
+
+**Response (200 OK)**:
+```json
+{
+  "categoriaId": 3,
+  "nombre": "Electrodomésticos"
+}
+```
+
+### Crear Múltiples Categorías
+
+**URL**: `/api/categorias/bulk`  
+**Método**: `POST`  
+**Roles Requeridos**: `ROLE_ADMIN`
+
+**Request Body**:
+```json
+{
+  "categorias": [
+    {"nombre": "Hogar"},
+    {"nombre": "Deportes"},
+    {"nombre": "Juguetes"}
+  ]
+}
+```
+
+**Response (200 OK)**:
+```json
+[
+  {
+    "categoriaId": 4,
+    "nombre": "Hogar"
+  },
+  {
+    "categoriaId": 5,
+    "nombre": "Deportes"
+  },
+  {
+    "categoriaId": 6,
+    "nombre": "Juguetes"
+  }
+]
+```
+
+### Actualizar una Categoría
+
+**URL**: `/api/categorias/{id}`  
+**Método**: `PUT`  
+**Roles Requeridos**: `ROLE_MODERATOR`, `ROLE_ADMIN`
+
+**Request Body**:
+```json
+{
+  "nombre": "Electrónica Actualizada"
+}
+```
+
+**Response (200 OK)**:
+```json
+{
+  "categoriaId": 1,
+  "nombre": "Electrónica Actualizada"
+}
+```
+
+### Eliminar una Categoría
+
+**URL**: `/api/categorias/{id}`  
+**Método**: `DELETE`  
+**Roles Requeridos**: `ROLE_ADMIN`
+
+**Response (200 OK)**:
+```json
+{
+  "success": true,
+  "message": "Categoría eliminada exitosamente",
+  "data": null,
+  "timestamp": "2025-10-18T14:30:00-05:00"
+}
+```
+
 ## Manejo de Errores
 
 ### Respuesta de Error Genérico
