@@ -1,5 +1,142 @@
 # Documentación de la API
 
+## Series
+
+### Crear una nueva serie
+
+**URL**: `/api/series`  
+**Método**: `POST`  
+**Descripción**: Crea una nueva serie  
+**Autenticación requerida**: Sí (Rol: ADMIN)
+
+**Request Body**:
+```json
+{
+  "subcategoriaId": 1,
+  "nombreSerie": "Nombre de la serie"
+}
+```
+
+**Response (201 Created)**:
+```json
+{
+  "success": true,
+  "message": "Serie creada exitosamente",
+  "data": {
+    "serieId": 1,
+    "subcategoriaId": 1,
+    "subcategoriaNombre": "Nombre de la subcategoría",
+    "nombreSerie": "Nombre de la serie"
+  }
+}
+```
+
+---
+
+### Obtener series por subcategoría
+
+**URL**: `/api/series/subcategoria/{subcategoriaId}`  
+**Método**: `GET`  
+**Descripción**: Obtiene todas las series de una subcategoría específica  
+**Autenticación requerida**: No
+
+**Response (200 OK)**:
+```json
+{
+  "success": true,
+  "message": "Series obtenidas exitosamente",
+  "data": [
+    {
+      "serieId": 1,
+      "subcategoriaId": 1,
+      "subcategoriaNombre": "Nombre de la subcategoría",
+      "nombreSerie": "Nombre de la serie 1"
+    },
+    {
+      "serieId": 2,
+      "subcategoriaId": 1,
+      "subcategoriaNombre": "Nombre de la subcategoría",
+      "nombreSerie": "Nombre de la serie 2"
+    }
+  ]
+}
+```
+
+---
+
+### Obtener una serie por ID
+
+**URL**: `/api/series/{id}`  
+**Método**: `GET`  
+**Descripción**: Obtiene los detalles de una serie específica  
+**Autenticación requerida**: No
+
+**Response (200 OK)**:
+```json
+{
+  "success": true,
+  "message": "Serie obtenida exitosamente",
+  "data": {
+    "serieId": 1,
+    "subcategoriaId": 1,
+    "subcategoriaNombre": "Nombre de la subcategoría",
+    "nombreSerie": "Nombre de la serie"
+  }
+}
+```
+
+---
+
+### Actualizar una serie
+
+**URL**: `/api/series/{id}`  
+**Método**: `PUT`  
+**Descripción**: Actualiza los datos de una serie existente  
+**Autenticación requerida**: Sí (Rol: ADMIN)
+
+**Request Body**:
+```json
+{
+  "subcategoriaId": 1,
+  "nombreSerie": "Nuevo nombre de la serie"
+}
+```
+
+**Response (200 OK)**:
+```json
+{
+  "success": true,
+  "message": "Serie actualizada exitosamente",
+  "data": {
+    "serieId": 1,
+    "subcategoriaId": 1,
+    "subcategoriaNombre": "Nombre de la subcategoría",
+    "nombreSerie": "Nuevo nombre de la serie"
+  }
+}
+```
+
+---
+
+### Eliminar una serie
+
+**URL**: `/api/series/{id}`  
+**Método**: `DELETE`  
+**Descripción**: Elimina una serie existente  
+**Autenticación requerida**: Sí (Rol: ADMIN)
+
+**Response (200 OK)**:
+```json
+{
+  "success": true,
+  "message": "Serie eliminada exitosamente",
+  "data": null
+}
+```
+
+---
+
+
 ## Autenticación
 
 ### Iniciar Sesión
