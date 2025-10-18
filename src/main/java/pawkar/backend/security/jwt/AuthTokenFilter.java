@@ -32,6 +32,31 @@ public class AuthTokenFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
         try {
+            String path = request.getRequestURI();
+            String contextPath = request.getContextPath();
+            
+            // Remove context path if it exists
+            if (contextPath != null && !contextPath.isEmpty() && path.startsWith(contextPath)) {
+                path = path.substring(contextPath.length());
+            }
+            
+            // Normalize the path
+            path = path.startsWith("/") ? path : "/" + path;
+            
+            logger.debug("Processing request for path: " + path);
+            
+            // Skip authentication for public endpoints
+            if (path.startsWith("/auth/")) {
+                if (!path.endsWith("/refreshtoken") && 
+                    !path.endsWith("/signout") &&
+                    !path.endsWith("/refreshtoken/") &&
+                    !path.endsWith("/signout/")) {
+                    logger.debug("Skipping authentication for public path: " + path);
+                    filterChain.doFilter(request, response);
+                    return;
+                }
+            }
+            
             String jwt = parseJwt(request);
             if (jwt != null && jwtUtils.validateJwtToken(jwt)) {
                 String username = jwtUtils.getUserNameFromJwtToken(jwt);
