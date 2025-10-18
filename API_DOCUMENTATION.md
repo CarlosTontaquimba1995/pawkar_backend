@@ -422,7 +422,7 @@
 
 **URL**: `/api/subcategorias/{id}`  
 **Método**: `DELETE`  
-**Roles Requeridos**: `ROLE_ADMIN`
+**Roles Requeridos**: `ROLE_MODERATOR`, `ROLE_ADMIN`
 
 **Parámetros de ruta**:
 - `id`: ID de la subcategoría a eliminar
@@ -432,6 +432,128 @@
 {
   "success": true,
   "message": "Subcategoría eliminada exitosamente"
+}
+```
+
+## Roles por Subcategoría
+
+### Obtener roles por ID de subcategoría
+
+**URL**: `/api/subcategoria-roles/subcategoria/{subcategoriaId}`  
+**Método**: `GET`  
+**Descripción**: Obtiene los roles asociados a una subcategoría específica por su ID
+
+**Parámetros de ruta**:
+- `subcategoriaId`: ID de la subcategoría
+
+**Response (200 OK)**:
+```json
+{
+  "success": true,
+  "message": "Roles obtenidos correctamente",
+  "data": [
+    {
+      "id": 1,
+      "name": "ROLE_USER",
+      "detail": "Usuario estándar"
+    },
+    {
+      "id": 2,
+      "name": "ADMIN",
+      "detail": "Administrador"
+    }
+  ]
+}
+```
+
+### Obtener roles por nombre de subcategoría
+
+**URL**: `/api/subcategoria-roles/subcategoria/nombre/{nombreSubcategoria}`  
+**Método**: `GET`  
+**Descripción**: Obtiene los roles asociados a una subcategoría específica por su nombre
+
+**Parámetros de ruta**:
+- `nombreSubcategoria`: Nombre de la subcategoría (ej: "Fútbol", "Baloncesto")
+
+**Response (200 OK)**:
+```json
+{
+  "success": true,
+  "message": "Roles obtenidos correctamente para la subcategoría: Fútbol",
+  "data": [
+    {
+      "id": 3,
+      "name": "JUGADOR",
+      "detail": "Jugador de fútbol"
+    },
+    {
+      "id": 4,
+      "name": "ENTRENADOR",
+      "detail": "Entrenador de fútbol"
+    }
+  ]
+}
+```
+
+### Asignar rol a subcategoría
+
+**URL**: `/api/subcategoria-roles/subcategoria/{subcategoriaId}/rol/{rolId}`  
+**Método**: `POST`  
+**Roles Requeridos**: `ROLE_ADMIN`
+
+**Parámetros de ruta**:
+- `subcategoriaId`: ID de la subcategoría
+- `rolId`: ID del rol a asignar
+
+**Response (200 OK)**:
+```json
+{
+  "success": true,
+  "message": "Rol asignado correctamente a la subcategoría"
+}
+```
+
+### Eliminar rol de subcategoría
+
+**URL**: `/api/subcategoria-roles/subcategoria/{subcategoriaId}/rol/{rolId}`  
+**Método**: `DELETE`  
+**Roles Requeridos**: `ROLE_ADMIN`
+
+**Parámetros de ruta**:
+- `subcategoriaId`: ID de la subcategoría
+- `rolId`: ID del rol a eliminar
+
+**Response (200 OK)**:
+```json
+{
+  "success": true,
+  "message": "Rol eliminado correctamente de la subcategoría"
+}
+```
+
+### Asignar múltiples roles a subcategoría
+
+**URL**: `/api/subcategoria-roles/bulk`  
+**Método**: `POST`  
+**Roles Requeridos**: `ROLE_ADMIN`
+
+**Request Body**:
+```json
+{
+  "subcategoriaId": 1,
+  "roles": [1, 2, 3]
+}
+```
+
+**Response (200 OK)**:
+```json
+{
+  "success": true,
+  "message": "Roles asignados correctamente a la subcategoría",
+  "data": {
+    "asignados": 3,
+    "fallidos": 0
+  }
 }
 ```
 
