@@ -1,5 +1,179 @@
 # Documentación de la API
 
+## Equipos
+
+### Obtener equipos por serie
+
+**URL**: `/equipos/serie/{serieId}`  
+**Método**: `GET`  
+**Descripción**: Obtiene todos los equipos de una serie específica  
+**Autenticación requerida**: No
+
+**Response (200 OK)**:
+```json
+{
+  "success": true,
+  "message": "Equipos obtenidos exitosamente",
+  "data": [
+    {
+      "equipoId": 1,
+      "subcategoriaId": 1,
+      "subcategoriaNombre": "Fútbol",
+      "serieId": 1,
+      "serieNombre": "Serie A",
+      "nombre": "Equipo Ejemplo",
+      "fundacion": "1900-01-01"
+    }
+  ]
+}
+```
+
+---
+
+### Obtener equipos por subcategoría
+
+**URL**: `/equipos/subcategoria/{subcategoriaId}`  
+**Método**: `GET`  
+**Descripción**: Obtiene todos los equipos de una subcategoría específica  
+**Autenticación requerida**: No
+
+**Response (200 OK)**:
+```json
+{
+  "success": true,
+  "message": "Equipos obtenidos exitosamente",
+  "data": [
+    {
+      "equipoId": 1,
+      "subcategoriaId": 1,
+      "subcategoriaNombre": "Fútbol",
+      "serieId": 1,
+      "serieNombre": "Serie A",
+      "nombre": "Equipo Ejemplo",
+      "fundacion": "1900-01-01"
+    }
+  ]
+}
+```
+
+---
+
+### Obtener un equipo por ID
+
+**URL**: `/equipos/{id}`  
+**Método**: `GET`  
+**Descripción**: Obtiene los detalles de un equipo específico  
+**Autenticación requerida**: No
+
+**Response (200 OK)**:
+```json
+{
+  "success": true,
+  "message": "Equipo obtenido exitosamente",
+  "data": {
+    "equipoId": 1,
+    "subcategoriaId": 1,
+    "subcategoriaNombre": "Fútbol",
+    "serieId": 1,
+    "serieNombre": "Serie A",
+    "nombre": "Equipo Ejemplo",
+    "fundacion": "1900-01-01"
+  }
+}
+```
+
+---
+
+### Crear un nuevo equipo
+
+**URL**: `/equipos`  
+**Método**: `POST`  
+**Descripción**: Crea un nuevo equipo  
+**Autenticación requerida**: Sí (Rol: ADMIN)
+
+**Request Body**:
+```json
+{
+  "subcategoriaId": 1,
+  "serieId": 1,
+  "nombre": "Nuevo Equipo",
+  "fundacion": "2000-01-01"
+}
+```
+
+**Response (201 Created)**:
+```json
+{
+  "success": true,
+  "message": "Equipo creado exitosamente",
+  "data": {
+    "equipoId": 1,
+    "subcategoriaId": 1,
+    "subcategoriaNombre": "Fútbol",
+    "serieId": 1,
+    "serieNombre": "Serie A",
+    "nombre": "Nuevo Equipo",
+    "fundacion": "2000-01-01"
+  }
+}
+```
+
+---
+
+### Actualizar un equipo
+
+**URL**: `/equipos/{id}`  
+**Método**: `PUT`  
+**Descripción**: Actualiza los datos de un equipo existente  
+**Autenticación requerida**: Sí (Rol: ADMIN)
+
+**Request Body**:
+```json
+{
+  "subcategoriaId": 1,
+  "serieId": 1,
+  "nombre": "Equipo Actualizado",
+  "fundacion": "2001-01-01"
+}
+```
+
+**Response (200 OK)**:
+```json
+{
+  "success": true,
+  "message": "Equipo actualizado exitosamente",
+  "data": {
+    "equipoId": 1,
+    "subcategoriaId": 1,
+    "subcategoriaNombre": "Fútbol",
+    "serieId": 1,
+    "serieNombre": "Serie A",
+    "nombre": "Equipo Actualizado",
+    "fundacion": "2001-01-01"
+  }
+}
+```
+
+---
+
+### Eliminar un equipo
+
+**URL**: `/equipos/{id}`  
+**Método**: `DELETE`  
+**Descripción**: Elimina un equipo existente  
+**Autenticación requerida**: Sí (Rol: ADMIN)
+
+**Response (200 OK)**:
+```json
+{
+  "success": true,
+  "message": "Equipo eliminado exitosamente",
+  "data": null
+}
+```
+
+---
+
 ## Series
 
 ### Crear una nueva serie

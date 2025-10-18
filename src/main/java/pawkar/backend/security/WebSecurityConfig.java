@@ -92,11 +92,13 @@ public class WebSecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/subcategorias/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/subcategoria-roles/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/series/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/equipos/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/roles/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/categorias/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/subcategorias/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/subcategoria-roles/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/series/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/equipos/**").permitAll()
 
                     .anyRequest().authenticated()
             )
