@@ -1,18 +1,16 @@
 package pawkar.backend.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import pawkar.backend.entity.Categoria;
 import pawkar.backend.entity.Subcategoria;
 import pawkar.backend.repository.CategoriaRepository;
 import pawkar.backend.repository.SubcategoriaRepository;
+import pawkar.backend.request.BulkSubcategoriaRequest;
 import pawkar.backend.request.SubcategoriaRequest;
-import pawkar.backend.response.ApiResponseStandard;
-import pawkar.backend.response.SubcategoriaResponse;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -34,6 +32,24 @@ public class SubcategoriaService {
         subcategoria.setDescripcion(request.getDescripcion());
 
         return subcategoriaRepository.save(subcategoria);
+    }
+
+    @Transactional
+    public List<Subcategoria> crearSubcategoriasBulk(BulkSubcategoriaRequest request) {
+        return request.getSubcategorias().stream()
+                .map(subcategoriaRequest -> {
+                    Categoria categoria = categoriaRepository.findById(subcategoriaRequest.getCategoriaId())
+                            .orElseThrow(() -> new RuntimeException(
+                                    "Categoría no encontrada con ID: " + subcategoriaRequest.getCategoriaId()));
+
+                    Subcategoria subcategoria = new Subcategoria();
+                    subcategoria.setCategoria(categoria);
+                    subcategoria.setNombre(subcategoriaRequest.getNombre());
+                    subcategoria.setDescripcion(subcategoriaRequest.getDescripcion());
+
+                    return subcategoriaRepository.save(subcategoria);
+                })
+                .collect(Collectors.toList());
     }
 
     public List<Subcategoria> listarSubcategorias() {

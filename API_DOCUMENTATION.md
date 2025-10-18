@@ -1,5 +1,233 @@
 # Documentación de la API
 
+## Plantillas
+
+### Añadir múltiples jugadores a un equipo (Bulk)
+
+**URL**: `/api/plantillas/bulk`  
+**Método**: `POST`  
+**Descripción**: Añade múltiples jugadores a un equipo en una sola petición  
+**Autenticación requerida**: Sí  
+**Content-Type**: `application/json`
+
+**Request Body**:
+```json
+{
+  "jugadores": [
+    {
+      "equipoId": 1,
+      "jugadorId": 1,
+      "numeroCamiseta": 1,
+      "rolId": 1
+    },
+    {
+      "equipoId": 1,
+      "jugadorId": 2,
+      "numeroCamiseta": 10,
+      "rolId": 2
+    },
+    {
+      "equipoId": 1,
+      "jugadorId": 3,
+      "numeroCamiseta": 7,
+      "rolId": 2
+    }
+  ]
+}
+```
+
+**Response (201 Created)**:
+```json
+{
+  "success": true,
+  "message": "Plantillas creadas exitosamente",
+  "data": [
+    {
+      "equipoId": 1,
+      "equipoNombre": "Equipo Ejemplo",
+      "jugadorId": 1,
+      "jugadorNombreCompleto": "Jugador Uno",
+      "numeroCamiseta": 1,
+      "rolId": 1,
+      "rolNombre": "PORTERO"
+    },
+    {
+      "equipoId": 1,
+      "equipoNombre": "Equipo Ejemplo",
+      "jugadorId": 2,
+      "jugadorNombreCompleto": "Jugador Dos",
+      "numeroCamiseta": 10,
+      "rolId": 2,
+      "rolNombre": "JUGADOR"
+    },
+    {
+      "equipoId": 1,
+      "equipoNombre": "Equipo Ejemplo",
+      "jugadorId": 3,
+      "jugadorNombreCompleto": "Jugador Tres",
+      "numeroCamiseta": 7,
+      "rolId": 2,
+      "rolNombre": "JUGADOR"
+    }
+  ]
+}
+```
+
+**Errores**:
+- `400 Bad Request`: Si la validación de los datos falla o si algún jugador ya está en el equipo
+- `401 Unauthorized`: Si no se proporciona un token de autenticación válido
+- `403 Forbidden`: Si el usuario no tiene permisos para realizar esta acción
+- `404 Not Found`: Si algún equipo, jugador o rol no existe
+
+### Obtener todas las plantillas
+
+**URL**: `/api/plantillas`  
+**Método**: `GET`  
+**Descripción**: Obtiene todas las plantillas registradas  
+**Autenticación requerida**: No
+
+**Response (200 OK)**:
+```json
+{
+  "success": true,
+  "message": "Plantillas obtenidas exitosamente",
+  "data": [
+    {
+      "equipoId": 1,
+      "equipoNombre": "Equipo Ejemplo",
+      "jugadorId": 1,
+      "jugadorNombreCompleto": "Nombre Apellido",
+      "numeroCamiseta": 10,
+      "rolId": 1,
+      "rolNombre": "JUGADOR"
+    }
+  ]
+}
+```
+
+### Obtener una plantilla específica
+
+**URL**: `/api/plantillas/{equipoId}/{jugadorId}`  
+**Método**: `GET`  
+**Descripción**: Obtiene una plantilla específica por ID de equipo y jugador  
+**Autenticación requerida**: No
+
+**Response (200 OK)**:
+```json
+{
+  "success": true,
+  "message": "Plantilla obtenida exitosamente",
+  "data": {
+    "equipoId": 1,
+    "equipoNombre": "Equipo Ejemplo",
+    "jugadorId": 1,
+    "jugadorNombreCompleto": "Nombre Apellido",
+    "numeroCamiseta": 10,
+    "rolId": 1,
+    "rolNombre": "JUGADOR"
+  }
+}
+```
+
+### Obtener jugadores de un equipo
+
+**URL**: `/api/plantillas/equipo/{equipoId}`  
+**Método**: `GET`  
+**Descripción**: Obtiene todos los jugadores de un equipo específico  
+**Autenticación requerida**: No
+
+**Parámetros de ruta**:
+- `equipoId`: ID del equipo del que se desean obtener los jugadores
+
+**Response (200 OK)**:
+```json
+{
+  "success": true,
+  "message": "Plantilla del equipo obtenida exitosamente",
+  "data": [
+    {
+      "equipoId": 1,
+      "equipoNombre": "Equipo Ejemplo",
+      "jugadorId": 1,
+      "jugadorNombreCompleto": "Jugador Uno",
+      "numeroCamiseta": 1,
+      "rolId": 1,
+      "rolNombre": "PORTERO"
+    },
+    {
+      "equipoId": 1,
+      "equipoNombre": "Equipo Ejemplo",
+      "jugadorId": 2,
+      "jugadorNombreCompleto": "Jugador Dos",
+      "numeroCamiseta": 10,
+      "rolId": 2,
+      "rolNombre": "JUGADOR"
+    },
+    {
+      "equipoId": 1,
+      "equipoNombre": "Equipo Ejemplo",
+      "jugadorId": 3,
+      "jugadorNombreCompleto": "Jugador Tres",
+      "numeroCamiseta": 7,
+      "rolId": 2,
+      "rolNombre": "JUGADOR"
+    }
+  ]
+}
+```
+
+**Errores**:
+- `404 Not Found`: Si el equipo no existe o no tiene jugadores registrados
+
+### Crear una nueva plantilla
+
+**URL**: `/api/plantillas`  
+**Método**: `POST`  
+**Descripción**: Crea una nueva plantilla  
+**Autenticación requerida**: Sí (Rol: ADMIN)
+
+**Request Body**:
+```json
+{
+  "equipoId": 1,
+  "jugadorId": 1,
+  "numeroCamiseta": 10,
+  "rolId": 1
+}
+```
+
+**Response (201 Created)**:
+```json
+{
+  "success": true,
+  "message": "Plantilla creada exitosamente",
+  "data": {
+    "equipoId": 1,
+    "equipoNombre": "Equipo Ejemplo",
+    "jugadorId": 1,
+    "jugadorNombreCompleto": "Nombre Apellido",
+    "numeroCamiseta": 10,
+    "rolId": 1,
+    "rolNombre": "JUGADOR"
+  }
+}
+```
+
+### Eliminar una plantilla
+
+**URL**: `/api/plantillas/{equipoId}/{jugadorId}`  
+**Método**: `DELETE`  
+**Descripción**: Elimina una plantilla específica por ID de equipo y jugador  
+**Autenticación requerida**: Sí (Rol: ADMIN)
+
+**Response (204 No Content)**:
+```
+// No content
+```
+
+---
+
+
 ## Equipos
 
 ### Obtener equipos por serie
@@ -817,7 +1045,7 @@
     },
     {
       "id": 6,
-      "name": "ROL_2"
+      "name": "ROL_2",
       "detail": "Descripción del rol 2"
     }
   ]
@@ -919,6 +1147,59 @@
 ### Actualizar una Categoría
 
 ## Subcategorías
+
+### Crear múltiples subcategorías (Bulk)
+
+**URL**: `/subcategorias/bulk`  
+**Método**: `POST`  
+**Descripción**: Crea múltiples subcategorías en una sola petición  
+**Autenticación requerida**: Sí (Rol: ADMIN)  
+**Content-Type**: `application/json`
+
+**Request Body**:
+```json
+{
+  "subcategorias": [
+    {
+      "categoriaId": 1,
+      "nombre": "Subcategoría 1",
+      "descripcion": "Descripción de la subcategoría 1"
+    },
+    {
+      "categoriaId": 1,
+      "nombre": "Subcategoría 2",
+      "descripcion": "Descripción de la subcategoría 2"
+    }
+  ]
+}
+```
+
+**Response (201 Created)**:
+```json
+{
+  "success": true,
+  "message": "Subcategorías creadas exitosamente",
+  "data": [
+    {
+      "subcategoriaId": 1,
+      "nombre": "Subcategoría 1",
+      "descripcion": "Descripción de la subcategoría 1",
+      "categoriaId": 1
+    },
+    {
+      "subcategoriaId": 2,
+      "nombre": "Subcategoría 2",
+      "descripcion": "Descripción de la subcategoría 2",
+      "categoriaId": 1
+    }
+  ]
+}
+```
+
+**Errores**:
+- `400 Bad Request`: Si la validación de los datos falla o si la categoría especificada no existe
+- `401 Unauthorized`: Si no se proporciona un token de autenticación válido
+- `403 Forbidden`: Si el usuario no tiene permisos de administrador
 
 ### Listar todas las subcategorías
 

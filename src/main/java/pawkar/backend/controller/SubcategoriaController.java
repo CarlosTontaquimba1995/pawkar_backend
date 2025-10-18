@@ -4,8 +4,10 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.http.HttpStatus;
 import pawkar.backend.entity.Subcategoria;
 import pawkar.backend.entity.Categoria;
+import pawkar.backend.request.BulkSubcategoriaRequest;
 import pawkar.backend.request.SubcategoriaRequest;
 import pawkar.backend.response.ApiResponseStandard;
 import pawkar.backend.response.SubcategoriaResponse;
@@ -21,6 +23,23 @@ public class SubcategoriaController {
 
     @Autowired
     private SubcategoriaService subcategoriaService;
+
+    @PostMapping("/bulk")
+    @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ApiResponseStandard<List<SubcategoriaResponse>> crearSubcategoriasBulk(
+            @Valid @RequestBody BulkSubcategoriaRequest request) {
+        try {
+            List<Subcategoria> subcategorias = subcategoriaService.crearSubcategoriasBulk(request);
+            List<SubcategoriaResponse> response = subcategorias.stream()
+                    .map(this::toSubcategoriaResponse)
+                    .collect(Collectors.toList());
+            return ApiResponseStandard.success(response, "Subcategorías creadas exitosamente");
+        } catch (Exception e) {
+            return ApiResponseStandard.error("Error al crear subcategorías: " + e.getMessage(), 
+                    "/api/subcategorias/bulk", "Bad Request", 400);
+        }
+    }
 
     @PostMapping
     @PreAuthorize("hasRole('ROLE_ADMIN')")
