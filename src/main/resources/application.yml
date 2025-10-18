@@ -12,15 +12,13 @@ spring:
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
-      ddl-auto: create-drop  # This will drop and recreate the schema
+      ddl-auto: validate  # This will update the schema without dropping data
     show-sql: true
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
         default_schema: public
-        hbm2ddl:
-          auto: create-drop
 
 # JWT configuration
 app:
