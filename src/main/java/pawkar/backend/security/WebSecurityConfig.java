@@ -89,8 +89,10 @@ public class WebSecurityConfig {
                     ).permitAll()
                         .requestMatchers(HttpMethod.POST, "/roles/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/categorias/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/subcategorias/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/roles/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/categorias/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/subcategorias/**").permitAll()
                     .anyRequest().authenticated()
             )
             .authenticationProvider(authenticationProvider());

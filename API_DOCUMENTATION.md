@@ -197,7 +197,7 @@
     },
     {
       "id": 6,
-      "name": "ROL_2",
+      "name": "ROL_2"
       "detail": "Descripción del rol 2"
     }
   ]
@@ -297,6 +297,147 @@
 ```
 
 ### Actualizar una Categoría
+
+## Subcategorías
+
+### Listar todas las subcategorías
+
+**URL**: `/api/subcategorias`  
+**Método**: `GET`  
+**Descripción**: Obtiene la lista de todas las subcategorías
+
+**Response (200 OK)**:
+```json
+{
+  "success": true,
+  "message": "Subcategorías obtenidas exitosamente",
+  "data": [
+    {
+      "id": 1,
+      "nombre": "Subcategoría 1",
+      "descripcion": "Descripción de la subcategoría 1",
+      "categoria": {
+        "id": 1,
+        "nombre": "Categoría 1"
+      }
+    }
+  ]
+}
+```
+
+### Obtener subcategoría por ID
+
+**URL**: `/api/subcategorias/{id}`  
+**Método**: `GET`  
+**Descripción**: Obtiene una subcategoría específica por su ID
+
+**Parámetros de ruta**:
+- `id`: ID de la subcategoría
+
+**Response (200 OK)**:
+```json
+{
+  "success": true,
+  "message": "Subcategoría encontrada",
+  "data": {
+    "id": 1,
+    "nombre": "Subcategoría 1",
+    "descripcion": "Descripción de la subcategoría 1",
+    "categoria": {
+      "id": 1,
+      "nombre": "Categoría 1"
+    }
+  }
+}
+```
+
+### Crear subcategoría
+
+**URL**: `/api/subcategorias`  
+**Método**: `POST`  
+**Roles Requeridos**: `ROLE_MODERATOR`, `ROLE_ADMIN`
+
+**Request Body**:
+```json
+{
+  "categoriaId": 1,
+  "nombre": "Nueva Subcategoría",
+  "descripcion": "Descripción de la nueva subcategoría"
+}
+```
+
+**Response (201 Created)**:
+```json
+{
+  "success": true,
+  "message": "Subcategoría creada exitosamente",
+  "data": {
+    "id": 2,
+    "nombre": "Nueva Subcategoría",
+    "descripcion": "Descripción de la nueva subcategoría",
+    "categoria": {
+      "id": 1,
+      "nombre": "Categoría 1"
+    }
+  }
+}
+```
+
+### Actualizar subcategoría
+
+**URL**: `/api/subcategorias/{id}`  
+**Método**: `PUT`  
+**Roles Requeridos**: `ROLE_MODERATOR`, `ROLE_ADMIN`
+
+**Parámetros de ruta**:
+- `id`: ID de la subcategoría a actualizar
+
+**Request Body**:
+```json
+{
+  "categoriaId": 1,
+  "nombre": "Subcategoría Actualizada",
+  "descripcion": "Descripción actualizada"
+}
+```
+
+**Response (200 OK)**:
+```json
+{
+  "success": true,
+  "message": "Subcategoría actualizada exitosamente",
+  "data": {
+    "id": 1,
+    "nombre": "Subcategoría Actualizada",
+    "descripcion": "Descripción actualizada",
+    "categoria": {
+      "id": 1,
+      "nombre": "Categoría 1"
+    }
+  }
+}
+```
+
+### Eliminar subcategoría
+
+**URL**: `/api/subcategorias/{id}`  
+**Método**: `DELETE`  
+**Roles Requeridos**: `ROLE_ADMIN`
+
+**Parámetros de ruta**:
+- `id`: ID de la subcategoría a eliminar
+
+**Response (200 OK)**:
+```json
+{
+  "success": true,
+  "message": "Subcategoría eliminada exitosamente"
+}
+```
+
+## Categorías
+
+### Actualizar categoría
 
 **URL**: `/api/categorias/{id}`  
 **Método**: `PUT`  
