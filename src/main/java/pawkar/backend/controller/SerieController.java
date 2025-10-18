@@ -3,6 +3,7 @@ package pawkar.backend.controller;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import pawkar.backend.dto.BulkSerieRequest;
 import pawkar.backend.response.ApiResponseStandard;
 import pawkar.backend.dto.SerieRequest;
 import pawkar.backend.dto.SerieResponse;
@@ -22,6 +23,7 @@ public class SerieController {
     }
 
     @PostMapping
+    @ResponseStatus(org.springframework.http.HttpStatus.CREATED)
     public ApiResponseStandard<SerieResponse> crearSerie(
             @Valid @RequestBody SerieRequest request) {
         try {
@@ -34,6 +36,24 @@ public class SerieController {
                     e.getMessage(),
                     "/api/series",
                     "Error al crear la serie",
+                    400);
+        }
+    }
+
+    @PostMapping("/bulk")
+    @ResponseStatus(org.springframework.http.HttpStatus.CREATED)
+    public ApiResponseStandard<List<SerieResponse>> crearSeriesEnLote(
+            @Valid @RequestBody BulkSerieRequest request) {
+        try {
+            List<SerieResponse> series = serieService.crearSeriesEnLote(request);
+            return ApiResponseStandard.success(
+                    series,
+                    "Series creadas exitosamente");
+        } catch (Exception e) {
+            return ApiResponseStandard.error(
+                    e.getMessage(),
+                    "/api/series/bulk",
+                    "Error al crear las series",
                     400);
         }
     }

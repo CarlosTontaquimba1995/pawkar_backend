@@ -3,6 +3,7 @@ package pawkar.backend.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import pawkar.backend.dto.BulkEquipoRequest;
 import pawkar.backend.dto.EquipoRequest;
 import pawkar.backend.dto.EquipoResponse;
 import pawkar.backend.entity.Equipo;
@@ -104,6 +105,39 @@ public class EquipoService {
         
         Equipo equipoActualizado = equipoRepository.save(equipo);
         return mapToResponse(equipoActualizado);
+    }
+
+    @Transactional
+    public List<EquipoResponse> crearEquiposEnLote(BulkEquipoRequest request) {
+        // Verificar que la lista de equipos no esté vacía
+        if (request.getEquipos() == null || request.getEquipos().isEmpty()) {
+            throw new BadRequestException("La lista de equipos no puede estar vacía");
+        }
+
+        // Verificar nombres duplicados en la misma serie dentro de la solicitud
+        long uniqueEquiposCount = request.getEquipos().stream()
+                .map(equipo -> equipo.getSerieId() + "_" + equipo.getNombre())
+                .distinct()
+                .count();
+
+        if (uniqueEquiposCount != request.getEquipos().size()) {
+            throw new BadRequestException(
+                    "No se permiten equipos duplicados en la misma serie dentro de la misma solicitud");
+        }
+
+        // Verificar si ya existen equipos con los mismos nombres en las series
+        // correspondientes
+        for (EquipoRequest equipoReq : request.getEquipos()) {
+            if (equipoRepository.existsByNombreAndSerieId(equipoReq.getNombre(), equipoReq.getSerieId())) {
+                throw new BadRequestException("Ya existe un equipo con el nombre '" +
+                        equipoReq.getNombre() + "' en la serie con ID: " + equipoReq.getSerieId());
+            }
+        }
+
+        // Crear y guardar los equipos
+        return request.getEquipos().stream()
+                .map(this::crearEquipo)
+                .collect(Collectors.toList());
     }
 
     @Transactional

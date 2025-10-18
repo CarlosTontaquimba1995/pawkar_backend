@@ -3,6 +3,7 @@ package pawkar.backend.controller;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import pawkar.backend.dto.BulkEquipoRequest;
 import pawkar.backend.dto.EquipoRequest;
 import pawkar.backend.dto.EquipoResponse;
 import pawkar.backend.response.ApiResponseStandard;
@@ -44,6 +45,14 @@ public class EquipoController {
             @Valid @RequestBody EquipoRequest request) {
         EquipoResponse equipo = equipoService.crearEquipo(request);
         return ApiResponseStandard.success(equipo, "Equipo creado exitosamente");
+    }
+    
+    @PostMapping("/bulk")
+    @ResponseStatus(org.springframework.http.HttpStatus.CREATED)
+    public ApiResponseStandard<List<EquipoResponse>> crearEquiposEnLote(
+            @Valid @RequestBody BulkEquipoRequest request) {
+        List<EquipoResponse> equipos = equipoService.crearEquiposEnLote(request);
+        return ApiResponseStandard.success(equipos, "Equipos creados exitosamente");
     }
 
     @PutMapping("/{id}")

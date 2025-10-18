@@ -19,6 +19,10 @@ public interface SerieRepository extends JpaRepository<Serie, Integer> {
             @Param("nombreSerie") String nombreSerie
     );
     
+    default boolean existsBySubcategoriaAndNombreSerie(Integer subcategoriaId, String nombreSerie) {
+        return findBySubcategoriaAndNombreSerie(subcategoriaId, nombreSerie).isPresent();
+    }
+    
     @Query("SELECT CASE WHEN COUNT(s) > 0 THEN true ELSE false END FROM Serie s " +
            "WHERE s.subcategoria.subcategoriaId = :subcategoriaId " +
            "AND s.nombreSerie = :nombreSerie " +

@@ -4,7 +4,7 @@
 
 ### Obtener equipos por serie
 
-**URL**: `/equipos/serie/{serieId}`  
+**URL**: `/api/equipos/serie/{serieId}`  
 **Método**: `GET`  
 **Descripción**: Obtiene todos los equipos de una serie específica  
 **Autenticación requerida**: No
@@ -32,7 +32,7 @@
 
 ### Obtener equipos por subcategoría
 
-**URL**: `/equipos/subcategoria/{subcategoriaId}`  
+**URL**: `/api/equipos/subcategoria/{subcategoriaId}`  
 **Método**: `GET`  
 **Descripción**: Obtiene todos los equipos de una subcategoría específica  
 **Autenticación requerida**: No
@@ -60,7 +60,7 @@
 
 ### Obtener un equipo por ID
 
-**URL**: `/equipos/{id}`  
+**URL**: `/api/equipos/{id}`  
 **Método**: `GET`  
 **Descripción**: Obtiene los detalles de un equipo específico  
 **Autenticación requerida**: No
@@ -86,7 +86,7 @@
 
 ### Crear un nuevo equipo
 
-**URL**: `/equipos`  
+**URL**: `/api/equipos`  
 **Método**: `POST`  
 **Descripción**: Crea un nuevo equipo  
 **Autenticación requerida**: Sí (Rol: ADMIN)
@@ -120,9 +120,72 @@
 
 ---
 
-### Actualizar un equipo
+### Crear múltiples equipos en lote
 
-**URL**: `/equipos/{id}`  
+**URL**: `/api/equipos/bulk`  
+**Método**: `POST`  
+**Descripción**: Crea múltiples equipos en una sola operación  
+**Autenticación requerida**: Sí (Rol: ADMIN)
+
+**Request Body**:
+```json
+{
+  "equipos": [
+    {
+      "subcategoriaId": 1,
+      "serieId": 1,
+      "nombre": "Equipo A",
+      "fundacion": "2000-01-01"
+    },
+    {
+      "subcategoriaId": 1,
+      "serieId": 1,
+      "nombre": "Equipo B",
+      "fundacion": "2001-01-01"
+    }
+  ]
+}
+```
+
+**Response (201 Created)**:
+```json
+{
+  "success": true,
+  "message": "Equipos creados exitosamente",
+  "data": [
+    {
+      "equipoId": 1,
+      "subcategoriaId": 1,
+      "subcategoriaNombre": "Fútbol",
+      "serieId": 1,
+      "serieNombre": "Serie A",
+      "nombre": "Equipo A",
+      "fundacion": "2000-01-01"
+    },
+    {
+      "equipoId": 2,
+      "subcategoriaId": 1,
+      "subcategoriaNombre": "Fútbol",
+      "serieId": 1,
+      "serieNombre": "Serie A",
+      "nombre": "Equipo B",
+      "fundacion": "2001-01-01"
+    }
+  ]
+}
+```
+
+**Errores**:
+- `400 Bad Request`: Si la lista de equipos está vacía o contiene datos inválidos
+- `400 Bad Request`: Si hay equipos duplicados en la misma serie dentro de la misma solicitud
+- `400 Bad Request`: Si ya existe un equipo con el mismo nombre en la misma serie
+- `404 Not Found`: Si la subcategoría o serie especificada no existe
+
+---
+
+### Actualizar un equipo existente
+
+**URL**: `/api/equipos/{id}`  
 **Método**: `PUT`  
 **Descripción**: Actualiza los datos de un equipo existente  
 **Autenticación requerida**: Sí (Rol: ADMIN)
@@ -158,7 +221,7 @@
 
 ### Eliminar un equipo
 
-**URL**: `/equipos/{id}`  
+**URL**: `/api/equipos/{id}`  
 **Método**: `DELETE`  
 **Descripción**: Elimina un equipo existente  
 **Autenticación requerida**: Sí (Rol: ADMIN)
@@ -202,6 +265,53 @@
     "subcategoriaNombre": "Nombre de la subcategoría",
     "nombreSerie": "Nombre de la serie"
   }
+}
+```
+
+---
+
+### Crear múltiples series en lote
+
+**URL**: `/api/series/bulk`  
+**Método**: `POST`  
+**Descripción**: Crea múltiples series en una sola operación  
+**Autenticación requerida**: Sí (Rol: ADMIN)
+
+**Request Body**:
+```json
+{
+  "series": [
+    {
+      "subcategoriaId": 1,
+      "nombreSerie": "Serie A"
+    },
+    {
+      "subcategoriaId": 1,
+      "nombreSerie": "Serie B"
+    }
+  ]
+}
+```
+
+**Response (201 Created)**:
+```json
+{
+  "success": true,
+  "message": "Series creadas exitosamente",
+  "data": [
+    {
+      "serieId": 1,
+      "subcategoriaId": 1,
+      "subcategoriaNombre": "Nombre de la subcategoría",
+      "nombreSerie": "Serie A"
+    },
+    {
+      "serieId": 2,
+      "subcategoriaId": 1,
+      "subcategoriaNombre": "Nombre de la subcategoría",
+      "nombreSerie": "Serie B"
+    }
+  ]
 }
 ```
 
