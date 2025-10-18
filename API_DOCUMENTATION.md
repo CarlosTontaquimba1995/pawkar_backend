@@ -1,5 +1,173 @@
 # Documentación de la API
 
+## Encuentros
+
+### Crear un nuevo encuentro
+
+**URL**: `/encuentros`  
+**Método**: `POST`  
+**Descripción**: Crea un nuevo encuentro  
+**Autenticación requerida**: Sí  
+**Content-Type**: `application/json`
+
+**Request Body**:
+```json
+{
+  "subcategoriaId": 1,
+  "titulo": "Partido de fútbol entre Equipo A y Equipo B",
+  "fechaHora": "2025-12-25T15:00:00",
+  "estadioLugar": "Estadio Principal",
+  "estado": "Pendiente"
+}
+```
+
+**Response (201 Created)**:
+```json
+{
+  "id": 1,
+  "subcategoriaId": 1,
+  "subcategoriaNombre": "Fútbol",
+  "titulo": "Partido de fútbol entre Equipo A y Equipo B",
+  "fechaHora": "2025-12-25T15:00:00",
+  "estadioLugar": "Estadio Principal",
+  "estado": "Pendiente"
+}
+```
+
+### Obtener todos los encuentros
+
+**URL**: `/encuentros`  
+**Método**: `GET`  
+**Descripción**: Obtiene todos los encuentros registrados  
+**Autenticación requerida**: No
+
+**Response (200 OK)**:
+```json
+[
+  {
+    "id": 1,
+    "subcategoriaId": 1,
+    "subcategoriaNombre": "Fútbol",
+    "titulo": "Partido de fútbol entre Equipo A y Equipo B",
+    "fechaHora": "2025-12-25T15:00:00",
+    "estadioLugar": "Estadio Principal",
+    "estado": "Pendiente"
+  },
+  {
+    "id": 2,
+    "subcategoriaId": 2,
+    "subcategoriaNombre": "Baloncesto",
+    "titulo": "Partido de baloncesto",
+    "fechaHora": "2025-12-26T18:00:00",
+    "estadioLugar": "Coliseo Municipal",
+    "estado": "Pendiente"
+  }
+]
+```
+
+### Obtener un encuentro por ID
+
+**URL**: `/encuentros/{id}`  
+**Método**: `GET`  
+**Descripción**: Obtiene un encuentro específico por su ID  
+**Autenticación requerida**: No  
+**Parámetros de la URL**:
+- `id` (requerido): ID del encuentro
+
+**Response (200 OK)**:
+```json
+{
+  "id": 1,
+  "subcategoriaId": 1,
+  "subcategoriaNombre": "Fútbol",
+  "titulo": "Partido de fútbol entre Equipo A y Equipo B",
+  "fechaHora": "2025-12-25T15:00:00",
+  "estadioLugar": "Estadio Principal",
+  "estado": "Pendiente"
+}
+```
+
+### Obtener encuentros por subcategoría
+
+**URL**: `/encuentros/subcategoria/{subcategoriaId}`  
+**Método**: `GET`  
+**Descripción**: Obtiene todos los encuentros de una subcategoría específica  
+**Autenticación requerida**: No  
+**Parámetros de la URL**:
+- `subcategoriaId` (requerido): ID de la subcategoría
+
+**Response (200 OK)**:
+```json
+[
+  {
+    "id": 1,
+    "subcategoriaId": 1,
+    "subcategoriaNombre": "Fútbol",
+    "titulo": "Partido de fútbol entre Equipo A y Equipo B",
+    "fechaHora": "2025-12-25T15:00:00",
+    "estadioLugar": "Estadio Principal",
+    "estado": "Pendiente"
+  },
+  {
+    "id": 3,
+    "subcategoriaId": 1,
+    "subcategoriaNombre": "Fútbol",
+    "titulo": "Otro partido de fútbol",
+    "fechaHora": "2025-12-27T16:00:00",
+    "estadioLugar": "Estadio Secundario",
+    "estado": "Pendiente"
+  }
+]
+```
+
+### Actualizar un encuentro
+
+**URL**: `/encuentros/{id}`  
+**Método**: `PUT`  
+**Descripción**: Actualiza un encuentro existente  
+**Autenticación requerida**: Sí  
+**Content-Type**: `application/json`
+
+**Request Body**:
+```json
+{
+  "subcategoriaId": 1,
+  "titulo": "Partido de fútbol actualizado",
+  "fechaHora": "2025-12-25T16:00:00",
+  "estadioLugar": "Estadio Principal",
+  "estado": "En juego"
+}
+```
+
+**Response (200 OK)**:
+```json
+{
+  "id": 1,
+  "subcategoriaId": 1,
+  "subcategoriaNombre": "Fútbol",
+  "titulo": "Partido de fútbol actualizado",
+  "fechaHora": "2025-12-25T16:00:00",
+  "estadioLugar": "Estadio Principal",
+  "estado": "En juego"
+}
+```
+
+### Eliminar un encuentro
+
+**URL**: `/encuentros/{id}`  
+**Método**: `DELETE`  
+**Descripción**: Elimina un encuentro existente  
+**Autenticación requerida**: Sí
+
+**Response (204 No Content)**: No content
+
+**Errores**:
+- `400 Bad Request`: Si la validación de los datos falla
+- `401 Unauthorized`: Si no se proporciona un token de autenticación válido
+- `403 Forbidden`: Si el usuario no tiene permisos para realizar la acción
+- `404 Not Found`: Si el encuentro no existe
+- `500 Internal Server Error`: Error interno del servidor
+
 ## Plantillas
 
 ### Añadir múltiples jugadores a un equipo (Bulk)
