@@ -183,6 +183,205 @@
 
 ---
 
+## Jugadores
+
+### Obtener todos los jugadores
+
+**URL**: `/api/jugadores`  
+**Método**: `GET`  
+**Descripción**: Obtiene una lista de todos los jugadores  
+**Autenticación requerida**: No
+
+**Response (200 OK)**:
+```json
+{
+  "success": true,
+  "message": "Jugadores obtenidos exitosamente",
+  "data": [
+    {
+      "id": 1,
+      "nombre": "Juan",
+      "apellido": "Pérez",
+      "fechaNacimiento": "1990-01-01",
+      "documentoIdentidad": "12345678"
+    }
+  ]
+}
+```
+
+---
+
+### Obtener un jugador por ID
+
+**URL**: `/api/jugadores/{id}`  
+**Método**: `GET`  
+**Descripción**: Obtiene un jugador por su ID  
+**Autenticación requerida**: No
+
+**Response (200 OK)**:
+```json
+{
+  "success": true,
+  "message": "Jugador obtenido exitosamente",
+  "data": {
+    "id": 1,
+    "nombre": "Juan",
+    "apellido": "Pérez",
+    "fechaNacimiento": "1990-01-01",
+    "documentoIdentidad": "12345678"
+  }
+}
+```
+
+---
+
+### Crear un nuevo jugador
+
+**URL**: `/api/jugadores`  
+**Método**: `POST`  
+**Descripción**: Crea un nuevo jugador  
+**Autenticación requerida**: Sí (Rol: ADMIN)
+
+**Request Body**:
+```json
+{
+  "nombre": "Carlos",
+  "apellido": "González",
+  "fechaNacimiento": "1995-05-15",
+  "documentoIdentidad": "87654321"
+}
+```
+
+**Response (201 Created)**:
+```json
+{
+  "success": true,
+  "message": "Jugador creado exitosamente",
+  "data": {
+    "id": 1,
+    "nombre": "Carlos",
+    "apellido": "González",
+    "fechaNacimiento": "1995-05-15",
+    "documentoIdentidad": "87654321"
+  }
+}
+```
+
+---
+
+### Crear múltiples jugadores en lote
+
+**URL**: `/api/jugadores/bulk`  
+**Método**: `POST`  
+**Descripción**: Crea múltiples jugadores en una sola operación  
+**Autenticación requerida**: Sí (Rol: ADMIN)
+
+**Request Body**:
+```json
+{
+  "jugadores": [
+    {
+      "nombre": "Jugador 1",
+      "apellido": "Apellido 1",
+      "fechaNacimiento": "1990-01-01",
+      "documentoIdentidad": "11111111"
+    },
+    {
+      "nombre": "Jugador 2",
+      "apellido": "Apellido 2",
+      "fechaNacimiento": "1991-02-02",
+      "documentoIdentidad": "22222222"
+    }
+  ]
+}
+```
+
+**Response (201 Created)**:
+```json
+{
+  "success": true,
+  "message": "Jugadores creados exitosamente",
+  "data": [
+    {
+      "id": 1,
+      "nombre": "Jugador 1",
+      "apellido": "Apellido 1",
+      "fechaNacimiento": "1990-01-01",
+      "documentoIdentidad": "11111111"
+    },
+    {
+      "id": 2,
+      "nombre": "Jugador 2",
+      "apellido": "Apellido 2",
+      "fechaNacimiento": "1991-02-02",
+      "documentoIdentidad": "22222222"
+    }
+  ]
+}
+```
+
+**Errores**:
+- `400 Bad Request`: Si la lista de jugadores está vacía o contiene datos inválidos
+- `400 Bad Request`: Si hay jugadores con el mismo documento de identidad en la misma solicitud
+- `400 Bad Request`: Si ya existe un jugador con el mismo documento de identidad
+
+---
+
+### Actualizar un jugador
+
+**URL**: `/api/jugadores/{id}`  
+**Método**: `PUT`  
+**Descripción**: Actualiza un jugador existente  
+**Autenticación requerida**: Sí (Rol: ADMIN)
+
+**Request Body**:
+```json
+{
+  "nombre": "Carlos",
+  "apellido": "González López",
+  "fechaNacimiento": "1995-05-15",
+  "documentoIdentidad": "87654321"
+}
+```
+
+**Response (200 OK)**:
+```json
+{
+  "success": true,
+  "message": "Jugador actualizado exitosamente",
+  "data": {
+    "id": 1,
+    "nombre": "Carlos",
+    "apellido": "González López",
+    "fechaNacimiento": "1995-05-15",
+    "documentoIdentidad": "87654321"
+  }
+}
+```
+
+---
+
+### Eliminar un jugador
+
+**URL**: `/api/jugadores/{id}`  
+**Método**: `DELETE`  
+**Descripción**: Elimina un jugador existente  
+**Autenticación requerida**: Sí (Rol: ADMIN)
+
+**Response (200 OK)**:
+```json
+{
+  "success": true,
+  "message": "Jugador eliminado exitosamente"
+}
+```
+
+**Errores**:
+- `404 Not Found`: Si el jugador con el ID especificado no existe
+- `400 Bad Request`: Si el jugador no puede ser eliminado por restricciones de integridad referencial
+
+---
+
 ### Actualizar un equipo existente
 
 **URL**: `/api/equipos/{id}`  
