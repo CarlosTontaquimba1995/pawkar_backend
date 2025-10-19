@@ -9,14 +9,22 @@ public class TablaPosicionResponse {
     private Integer derrotas;
     private Integer empates;
     private Integer puntos;
+    private Integer golesAFavor;
+    private Integer golesEnContra;
+    private Integer diferenciaGoles;
     private Integer posicion;
+    private Integer serieId;
+    private String serieNombre;
+    private Integer categoriaId;
+    private String categoriaNombre;
 
     // Constructors
     public TablaPosicionResponse() {}
 
     public TablaPosicionResponse(Integer subcategoriaId, Integer equipoId, String equipoNombre, 
                                Integer partidosJugados, Integer victorias, Integer derrotas, 
-                               Integer empates, Integer puntos, Integer posicion) {
+                               Integer empates, Integer golesAFavor, Integer golesEnContra,
+                               Integer diferenciaGoles, Integer puntos, Integer posicion) {
         this.subcategoriaId = subcategoriaId;
         this.equipoId = equipoId;
         this.equipoNombre = equipoNombre;
@@ -24,6 +32,9 @@ public class TablaPosicionResponse {
         this.victorias = victorias;
         this.derrotas = derrotas;
         this.empates = empates;
+        this.golesAFavor = golesAFavor;
+        this.golesEnContra = golesEnContra;
+        this.diferenciaGoles = diferenciaGoles;
         this.puntos = puntos;
         this.posicion = posicion;
     }
@@ -99,5 +110,61 @@ public class TablaPosicionResponse {
 
     public void setPosicion(Integer posicion) {
         this.posicion = posicion;
+    }
+
+    public Integer getGolesAFavor() {
+        return golesAFavor;
+    }
+
+    public void setGolesAFavor(Integer golesAFavor) {
+        this.golesAFavor = golesAFavor;
+    }
+
+    public Integer getGolesEnContra() {
+        return golesEnContra;
+    }
+
+    public void setGolesEnContra(Integer golesEnContra) {
+        this.golesEnContra = golesEnContra;
+    }
+
+    public Integer getDiferenciaGoles() {
+        return diferenciaGoles;
+    }
+
+    public void setDiferenciaGoles(Integer diferenciaGoles) {
+        this.diferenciaGoles = diferenciaGoles;
+    }
+
+    public Integer getSerieId() {
+        return serieId;
+    }
+
+    public void setSerieId(Integer serieId) {
+        this.serieId = serieId;
+    }
+
+    public String getSerieNombre() {
+        return serieNombre;
+    }
+
+    public void setSerieNombre(String serieNombre) {
+        this.serieNombre = serieNombre;
+    }
+
+    public Integer getCategoriaId() {
+        return categoriaId;
+    }
+
+    public void setCategoriaId(Integer categoriaId) {
+        this.categoriaId = categoriaId;
+    }
+
+    public String getCategoriaNombre() {
+        return categoriaNombre;
+    }
+
+    public void setCategoriaNombre(String categoriaNombre) {
+        this.categoriaNombre = categoriaNombre;
     }
 }

@@ -32,6 +32,15 @@ public class TablaPosicion {
     @Column(nullable = false, columnDefinition = "INT DEFAULT 0")
     private Integer puntos = 0;
 
+    @Column(name = "goles_a_favor", nullable = false, columnDefinition = "INT DEFAULT 0")
+    private Integer golesAFavor = 0;
+
+    @Column(name = "goles_en_contra", nullable = false, columnDefinition = "INT DEFAULT 0")
+    private Integer golesEnContra = 0;
+
+    @Column(name = "diferencia_goles", nullable = false, columnDefinition = "INT DEFAULT 0")
+    private Integer diferenciaGoles = 0;
+
     // Getters and Setters
     public Subcategoria getSubcategoria() {
         return subcategoria;
@@ -87,5 +96,29 @@ public class TablaPosicion {
 
     public void setPuntos(Integer puntos) {
         this.puntos = puntos;
+    }
+
+    public Integer getGolesAFavor() {
+        return golesAFavor;
+    }
+
+    public void setGolesAFavor(Integer golesAFavor) {
+        this.golesAFavor = golesAFavor;
+    }
+
+    public Integer getGolesEnContra() {
+        return golesEnContra;
+    }
+
+    public void setGolesEnContra(Integer golesEnContra) {
+        this.golesEnContra = golesEnContra;
+    }
+
+    public Integer getDiferenciaGoles() {
+        return diferenciaGoles;
+    }
+
+    public void setDiferenciaGoles(Integer diferenciaGoles) {
+        this.diferenciaGoles = diferenciaGoles;
     }
 }

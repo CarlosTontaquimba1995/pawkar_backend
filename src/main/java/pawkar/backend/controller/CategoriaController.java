@@ -1,6 +1,5 @@
 package pawkar.backend.controller;
 
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -21,8 +20,6 @@ public class CategoriaController {
     @Autowired
     private CategoriaService categoriaService;
 
-    @Autowired
-    private HttpServletRequest request;
 
     @GetMapping
     @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")

@@ -4,7 +4,7 @@
 
 ### Obtener tabla de posiciones por subcategoría
 
-**URL**: `/tabla-posicion/subcategoria/{subcategoriaId}`  
+**URL**: `/api/tabla-posicion/subcategoria/{subcategoriaId}`  
 **Método**: `GET`  
 **Descripción**: Obtiene la tabla de posiciones para una subcategoría específica  
 **Autenticación requerida**: No  
@@ -27,6 +27,9 @@
       "victorias": 3,
       "derrotas": 1,
       "empates": 1,
+      "golesAFavor": 8,
+      "golesEnContra": 4,
+      "diferenciaGoles": 4,
       "puntos": 10,
       "posicion": 1
     },
@@ -38,6 +41,9 @@
       "victorias": 2,
       "derrotas": 2,
       "empates": 1,
+      "golesAFavor": 5,
+      "golesEnContra": 6,
+      "diferenciaGoles": -1,
       "puntos": 7,
       "posicion": 2
     }
@@ -45,11 +51,201 @@
 }
 ```
 
-### Crear o actualizar posición en la tabla
+### Buscar en la tabla de posiciones
 
-**URL**: `/tabla-posicion`  
+**URL**: `/api/tabla-posicion/search`  
+**Método**: `GET`  
+**Descripción**: Busca en la tabla de posiciones según diferentes criterios  
+**Autenticación requerida**: No  
+**Versión**: 1.0.0
+
+#### Parámetros de consulta
+
+| Parámetro | Tipo | Requerido | Descripción |
+|-----------|------|-----------|-------------|
+| `subcategoriaId` | Integer | No | Filtra por ID de subcategoría |
+| `categoriaId` | Integer | No | Filtra por ID de categoría |
+| `equipoId` | Integer | No | Filtra por ID de equipo |
+| `serieId` | Integer | No | Filtra por ID de serie |
+| `nombreEquipo` | String | No | Búsqueda por nombre o parte del nombre del equipo (no sensible a mayúsculas) |
+| `page` | Integer | No | Número de página (0-based), por defecto: 0 |
+| `size` | Integer | No | Tamaño de la página, por defecto: 10 |
+| `sort` | String | No | Campo(s) de ordenación en formato `campo,direccion` (ej: `puntos,desc`, `equipo.nombre,asc`). Por defecto: `puntos,desc` |
+
+#### Ejemplos de uso
+
+1. **Búsqueda por subcategoría**:
+   ```
+   GET /api/tabla-posicion/search?subcategoriaId=5
+   ```
+
+2. **Búsqueda por categoría**:
+   ```
+   GET /api/tabla-posicion/search?categoriaId=1
+   ```
+
+3. **Búsqueda por equipo**:
+   ```
+   GET /api/tabla-posicion/search?equipoId=10
+   ```
+
+4. **Búsqueda por serie**:
+   ```
+   GET /api/tabla-posicion/search?serieId=3
+   ```
+
+5. **Búsqueda por nombre de equipo**:
+   ```
+   GET /api/tabla-posicion/search?nombreEquipo=pepito
+   ```
+
+6. **Búsqueda avanzada con múltiples filtros**:
+   ```
+   GET /api/tabla-posicion/search?categoriaId=1&serieId=3&page=0&size=20&sort=puntos,desc
+   ```
+
+7. **Ordenar por nombre de equipo ascendente**:
+   ```
+   GET /api/tabla-posicion/search?sort=equipo.nombre,asc
+   ```
+
+**Response (200 OK)**:
+```json
+{
+  "success": true,
+  "message": "Búsqueda de tabla de posiciones exitosa",
+  "data": {
+    "content": [
+      {
+        "posicion": 1,
+        "equipo": {
+          "equipoId": 1,
+          "nombreEquipo": "Equipo A",
+          "logo": "url_del_logo"
+        },
+        "puntos": 15,
+        "partidosJugados": 5,
+        "partidosGanados": 5,
+        "partidosEmpatados": 0,
+        "partidosPerdidos": 0,
+        "golesAFavor": 12,
+        "golesEnContra": 2,
+        "diferenciaGoles": 10
+      }
+    ],
+    "pageable": {
+      "sort": {
+        "sorted": true,
+        "unsorted": false,
+        "empty": false
+      },
+      "pageNumber": 0,
+      "pageSize": 10,
+      "offset": 0,
+      "unpaged": false,
+      "paged": true
+    },
+    "totalElements": 25,
+    "totalPages": 3,
+    "last": false,
+    "size": 10,
+    "number": 0,
+    "sort": {
+      "sorted": true,
+      "unsorted": false,
+      "empty": false
+    },
+    "numberOfElements": 10,
+    "first": true,
+    "empty": false
+  }
+}
+```
+
+#### Campos de respuesta
+
+- `content`: Array de registros de la tabla de posiciones
+  - `posicion`: Posición en la tabla
+  - `equipo`: Información del equipo
+    - `equipoId`: ID del equipo
+    - `nombreEquipo`: Nombre del equipo
+    - `logo`: URL del logo del equipo
+  - `puntos`: Puntos totales
+  - `partidosJugados`: Partidos jugados
+  - `partidosGanados`: Partidos ganados
+  - `partidosEmpatados`: Partidos empatados
+  - `partidosPerdidos`: Partidos perdidos
+  - `golesAFavor`: Goles a favor
+  - `golesEnContra`: Goles en contra
+  - `diferenciaGoles`: Diferencia de goles
+
+#### Información de paginación
+
+- `pageable`: Información de paginación
+- `totalElements`: Número total de elementos
+- `totalPages`: Número total de páginas
+- `size`: Número de elementos por página
+- `number`: Número de página actual
+- `sort`: Información de ordenación actual
+- `first`: Indica si es la primera página
+- `last`: Indica si es la última página
+- `empty`: Indica si el contenido está vacío
+
+#### Notas
+
+1. Las búsquedas de texto no distinguen entre mayúsculas y minúsculas
+2. Los filtros múltiples se combinan con lógica AND
+3. El ordenamiento predeterminado es por puntos (`puntos`) en orden descendente
+4. Se puede ordenar por cualquier campo usando el formato `campo,direccion` donde dirección es `asc` o `desc`
+5. La respuesta incluye metadatos de paginación para facilitar la navegación
+```
+
+### Actualizar tabla de posiciones desde un partido
+
+**URL**: `/api/tabla-posicion/actualizar-desde-partido`  
 **Método**: `POST`  
-**Descripción**: Crea o actualiza una posición en la tabla de posiciones  
+**Descripción**: Actualiza la tabla de posiciones basada en el resultado de un partido  
+**Autenticación requerida**: Sí  
+**Content-Type**: `application/json`
+
+**Request Body**:
+```json
+{
+  "subcategoriaId": 1,
+  "equipoLocalId": 1,
+  "equipoVisitanteId": 2,
+  "golesLocal": 2,
+  "golesVisitante": 1,
+  "estadoPartido": "FINALIZADO"
+}
+```
+
+**Campos del Request Body**:
+- `subcategoriaId` (requerido): ID de la subcategoría del partido
+- `equipoLocalId` (requerido): ID del equipo local
+- `equipoVisitanteId` (requerido): ID del equipo visitante
+- `golesLocal` (opcional, default: 0): Goles del equipo local
+- `golesVisitante` (opcional, default: 0): Goles del equipo visitante
+- `estadoPartido` (requerido): Estado actual del partido (ej. "FINALIZADO", "SUSPENDIDO", etc.)
+
+**Response (200 OK)**:
+```json
+{
+  "success": true,
+  "message": "Tabla de posiciones actualizada exitosamente",
+  "data": null
+}
+```
+
+**Códigos de error**:
+- `400 Bad Request`: Si faltan campos requeridos o los datos son inválidos
+- `500 Internal Server Error`: Si ocurre un error al procesar la solicitud
+
+### Crear o actualizar posición en la tabla manualmente
+
+**URL**: `/api/tabla-posicion`  
+**Método**: `POST`  
+**Descripción**: Crea o actualiza manualmente una posición en la tabla de posiciones  
 **Autenticación requerida**: Sí  
 **Content-Type**: `application/json`
 
@@ -93,6 +289,9 @@
     "victorias": 3,
     "derrotas": 1,
     "empates": 1,
+    "golesAFavor": 8,
+    "golesEnContra": 4,
+    "diferenciaGoles": 4,
     "puntos": 10
   }
 }
@@ -100,7 +299,7 @@
 
 ### Actualizar posición en la tabla
 
-**URL**: `/tabla-posicion`  
+**URL**: `/api/tabla-posicion`  
 **Método**: `PUT`  
 **Descripción**: Actualiza una posición existente en la tabla de posiciones  
 **Autenticación requerida**: Sí  
@@ -144,7 +343,7 @@
 
 ### Eliminar posición de la tabla
 
-**URL**: `/tabla-posicion/subcategoria/{subcategoriaId}/equipo/{equipoId}`  
+**URL**: `/api/tabla-posicion/subcategoria/{subcategoriaId}/equipo/{equipoId}`  
 **Método**: `DELETE`  
 **Descripción**: Elimina una posición específica de la tabla de posiciones  
 **Autenticación requerida**: Sí
