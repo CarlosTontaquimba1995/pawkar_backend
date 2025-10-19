@@ -1,4 +1,4 @@
-package pawkar.backend.dto;
+package pawkar.backend.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

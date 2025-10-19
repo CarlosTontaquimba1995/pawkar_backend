@@ -1,4 +1,4 @@
-package pawkar.backend.dto;
+package pawkar.backend.request;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;

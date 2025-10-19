@@ -1,4 +1,4 @@
-package pawkar.backend.dto;
+package pawkar.backend.response;
 
 import java.time.LocalDate;
 

@@ -1,4 +1,4 @@
-package pawkar.backend.dto;
+package pawkar.backend.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.PastOrPresent;

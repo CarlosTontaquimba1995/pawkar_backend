@@ -3,9 +3,9 @@ package pawkar.backend.controller;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import pawkar.backend.dto.BulkEquipoRequest;
-import pawkar.backend.dto.EquipoRequest;
-import pawkar.backend.dto.EquipoResponse;
+import pawkar.backend.request.BulkEquipoRequest;
+import pawkar.backend.request.EquipoRequest;
+import pawkar.backend.response.EquipoResponse;
 import pawkar.backend.response.ApiResponseStandard;
 import pawkar.backend.service.EquipoService;
 

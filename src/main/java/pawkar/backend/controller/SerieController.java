@@ -3,10 +3,10 @@ package pawkar.backend.controller;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import pawkar.backend.dto.BulkSerieRequest;
+import pawkar.backend.request.BulkSerieRequest;
 import pawkar.backend.response.ApiResponseStandard;
-import pawkar.backend.dto.SerieRequest;
-import pawkar.backend.dto.SerieResponse;
+import pawkar.backend.request.SerieRequest;
+import pawkar.backend.response.SerieResponse;
 import pawkar.backend.service.SerieService;
 
 import java.util.List;

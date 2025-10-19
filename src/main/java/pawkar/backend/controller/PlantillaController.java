@@ -4,9 +4,9 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import pawkar.backend.dto.BulkPlantillaRequest;
-import pawkar.backend.dto.PlantillaRequest;
-import pawkar.backend.dto.PlantillaResponse;
+import pawkar.backend.request.BulkPlantillaRequest;
+import pawkar.backend.request.PlantillaRequest;
+import pawkar.backend.response.PlantillaResponse;
 import pawkar.backend.response.ApiResponseStandard;
 import pawkar.backend.service.PlantillaService;
 

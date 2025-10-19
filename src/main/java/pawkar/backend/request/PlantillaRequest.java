@@ -1,4 +1,4 @@
-package pawkar.backend.dto;
+package pawkar.backend.request;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;

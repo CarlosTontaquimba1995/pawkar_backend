@@ -87,6 +87,68 @@
 }
 ```
 
+### Buscar encuentros
+
+**URL**: `/encuentros/search`  
+**Método**: `GET`  
+**Descripción**: Busca encuentros según diferentes criterios  
+**Autenticación requerida**: No  
+**Parámetros de consulta**:
+- `subcategoriaId` (opcional): ID de la subcategoría
+- `fechaInicio` (opcional): Fecha de inicio en formato YYYY-MM-DD
+- `fechaFin` (opcional): Fecha de fin en formato YYYY-MM-DD
+- `estadioLugar` (opcional): Nombre o parte del nombre del estadio o lugar
+- `estado` (opcional): Estado del encuentro (ej: "Pendiente", "En juego", "Finalizado")
+- `page` (opcional, default=0): Número de página (0-based)
+- `size` (opcional, default=10): Tamaño de la página
+- `sort` (opcional): Campo por el que ordenar (ej: "fechaHora,asc")
+
+**Ejemplo de uso**:
+```
+/encuentros/search?subcategoriaId=1&fechaInicio=2025-01-01&estado=Pendiente&page=0&size=20&sort=fechaHora,asc
+```
+
+**Response (200 OK)**:
+```json
+{
+  "content": [
+    {
+      "id": 1,
+      "subcategoriaId": 1,
+      "subcategoriaNombre": "Fútbol",
+      "fechaHora": "2025-12-25T15:00:00",
+      "estadioLugar": "Estadio Principal",
+      "estado": "Pendiente"
+    }
+  ],
+  "pageable": {
+    "sort": {
+      "sorted": true,
+      "unsorted": false,
+      "empty": false
+    },
+    "pageNumber": 0,
+    "pageSize": 10,
+    "offset": 0,
+    "paged": true,
+    "unpaged": false
+  },
+  "totalElements": 1,
+  "totalPages": 1,
+  "last": true,
+  "size": 10,
+  "number": 0,
+  "sort": {
+    "sorted": true,
+    "unsorted": false,
+    "empty": false
+  },
+  "numberOfElements": 1,
+  "first": true,
+  "empty": false
+}
+```
+
 ### Obtener encuentros por subcategoría
 
 **URL**: `/encuentros/subcategoria/{subcategoriaId}`  

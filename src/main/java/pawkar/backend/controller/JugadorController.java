@@ -3,9 +3,9 @@ package pawkar.backend.controller;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import pawkar.backend.dto.JugadorRequest;
-import pawkar.backend.dto.JugadorResponse;
-import pawkar.backend.dto.JugadorBulkRequest;
+import pawkar.backend.request.JugadorRequest;
+import pawkar.backend.response.JugadorResponse;
+import pawkar.backend.request.JugadorBulkRequest;
 import pawkar.backend.response.ApiResponseStandard;
 import pawkar.backend.service.JugadorService;
 
