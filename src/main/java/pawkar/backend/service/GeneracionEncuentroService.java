@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pawkar.backend.entity.*;
-import pawkar.backend.enums.TipoGeneracionEncuentro;
 import pawkar.backend.repository.*;
 import pawkar.backend.request.*;
 import pawkar.backend.response.EncuentroResponse;
@@ -28,7 +27,6 @@ public class GeneracionEncuentroService {
     @Autowired
     private SubcategoriaRepository subcategoriaRepository;
 
-    @Autowired
     private EncuentroService encuentroService;
 
     @Autowired

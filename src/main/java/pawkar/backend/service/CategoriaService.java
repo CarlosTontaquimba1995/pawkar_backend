@@ -1,7 +1,6 @@
 package pawkar.backend.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pawkar.backend.entity.Categoria;
@@ -10,7 +9,6 @@ import pawkar.backend.exception.ResourceNotFoundException;
 import pawkar.backend.repository.CategoriaRepository;
 import pawkar.backend.request.BulkCategoriaRequest;
 import pawkar.backend.request.CategoriaRequest;
-import pawkar.backend.response.ApiResponseStandard;
 import pawkar.backend.response.CategoriaResponse;
 
 import java.util.List;

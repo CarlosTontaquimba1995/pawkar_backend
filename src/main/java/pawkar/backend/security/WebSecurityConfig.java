@@ -96,6 +96,7 @@ public class WebSecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/jugadores/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/plantillas/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/generacion-encuentros/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/tabla-posicion/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/roles/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/categorias/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/subcategorias/**").permitAll()
@@ -104,6 +105,7 @@ public class WebSecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/equipos/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/jugadores/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/plantillas/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/tabla-posicion/**").permitAll()
 
                     .anyRequest().authenticated()
             )

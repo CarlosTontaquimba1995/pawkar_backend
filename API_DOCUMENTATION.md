@@ -1,5 +1,173 @@
 # Documentación de la API
 
+## Tabla de Posiciones
+
+### Obtener tabla de posiciones por subcategoría
+
+**URL**: `/tabla-posicion/subcategoria/{subcategoriaId}`  
+**Método**: `GET`  
+**Descripción**: Obtiene la tabla de posiciones para una subcategoría específica  
+**Autenticación requerida**: No  
+**Versión**: 1.0.0
+
+**Parámetros de la URL**:
+- `subcategoriaId` (requerido): ID de la subcategoría
+
+**Response (200 OK)**:
+```json
+{
+  "success": true,
+  "message": "Tabla de posiciones obtenida exitosamente",
+  "data": [
+    {
+      "subcategoriaId": 1,
+      "equipoId": 1,
+      "equipoNombre": "Equipo A",
+      "partidosJugados": 5,
+      "victorias": 3,
+      "derrotas": 1,
+      "empates": 1,
+      "puntos": 10,
+      "posicion": 1
+    },
+    {
+      "subcategoriaId": 1,
+      "equipoId": 2,
+      "equipoNombre": "Equipo B",
+      "partidosJugados": 5,
+      "victorias": 2,
+      "derrotas": 2,
+      "empates": 1,
+      "puntos": 7,
+      "posicion": 2
+    }
+  ]
+}
+```
+
+### Crear o actualizar posición en la tabla
+
+**URL**: `/tabla-posicion`  
+**Método**: `POST`  
+**Descripción**: Crea o actualiza una posición en la tabla de posiciones  
+**Autenticación requerida**: Sí  
+**Content-Type**: `application/json`
+
+**Request Body**:
+```json
+{
+  "subcategoriaId": 1,
+  "equipoId": 1,
+  "partidosJugados": 5,
+  "victorias": 3,
+  "derrotas": 1,
+  "empates": 1,
+  "puntos": 10
+}
+```
+
+**Campos del Request Body**:
+- `subcategoriaId` (requerido): ID de la subcategoría
+- `equipoId` (requerido): ID del equipo
+- `partidosJugados` (opcional, default: 0): Número de partidos jugados
+- `victorias` (opcional, default: 0): Número de victorias
+- `derrotas` (opcional, default: 0): Número de derrotas
+- `empates` (opcional, default: 0): Número de empates
+- `puntos` (opcional, default: 0): Puntos totales
+
+**Response (200 OK)**:
+```json
+{
+  "success": true,
+  "message": "Posición actualizada exitosamente",
+  "data": {
+    "subcategoria": {
+      "subcategoriaId": 1,
+      "nombre": "Fútbol"
+    },
+    "equipo": {
+      "equipoId": 1,
+      "nombre": "Equipo A"
+    },
+    "partidosJugados": 5,
+    "victorias": 3,
+    "derrotas": 1,
+    "empates": 1,
+    "puntos": 10
+  }
+}
+```
+
+### Actualizar posición en la tabla
+
+**URL**: `/tabla-posicion`  
+**Método**: `PUT`  
+**Descripción**: Actualiza una posición existente en la tabla de posiciones  
+**Autenticación requerida**: Sí  
+**Content-Type**: `application/json`
+
+**Request Body**:
+```json
+{
+  "subcategoriaId": 1,
+  "equipoId": 1,
+  "partidosJugados": 6,
+  "victorias": 4,
+  "derrotas": 1,
+  "empates": 1,
+  "puntos": 13
+}
+```
+
+**Response (200 OK)**:
+```json
+{
+  "success": true,
+  "message": "Posición actualizada exitosamente",
+  "data": {
+    "subcategoria": {
+      "subcategoriaId": 1,
+      "nombre": "Fútbol"
+    },
+    "equipo": {
+      "equipoId": 1,
+      "nombre": "Equipo A"
+    },
+    "partidosJugados": 6,
+    "victorias": 4,
+    "derrotas": 1,
+    "empates": 1,
+    "puntos": 13
+  }
+}
+```
+
+### Eliminar posición de la tabla
+
+**URL**: `/tabla-posicion/subcategoria/{subcategoriaId}/equipo/{equipoId}`  
+**Método**: `DELETE`  
+**Descripción**: Elimina una posición específica de la tabla de posiciones  
+**Autenticación requerida**: Sí
+
+**Parámetros de la URL**:
+- `subcategoriaId` (requerido): ID de la subcategoría
+- `equipoId` (requerido): ID del equipo
+
+**Response (200 OK)**:
+```json
+{
+  "success": true,
+  "message": "Posición eliminada exitosamente",
+  "data": null
+}
+```
+
+**Códigos de error**:
+- `400 Bad Request`: Si faltan campos requeridos o los datos son inválidos
+- `404 Not Found`: Si no se encuentra la posición especificada
+- `500 Internal Server Error`: Si ocurre un error al procesar la solicitud
+
+## Generación de Encuentros
 ## Generación de Encuentros
 
 ### Generar encuentros
