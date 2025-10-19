@@ -13,10 +13,9 @@ import pawkar.backend.repository.EquipoRepository;
 import pawkar.backend.repository.JugadorRepository;
 import pawkar.backend.repository.PlantillaRepository;
 import pawkar.backend.repository.RoleRepository;
-
+import pawkar.backend.repository.SancionRepository;
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +25,7 @@ public class PlantillaService {
     private final EquipoRepository equipoRepository;
     private final JugadorRepository jugadorRepository;
     private final RoleRepository roleRepository;
+    private final SancionRepository sancionRepository;
 
     @Transactional
     public List<PlantillaResponse> crearPlantillasBulk(BulkPlantillaRequest request) {
@@ -73,24 +73,24 @@ public class PlantillaService {
         plantilla.setNumeroCamiseta(request.getNumeroCamiseta());
 
         Plantilla plantillaGuardada = plantillaRepository.save(plantilla);
-        return mapToResponse(plantillaGuardada);
+        return mapToPlantillaResponse(plantillaGuardada);
     }
 
     @Transactional(readOnly = true)
     public List<PlantillaResponse> obtenerTodasLasPlantillas() {
         return plantillaRepository.findAll().stream()
-                .map(this::mapToResponse)
-                .collect(Collectors.toList());
+                .sorted(Comparator.comparing(p -> p.getJugador().getApellido()))
+                .map(this::mapToPlantillaResponse)
+                .collect(java.util.stream.Collectors.toList());
     }
 
     @Transactional(readOnly = true)
     public PlantillaResponse obtenerPlantilla(Integer equipoId, Integer jugadorId) {
-        PlantillaId id = new PlantillaId(equipoId, jugadorId);
-        Plantilla plantilla = plantillaRepository.findById(id)
+        Plantilla plantilla = plantillaRepository.findById(new PlantillaId(equipoId, jugadorId))
                 .orElseThrow(() -> new ResourceNotFoundException(
                         String.format("Plantilla no encontrada para equipoId: %d y jugadorId: %d", equipoId,
                                 jugadorId)));
-        return mapToResponse(plantilla);
+        return mapToPlantillaResponse(plantilla);
     }
 
     @Transactional
@@ -103,23 +103,40 @@ public class PlantillaService {
         plantillaRepository.deleteById(id);
     }
 
-    private PlantillaResponse mapToResponse(Plantilla plantilla) {
-        return new PlantillaResponse(
-                plantilla.getEquipo().getEquipoId(),
-                plantilla.getEquipo().getNombre(),
-                plantilla.getJugador().getId(),
-                plantilla.getJugador().getNombre() + " " + plantilla.getJugador().getApellido(),
-                plantilla.getNumeroCamiseta(),
-                plantilla.getRol().getId(),
-                plantilla.getRol().getName().name()
-        );
+    private PlantillaResponse mapToPlantillaResponse(Plantilla plantilla) {
+        // Obtener sanciones activas del jugador
+        List<pawkar.backend.entity.Sancion> sanciones = sancionRepository
+                .findByJugadorId(plantilla.getJugador().getId().longValue());
+
+        // Mapear las sanciones a SancionInfo
+        List<PlantillaResponse.SancionInfo> sancionesInfo = sanciones.stream()
+                .map(sancion -> PlantillaResponse.SancionInfo.builder()
+                        .sancionId(sancion.getId())
+                        .tipoSancion(sancion.getTipoSancion())
+                        .motivo(sancion.getMotivo())
+                        .detalleSancion(sancion.getDetalleSancion())
+                        .fechaRegistro(sancion.getFechaRegistro().toString())
+                        .build())
+                .collect(java.util.stream.Collectors.toList());
+
+        return PlantillaResponse.builder()
+                .equipoId(plantilla.getEquipo().getEquipoId())
+                .equipoNombre(plantilla.getEquipo().getNombre())
+                .jugadorId(plantilla.getJugador().getId())
+                .jugadorNombreCompleto(plantilla.getJugador().getNombre() + " " + plantilla.getJugador().getApellido())
+                .numeroCamiseta(plantilla.getNumeroCamiseta())
+                .rolId(plantilla.getRol().getId())
+                .rolNombre(plantilla.getRol().getName().name())
+                .tieneSancion(!sanciones.isEmpty())
+                .sanciones(sancionesInfo)
+                .build();
     }
     
     @Transactional(readOnly = true)
     public List<PlantillaResponse> obtenerPlantillaPorEquipo(Integer equipoId) {
         return plantillaRepository.findByEquipo_EquipoId(equipoId).stream()
                 .sorted(Comparator.comparing(Plantilla::getNumeroCamiseta))
-                .map(this::mapToResponse)
-                .collect(Collectors.toList());
+                .map(this::mapToPlantillaResponse)
+                .collect(java.util.stream.Collectors.toList());
     }
 }

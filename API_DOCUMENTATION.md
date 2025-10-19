@@ -1,5 +1,200 @@
 # Documentación de la API
 
+## Sanciones
+
+### Obtener todas las sanciones
+
+**URL**: `/sanciones`  
+**Método**: `GET`  
+**Descripción**: Obtiene todas las sanciones registradas  
+**Autenticación Requerida**: No
+
+**Respuesta (200 OK)**:
+```json
+[
+  {
+    "id": 1,
+    "tipoSancion": "TARJETA_AMARILLA",
+    "descripcion": "Falta técnica",
+    "fechaSancion": "2025-10-19T10:00:00",
+    "jugadorId": 1,
+    "encuentroId": 1
+  }
+]
+```
+
+### Obtener sanción por ID
+
+**URL**: `/sanciones/{id}`  
+**Método**: `GET`  
+**Descripción**: Obtiene una sanción específica por su ID  
+**Autenticación Requerida**: No
+
+**Parámetros de Ruta**:
+- `id` (requerido): ID de la sanción
+
+**Respuesta (200 OK)**:
+```json
+{
+  "id": 1,
+  "tipoSancion": "TARJETA_AMARILLA",
+  "descripcion": "Falta técnica",
+  "fechaSancion": "2025-10-19T10:00:00",
+  "jugadorId": 1,
+  "encuentroId": 1
+}
+```
+
+### Crear una nueva sanción
+
+**URL**: `/sanciones`  
+**Método**: `POST`  
+**Descripción**: Crea una nueva sanción  
+**Autenticación Requerida**: Sí
+
+**Cuerpo de la Solicitud**:
+```json
+{
+  "tipoSancion": "TARJETA_AMARILLA",
+  "descripcion": "Falta técnica",
+  "fechaSancion": "2025-10-19T10:00:00",
+  "jugadorId": 1,
+  "encuentroId": 1
+}
+```
+
+**Respuesta (200 OK)**:
+```json
+{
+  "id": 1,
+  "tipoSancion": "TARJETA_AMARILLA",
+  "descripcion": "Falta técnica",
+  "fechaSancion": "2025-10-19T10:00:00",
+  "jugadorId": 1,
+  "encuentroId": 1
+}
+```
+
+### Actualizar una sanción
+
+**URL**: `/sanciones/{id}`  
+**Método**: `PUT`  
+**Descripción**: Actualiza una sanción existente  
+**Autenticación Requerida**: Sí
+
+**Parámetros de Ruta**:
+- `id` (requerido): ID de la sanción a actualizar
+
+**Cuerpo de la Solicitud**:
+```json
+{
+  "tipoSancion": "TARJETA_ROJA",
+  "descripcion": "Falta grave",
+  "fechaSancion": "2025-10-19T10:00:00",
+  "jugadorId": 1,
+  "encuentroId": 1
+}
+```
+
+**Respuesta (200 OK)**:
+```json
+{
+  "id": 1,
+  "tipoSancion": "TARJETA_ROJA",
+  "descripcion": "Falta grave",
+  "fechaSancion": "2025-10-19T10:00:00",
+  "jugadorId": 1,
+  "encuentroId": 1
+}
+```
+
+### Eliminar una sanción
+
+**URL**: `/sanciones/{id}`  
+**Método**: `DELETE`  
+**Descripción**: Elimina una sanción por su ID  
+**Autenticación Requerida**: Sí
+
+**Parámetros de Ruta**:
+- `id` (requerido): ID de la sanción a eliminar
+
+**Respuesta (204 No Content)**:
+```
+// Sin contenido en la respuesta
+```
+
+### Obtener sanciones por jugador
+
+**URL**: `/sanciones/jugador/{jugadorId}`  
+**Método**: `GET`  
+**Descripción**: Obtiene todas las sanciones de un jugador específico  
+**Autenticación Requerida**: No
+
+**Parámetros de Ruta**:
+- `jugadorId` (requerido): ID del jugador
+
+**Respuesta (200 OK)**:
+```json
+[
+  {
+    "id": 1,
+    "tipoSancion": "TARJETA_AMARILLA",
+    "descripcion": "Falta técnica",
+    "fechaSancion": "2025-10-19T10:00:00",
+    "jugadorId": 1,
+    "encuentroId": 1
+  }
+]
+```
+
+### Obtener sanciones por encuentro
+
+**URL**: `/sanciones/encuentro/{encuentroId}`  
+**Método**: `GET`  
+**Descripción**: Obtiene todas las sanciones de un encuentro específico  
+**Autenticación Requerida**: No
+
+**Parámetros de Ruta**:
+- `encuentroId` (requerido): ID del encuentro
+
+**Respuesta (200 OK)**:
+```json
+[
+  {
+    "id": 1,
+    "tipoSancion": "TARJETA_AMARILLA",
+    "descripcion": "Falta técnica",
+    "fechaSancion": "2025-10-19T10:00:00",
+    "jugadorId": 1,
+    "encuentroId": 1
+  }
+]
+```
+
+### Obtener sanciones por tipo
+
+**URL**: `/sanciones/tipo/{tipoSancion}`  
+**Método**: `GET`  
+**Descripción**: Obtiene todas las sanciones de un tipo específico  
+**Autenticación Requerida**: No
+
+**Parámetros de Ruta**:
+- `tipoSancion` (requerido): Tipo de sanción (ej: TARJETA_AMARILLA, TARJETA_ROJA, SUSPENSION, etc.)
+
+**Respuesta (200 OK)**:
+```json
+[
+  {
+    "id": 1,
+    "tipoSancion": "TARJETA_AMARILLA",
+    "descripcion": "Falta técnica",
+    "fechaSancion": "2025-10-19T10:00:00",
+    "jugadorId": 1,
+    "encuentroId": 1
+  }
+]
+```
+
 ## Tabla de Posiciones
 
 ### Obtener tabla de posiciones por subcategoría
@@ -165,19 +360,19 @@
 #### Campos de respuesta
 
 - `content`: Array de registros de la tabla de posiciones
-  - `posicion`: Posición en la tabla
-  - `equipo`: Información del equipo
-    - `equipoId`: ID del equipo
-    - `nombreEquipo`: Nombre del equipo
-    - `logo`: URL del logo del equipo
-  - `puntos`: Puntos totales
-  - `partidosJugados`: Partidos jugados
-  - `partidosGanados`: Partidos ganados
-  - `partidosEmpatados`: Partidos empatados
-  - `partidosPerdidos`: Partidos perdidos
-  - `golesAFavor`: Goles a favor
-  - `golesEnContra`: Goles en contra
-  - `diferenciaGoles`: Diferencia de goles
+    - `posicion`: Posición en la tabla
+    - `equipo`: Información del equipo
+        - `equipoId`: ID del equipo
+        - `nombreEquipo`: Nombre del equipo
+        - `logo`: URL del logo del equipo
+    - `puntos`: Puntos totales
+    - `partidosJugados`: Partidos jugados
+    - `partidosGanados`: Partidos ganados
+    - `partidosEmpatados`: Partidos empatados
+    - `partidosPerdidos`: Partidos perdidos
+    - `golesAFavor`: Goles a favor
+    - `golesEnContra`: Goles en contra
+    - `diferenciaGoles`: Diferencia de goles
 
 #### Información de paginación
 
@@ -383,9 +578,9 @@
 - Período de partidos: Del 14 de febrero al 3 de marzo de 2025
 - Horarios disponibles por día: 8:00 AM, 10:00 AM, 12:00 PM, 2:00 PM, 4:00 PM
 - Distribución de estadios:
-  - Peguche: 60% de los partidos
-  - Agato: 30% de los partidos
-  - La Bolsa: 10% de los partidos
+    - Peguche: 60% de los partidos
+    - Agato: 30% de los partidos
+    - La Bolsa: 10% de los partidos
 - No se permiten partidos simultáneos en el mismo estadio
 - Se permiten partidos simultáneos en diferentes estadios
 
@@ -428,17 +623,17 @@
 ```
 
 **Campos del Request Body**:
-- `tipoGeneracion` (requerido): 
-  - `TODOS_CONTRA_TODOS`: Genera partidos entre todos los equipos de las series
-  - `SELECCION_MANUAL`: Crea solo los partidos especificados en `encuentrosManuales`
+- `tipoGeneracion` (requerido):
+    - `TODOS_CONTRA_TODOS`: Genera partidos entre todos los equipos de las series
+    - `SELECCION_MANUAL`: Crea solo los partidos especificados en `encuentrosManuales`
 - `fechaInicio` (requerido): Fecha de inicio para los encuentros (formato: YYYY-MM-DD)
 - `fechaFin` (requerido): Fecha de fin para los encuentros (formato: YYYY-MM-DD)
 - `subcategoriaId` (opcional): ID de la subcategoría para filtrar las series
 - `encuentrosManuales` (requerido si tipoGeneracion es SELECCION_MANUAL): Lista de encuentros a crear manualmente, donde cada encuentro incluye:
-  - `equipoLocalId` (requerido): ID del equipo local
-  - `equipoVisitanteId` (requerido): ID del equipo visitante
-  - `fechaHora` (requerido): Fecha y hora del partido (formato: YYYY-MM-DDThh:mm:ss)
-  - `estadioLugar` (requerido): Nombre del estadio o lugar del partido
+    - `equipoLocalId` (requerido): ID del equipo local
+    - `equipoVisitanteId` (requerido): ID del equipo visitante
+    - `fechaHora` (requerido): Fecha y hora del partido (formato: YYYY-MM-DDThh:mm:ss)
+    - `estadioLugar` (requerido): Nombre del estadio o lugar del partido
 
 **Response (200 OK)**:
 ```json
@@ -562,7 +757,7 @@
 **Método**: `GET`  
 **Descripción**: Busca encuentros según diferentes criterios  
 **Autenticación requerida**: No  
-**Versión**: 1.0.0  
+**Versión**: 1.0.0
 
 #### Parámetros de consulta
 
@@ -594,7 +789,7 @@
    ```
    GET /encuentros/search?estadioLugar=Peguche
    ```
-   
+
 4. **Búsqueda avanzada con múltiples filtros**:
    ```
    GET /encuentros/search?subcategoriaId=5&estado=Pendiente&estadioLugar=Peguche&page=0&size=20&sort=fechaHora,asc
