@@ -75,6 +75,56 @@ public class EncuentroController {
         return ApiResponseStandard.success(response, "Búsqueda de encuentros completada exitosamente");
     }
 
+    @GetMapping("/search")
+    public ApiResponseStandard<Page<EncuentroResponse>> searchEncuentros(
+            @RequestParam(required = false) String titulo,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fechaInicio,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fechaFin,
+            @RequestParam(required = false) Integer subcategoriaId,
+            @RequestParam(required = false) Integer equipoId,
+            @RequestParam(required = false) String estadioLugar,
+            @PageableDefault(size = 10) Pageable pageable) {
+
+        EncuentroSearchRequest searchRequest = new EncuentroSearchRequest();
+        searchRequest.setTitulo(titulo);
+        searchRequest.setFechaInicio(fechaInicio != null ? fechaInicio.toLocalDate() : null);
+        searchRequest.setFechaFin(fechaFin != null ? fechaFin.toLocalDate() : null);
+        searchRequest.setSubcategoriaId(subcategoriaId);
+        searchRequest.setEquipoId(equipoId);
+        searchRequest.setEstadioLugar(estadioLugar);
+
+        Page<EncuentroResponse> page = encuentroService.searchEncuentros(
+                searchRequest.getSubcategoriaId(),
+                searchRequest.getFechaInicio() != null ? searchRequest.getFechaInicio().atStartOfDay() : null,
+                searchRequest.getFechaFin() != null ? searchRequest.getFechaFin().atTime(23, 59, 59) : null,
+                searchRequest.getEstadioLugar(),
+                searchRequest.getEstado(),
+                searchRequest.getEquipoId(),
+                pageable);
+        return ApiResponseStandard.success(page, "Búsqueda de encuentros exitosa");
+    }
+
+    /**
+     * Obtiene todos los encuentros en los que participa un equipo específico
+     * 
+     * @param equipoId ID del equipo
+     * @return Lista de encuentros en los que participa el equipo
+     */
+    @GetMapping("/equipo/{equipoId}")
+    public ApiResponseStandard<Page<EncuentroResponse>> getEncuentrosByEquipoId(
+            @PathVariable Integer equipoId,
+            @PageableDefault(size = 10) Pageable pageable) {
+        Page<EncuentroResponse> page = encuentroService.searchEncuentros(
+                null, // subcategoriaId
+                null, // fechaInicio
+                null, // fechaFin
+                null, // estadioLugar
+                null, // estado
+                equipoId,
+                pageable);
+        return ApiResponseStandard.success(page, "Encuentros del equipo obtenidos exitosamente");
+    }
+
     @GetMapping("/search/params")
     public ApiResponseStandard<Page<EncuentroResponse>> searchEncuentrosWithQueryParams(
             @RequestParam(required = false) Integer subcategoriaId,

@@ -195,20 +195,48 @@
 **Método**: `GET`  
 **Descripción**: Busca encuentros según diferentes criterios  
 **Autenticación requerida**: No  
-**Parámetros de consulta**:
-- `subcategoriaId` (opcional): ID de la subcategoría
-- `fechaInicio` (opcional): Fecha de inicio en formato YYYY-MM-DD
-- `fechaFin` (opcional): Fecha de fin en formato YYYY-MM-DD
-- `estadioLugar` (opcional): Nombre o parte del nombre del estadio o lugar
-- `estado` (opcional): Estado del encuentro (ej: "Pendiente", "En juego", "Finalizado")
-- `page` (opcional, default=0): Número de página (0-based)
-- `size` (opcional, default=10): Tamaño de la página
-- `sort` (opcional): Campo por el que ordenar (ej: "fechaHora,asc")
+**Versión**: 1.0.0  
 
-**Ejemplo de uso**:
-```
-/encuentros/search?subcategoriaId=1&fechaInicio=2025-01-01&estado=Pendiente&page=0&size=20&sort=fechaHora,asc
-```
+#### Parámetros de consulta
+
+| Parámetro | Tipo | Requerido | Descripción |
+|-----------|------|-----------|-------------|
+| `subcategoriaId` | Integer | No | Filtra por ID de subcategoría |
+| `fechaInicio` | DateTime | No | Fecha de inicio en formato `YYYY-MM-DD` o `YYYY-MM-DDTHH:mm:ss` |
+| `fechaFin` | DateTime | No | Fecha de fin en formato `YYYY-MM-DD` o `YYYY-MM-DDTHH:mm:ss` |
+| `estadioLugar` | String | No | Búsqueda por nombre o parte del nombre del estadio (case-insensitive) |
+| `estado` | String | No | Estado del encuentro: `Pendiente`, `En juego`, `Finalizado`, etc. |
+| `equipoId` | Integer | No | Filtra encuentros donde participe el equipo especificado |
+| `page` | Integer | No | Número de página (0-based), por defecto: 0 |
+| `size` | Integer | No | Tamaño de la página, por defecto: 10 |
+| `sort` | String | No | Campo(s) de ordenación en formato `campo,direccion` (ej: `fechaHora,asc`) |
+
+#### Ejemplos de uso
+
+1. **Búsqueda básica por subcategoría**:
+   ```
+   GET /encuentros/search?subcategoriaId=5
+   ```
+
+2. **Búsqueda por rango de fechas**:
+   ```
+   GET /encuentros/search?fechaInicio=2025-01-01&fechaFin=2025-12-31
+   ```
+
+3. **Búsqueda por estadio**:
+   ```
+   GET /encuentros/search?estadioLugar=Peguche
+   ```
+   
+4. **Búsqueda avanzada con múltiples filtros**:
+   ```
+   GET /encuentros/search?subcategoriaId=5&estado=Pendiente&estadioLugar=Peguche&page=0&size=20&sort=fechaHora,asc
+   ```
+
+#### Notas
+- La búsqueda por `estadioLugar` es insensible a mayúsculas/minúsculas y busca coincidencias parciales
+- Se pueden combinar múltiples filtros según sea necesario
+- La paginación es opcional pero recomendada para grandes conjuntos de datos
 
 **Response (200 OK)**:
 ```json

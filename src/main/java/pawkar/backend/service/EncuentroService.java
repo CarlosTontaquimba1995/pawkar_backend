@@ -12,6 +12,7 @@ import pawkar.backend.entity.Encuentro;
 import pawkar.backend.entity.Subcategoria;
 import pawkar.backend.repository.EncuentroRepository;
 import pawkar.backend.repository.SubcategoriaRepository;
+import pawkar.backend.repository.ParticipacionEncuentroRepository;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -23,11 +24,14 @@ public class EncuentroService {
 
     private final EncuentroRepository encuentroRepository;
     private final SubcategoriaRepository subcategoriaRepository;
+    private final ParticipacionEncuentroRepository participacionEncuentroRepository;
 
     public EncuentroService(EncuentroRepository encuentroRepository, 
-                          SubcategoriaRepository subcategoriaRepository) {
+                          SubcategoriaRepository subcategoriaRepository,
+                          ParticipacionEncuentroRepository participacionEncuentroRepository) {
         this.encuentroRepository = encuentroRepository;
         this.subcategoriaRepository = subcategoriaRepository;
+        this.participacionEncuentroRepository = participacionEncuentroRepository;
     }
 
     @Transactional

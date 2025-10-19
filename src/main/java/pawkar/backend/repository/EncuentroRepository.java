@@ -20,23 +20,25 @@ public interface EncuentroRepository extends JpaRepository<Encuentro, Integer>, 
     List<Encuentro> findByEstado(String estado);
     
     @Query(value = """
-            SELECT e.* FROM encuentros e
-            LEFT JOIN equipos_encuentros ee ON e.id = ee.encuentro_id
+            SELECT DISTINCT e.* FROM encuentros e
+            LEFT JOIN participacion_encuentro pe ON e.encuentro_id = pe.encuentro_id
             WHERE (:subcategoriaId IS NULL OR e.subcategoria_id = :subcategoriaId)
             AND (cast(:fechaInicio as timestamp) IS NULL OR e.fecha_hora >= :fechaInicio)
             AND (cast(:fechaFin as timestamp) IS NULL OR e.fecha_hora <= :fechaFin)
             AND (COALESCE(:estadioLugar, '') = '' OR e.estadio_lugar ILIKE '%' || :estadioLugar || '%')
             AND (COALESCE(:estado, '') = '' OR e.estado = :estado)
-            AND (:equipoId IS NULL OR ee.equipo_id = :equipoId)
+            AND (:equipoId IS NULL OR pe.equipo_id = :equipoId)
             ORDER BY e.fecha_hora
             """,
         countQuery = """
-            SELECT COUNT(*) FROM encuentros e
+                            SELECT COUNT(DISTINCT e.encuentro_id) FROM encuentros e
+                            LEFT JOIN participacion_encuentro pe ON e.encuentro_id = pe.encuentro_id
             WHERE (:subcategoriaId IS NULL OR e.subcategoria_id = :subcategoriaId)
             AND (cast(:fechaInicio as timestamp) IS NULL OR e.fecha_hora >= :fechaInicio)
             AND (cast(:fechaFin as timestamp) IS NULL OR e.fecha_hora <= :fechaFin)
             AND (COALESCE(:estadioLugar, '') = '' OR e.estadio_lugar ILIKE '%' || :estadioLugar || '%')
             AND (COALESCE(:estado, '') = '' OR e.estado = :estado)
+                            AND (:equipoId IS NULL OR pe.equipo_id = :equipoId)
             """,
         nativeQuery = true
     )
@@ -50,16 +52,15 @@ public interface EncuentroRepository extends JpaRepository<Encuentro, Integer>, 
         Pageable pageable
     );
 
-    // Add this method to handle the case when no pageable sorting is needed
     @Query(value = """
-            SELECT e.* FROM encuentros e
-            LEFT JOIN equipos_encuentros ee ON e.id = ee.encuentro_id
+            SELECT DISTINCT e.* FROM encuentros e
+            LEFT JOIN participacion_encuentro pe ON e.encuentro_id = pe.encuentro_id
             WHERE (:subcategoriaId IS NULL OR e.subcategoria_id = :subcategoriaId)
             AND (cast(:fechaInicio as timestamp) IS NULL OR e.fecha_hora >= :fechaInicio)
             AND (cast(:fechaFin as timestamp) IS NULL OR e.fecha_hora <= :fechaFin)
             AND (COALESCE(:estadioLugar, '') = '' OR e.estadio_lugar ILIKE '%' || :estadioLugar || '%')
             AND (COALESCE(:estado, '') = '' OR e.estado = :estado)
-            AND (:equipoId IS NULL OR ee.equipo_id = :equipoId)
+            AND (:equipoId IS NULL OR pe.equipo_id = :equipoId)
             ORDER BY e.fecha_hora
             """,
         nativeQuery = true

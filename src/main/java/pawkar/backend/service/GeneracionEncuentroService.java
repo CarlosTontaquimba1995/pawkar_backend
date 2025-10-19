@@ -8,6 +8,7 @@ import pawkar.backend.enums.TipoGeneracionEncuentro;
 import pawkar.backend.repository.*;
 import pawkar.backend.request.*;
 import pawkar.backend.response.EncuentroResponse;
+import pawkar.backend.entity.ParticipacionEncuentro.ParticipacionEncuentroId;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -32,6 +33,9 @@ public class GeneracionEncuentroService {
 
     @Autowired
     private EncuentroRepository encuentroRepository;
+    
+    @Autowired
+    private ParticipacionEncuentroRepository participacionEncuentroRepository;
 
     @Transactional
     public List<EncuentroResponse> generarEncuentros(GeneracionEncuentroRequest request) {
@@ -179,8 +183,37 @@ public class GeneracionEncuentroService {
                     LocalDateTime fechaHora = LocalDateTime.of(fechaActual, horaPartido);
                     encuentro.setFechaHora(fechaHora);
 
+                    // Guardar el encuentro para obtener el ID generado
+                    Encuentro savedEncuentro = encuentroRepository.save(encuentro);
+                    
+                    // Crear participación para el equipo local
+                    ParticipacionEncuentro participacionLocal = new ParticipacionEncuentro();
+                    ParticipacionEncuentroId participacionLocalId = new ParticipacionEncuentroId();
+                    participacionLocalId.setEncuentroId(savedEncuentro.getId());
+                    participacionLocalId.setEquipoId(local.getEquipoId());
+                    participacionLocal.setId(participacionLocalId);
+                    participacionLocal.setEncuentro(savedEncuentro);
+                    participacionLocal.setEquipo(local);
+                    participacionLocal.setEsLocal(true);
+                    participacionLocal.setGolesPuntos(0);
+                    
+                    // Crear participación para el equipo visitante
+                    ParticipacionEncuentro participacionVisitante = new ParticipacionEncuentro();
+                    ParticipacionEncuentroId participacionVisitanteId = new ParticipacionEncuentroId();
+                    participacionVisitanteId.setEncuentroId(savedEncuentro.getId());
+                    participacionVisitanteId.setEquipoId(visitante.getEquipoId());
+                    participacionVisitante.setId(participacionVisitanteId);
+                    participacionVisitante.setEncuentro(savedEncuentro);
+                    participacionVisitante.setEquipo(visitante);
+                    participacionVisitante.setEsLocal(false);
+                    participacionVisitante.setGolesPuntos(0);
+                    
+                    // Guardar las participaciones
+                    participacionEncuentroRepository.save(participacionLocal);
+                    participacionEncuentroRepository.save(participacionVisitante);
+                    
                     // Agregar a la lista
-                    encuentros.add(encuentro);
+                    encuentros.add(savedEncuentro);
 
                     // Verificar si todos los horarios del día están ocupados para todos los
                     // estadios
