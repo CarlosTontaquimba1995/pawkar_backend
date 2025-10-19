@@ -1,5 +1,107 @@
 # Documentación de la API
 
+## Generación de Encuentros
+
+### Generar encuentros
+
+**URL**: `/api/encuentros/generar`  
+**Método**: `POST`  
+**Descripción**: Genera encuentros según el tipo de generación especificado  
+**Autenticación requerida**: Sí  
+**Content-Type**: `application/json`
+
+#### 1. Generación Automática (TODOS_CONTRA_TODOS)
+
+**Descripción**: Genera automáticamente partidos entre todos los equipos de las series seleccionadas con las siguientes características:
+- Período de partidos: Del 14 de febrero al 3 de marzo de 2025
+- Horarios disponibles por día: 8:00 AM, 10:00 AM, 12:00 PM, 2:00 PM, 4:00 PM
+- Distribución de estadios:
+  - Peguche: 60% de los partidos
+  - Agato: 30% de los partidos
+  - La Bolsa: 10% de los partidos
+- No se permiten partidos simultáneos en el mismo estadio
+- Se permiten partidos simultáneos en diferentes estadios
+
+**Request Body**:
+```json
+{
+  "tipoGeneracion": "TODOS_CONTRA_TODOS",
+  "fechaInicio": "2025-02-14",
+  "fechaFin": "2025-03-03",
+  "subcategoriaId": 1
+}
+```
+
+#### 2. Generación Manual (SELECCION_MANUAL)
+
+**Descripción**: Crea encuentros específicos según la lista proporcionada.
+
+**Request Body**:
+```json
+{
+  "tipoGeneracion": "SELECCION_MANUAL",
+  "fechaInicio": "2025-11-01",
+  "fechaFin": "2025-12-31",
+  "subcategoriaId": 1,
+  "encuentrosManuales": [
+    {
+      "equipoLocalId": 1,
+      "equipoVisitanteId": 2,
+      "fechaHora": "2025-11-01T10:00:00",
+      "estadioLugar": "Estadio Principal"
+    },
+    {
+      "equipoLocalId": 3,
+      "equipoVisitanteId": 4,
+      "fechaHora": "2025-11-01T12:00:00",
+      "estadioLugar": "Estadio Secundario"
+    }
+  ]
+}
+```
+
+**Campos del Request Body**:
+- `tipoGeneracion` (requerido): 
+  - `TODOS_CONTRA_TODOS`: Genera partidos entre todos los equipos de las series
+  - `SELECCION_MANUAL`: Crea solo los partidos especificados en `encuentrosManuales`
+- `fechaInicio` (requerido): Fecha de inicio para los encuentros (formato: YYYY-MM-DD)
+- `fechaFin` (requerido): Fecha de fin para los encuentros (formato: YYYY-MM-DD)
+- `subcategoriaId` (opcional): ID de la subcategoría para filtrar las series
+- `encuentrosManuales` (requerido si tipoGeneracion es SELECCION_MANUAL): Lista de encuentros a crear manualmente, donde cada encuentro incluye:
+  - `equipoLocalId` (requerido): ID del equipo local
+  - `equipoVisitanteId` (requerido): ID del equipo visitante
+  - `fechaHora` (requerido): Fecha y hora del partido (formato: YYYY-MM-DDThh:mm:ss)
+  - `estadioLugar` (requerido): Nombre del estadio o lugar del partido
+
+**Response (200 OK)**:
+```json
+[
+  {
+    "id": 101,
+    "subcategoriaId": 1,
+    "subcategoriaNombre": "Fútbol",
+    "titulo": "Equipo A vs Equipo B",
+    "fechaHora": "2025-11-01T10:00:00",
+    "estadioLugar": "Estadio Principal",
+    "estado": "Pendiente"
+  },
+  {
+    "id": 102,
+    "subcategoriaId": 1,
+    "subcategoriaNombre": "Fútbol",
+    "titulo": "Equipo C vs Equipo D",
+    "fechaHora": "2025-11-01T12:00:00",
+    "estadioLugar": "Estadio Principal",
+    "estado": "Pendiente"
+  }
+]
+```
+
+**Códigos de error**:
+- 400 Bad Request: Si faltan campos requeridos o los datos son inválidos
+- 404 Not Found: Si no se encuentra la subcategoría especificada
+- 500 Internal Server Error: Si ocurre un error al generar los encuentros
+
 ## Encuentros
 
 ### Crear un nuevo encuentro

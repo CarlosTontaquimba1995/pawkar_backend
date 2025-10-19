@@ -19,22 +19,57 @@ public interface EncuentroRepository extends JpaRepository<Encuentro, Integer>, 
     
     List<Encuentro> findByEstado(String estado);
     
-    @Query("""
-        SELECT e FROM Encuentro e 
-        WHERE (:titulo IS NULL OR LOWER(e.titulo) LIKE LOWER(CONCAT('%', :titulo, '%')))
-        AND (:subcategoriaId IS NULL OR e.subcategoria.subcategoriaId = :subcategoriaId)
-        AND (:fechaInicio IS NULL OR e.fechaHora >= :fechaInicio)
-        AND (:fechaFin IS NULL OR e.fechaHora <= :fechaFin)
-        AND (:estadioLugar IS NULL OR LOWER(e.estadioLugar) LIKE LOWER(CONCAT('%', :estadioLugar, '%')))
-        AND (:estado IS NULL OR e.estado = :estado)
-    """)
+    @Query(value = """
+            SELECT e.* FROM encuentros e
+            LEFT JOIN equipos_encuentros ee ON e.id = ee.encuentro_id
+            WHERE (:subcategoriaId IS NULL OR e.subcategoria_id = :subcategoriaId)
+            AND (cast(:fechaInicio as timestamp) IS NULL OR e.fecha_hora >= :fechaInicio)
+            AND (cast(:fechaFin as timestamp) IS NULL OR e.fecha_hora <= :fechaFin)
+            AND (COALESCE(:estadioLugar, '') = '' OR e.estadio_lugar ILIKE '%' || :estadioLugar || '%')
+            AND (COALESCE(:estado, '') = '' OR e.estado = :estado)
+            AND (:equipoId IS NULL OR ee.equipo_id = :equipoId)
+            ORDER BY e.fecha_hora
+            """,
+        countQuery = """
+            SELECT COUNT(*) FROM encuentros e
+            WHERE (:subcategoriaId IS NULL OR e.subcategoria_id = :subcategoriaId)
+            AND (cast(:fechaInicio as timestamp) IS NULL OR e.fecha_hora >= :fechaInicio)
+            AND (cast(:fechaFin as timestamp) IS NULL OR e.fecha_hora <= :fechaFin)
+            AND (COALESCE(:estadioLugar, '') = '' OR e.estadio_lugar ILIKE '%' || :estadioLugar || '%')
+            AND (COALESCE(:estado, '') = '' OR e.estado = :estado)
+            """,
+        nativeQuery = true
+    )
     Page<Encuentro> searchEncuentros(
-        @Param("titulo") String titulo,
         @Param("subcategoriaId") Integer subcategoriaId,
         @Param("fechaInicio") LocalDateTime fechaInicio,
         @Param("fechaFin") LocalDateTime fechaFin,
         @Param("estadioLugar") String estadioLugar,
         @Param("estado") String estado,
+        @Param("equipoId") Integer equipoId,
         Pageable pageable
+    );
+
+    // Add this method to handle the case when no pageable sorting is needed
+    @Query(value = """
+            SELECT e.* FROM encuentros e
+            LEFT JOIN equipos_encuentros ee ON e.id = ee.encuentro_id
+            WHERE (:subcategoriaId IS NULL OR e.subcategoria_id = :subcategoriaId)
+            AND (cast(:fechaInicio as timestamp) IS NULL OR e.fecha_hora >= :fechaInicio)
+            AND (cast(:fechaFin as timestamp) IS NULL OR e.fecha_hora <= :fechaFin)
+            AND (COALESCE(:estadioLugar, '') = '' OR e.estadio_lugar ILIKE '%' || :estadioLugar || '%')
+            AND (COALESCE(:estado, '') = '' OR e.estado = :estado)
+            AND (:equipoId IS NULL OR ee.equipo_id = :equipoId)
+            ORDER BY e.fecha_hora
+            """,
+        nativeQuery = true
+    )
+    List<Encuentro> searchEncuentrosWithoutPagination(
+        @Param("subcategoriaId") Integer subcategoriaId,
+        @Param("fechaInicio") LocalDateTime fechaInicio,
+        @Param("fechaFin") LocalDateTime fechaFin,
+        @Param("estadioLugar") String estadioLugar,
+        @Param("estado") String estado,
+        @Param("equipoId") Integer equipoId
     );
 }

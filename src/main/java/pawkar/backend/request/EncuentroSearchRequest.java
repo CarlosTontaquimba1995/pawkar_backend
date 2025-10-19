@@ -12,6 +12,7 @@ import java.time.LocalDate;
 public class EncuentroSearchRequest {
     private Integer categoriaId;
     private Integer subcategoriaId;
+    private String titulo;
     private LocalDate fechaInicio;
     private LocalDate fechaFin;
     private String estadioLugar;

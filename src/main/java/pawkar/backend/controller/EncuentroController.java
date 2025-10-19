@@ -2,17 +2,21 @@ package pawkar.backend.controller;
 
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import java.time.LocalDateTime;
+import java.util.List;
 import org.springframework.web.bind.annotation.*;
 import pawkar.backend.request.EncuentroRequest;
 import pawkar.backend.request.EncuentroResponse;
 import pawkar.backend.request.EncuentroSearchRequest;
+import pawkar.backend.response.ApiResponseStandard;
 import pawkar.backend.service.EncuentroService;
 
-import java.util.List;
+import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/encuentros")
@@ -25,81 +29,97 @@ public class EncuentroController {
     }
 
     @PostMapping
-    public ResponseEntity<EncuentroResponse> createEncuentro(@Valid @RequestBody EncuentroRequest request) {
+    public ApiResponseStandard<EncuentroResponse> createEncuentro(
+            @Valid @RequestBody EncuentroRequest request,
+            HttpServletRequest httpRequest) {
         EncuentroResponse response = encuentroService.createEncuentro(request);
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
+        return ApiResponseStandard.success(response, "Encuentro creado exitosamente");
+    }
+
+    /**
+     * Endpoint para guardar múltiples encuentros en una sola operación
+     * 
+     * @param requests Lista de objetos EncuentroRequest a guardar
+     * @return Lista de EncuentroResponse con los encuentros guardados
+     */
+    @PostMapping("/bulk")
+    public ApiResponseStandard<List<EncuentroResponse>> createEncuentrosBulk(
+            @Valid @RequestBody List<EncuentroRequest> requests) {
+        List<EncuentroResponse> responses = encuentroService.saveAllEncuentros(requests);
+        return ApiResponseStandard.success(responses, "Encuentros creados exitosamente");
     }
 
     @GetMapping
-    public ResponseEntity<List<EncuentroResponse>> getAllEncuentros() {
+    public ApiResponseStandard<List<EncuentroResponse>> getAllEncuentros() {
         List<EncuentroResponse> encuentros = encuentroService.getAllEncuentros();
-        return ResponseEntity.ok(encuentros);
+        return ApiResponseStandard.success(encuentros, "Lista de encuentros obtenida exitosamente");
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<EncuentroResponse> getEncuentroById(@PathVariable Integer id) {
+    public ApiResponseStandard<EncuentroResponse> getEncuentroById(@PathVariable Integer id) {
         EncuentroResponse response = encuentroService.getEncuentroById(id);
-        return ResponseEntity.ok(response);
+        return ApiResponseStandard.success(response, "Encuentro obtenido exitosamente");
     }
 
     @GetMapping("/subcategoria/{subcategoriaId}")
-    public ResponseEntity<List<EncuentroResponse>> getEncuentrosBySubcategoria(
+    public ApiResponseStandard<List<EncuentroResponse>> getEncuentrosBySubcategoria(
             @PathVariable Integer subcategoriaId) {
         List<EncuentroResponse> encuentros = encuentroService.getEncuentrosBySubcategoria(subcategoriaId);
-        return ResponseEntity.ok(encuentros);
+        return ApiResponseStandard.success(encuentros, "Encuentros por subcategoría obtenidos exitosamente");
     }
 
     @PostMapping("/search")
-    public ResponseEntity<Page<EncuentroResponse>> searchEncuentros(
+    public ApiResponseStandard<Page<EncuentroResponse>> searchEncuentros(
             @Valid @RequestBody EncuentroSearchRequest searchRequest) {
         Page<EncuentroResponse> response = encuentroService.searchEncuentros(searchRequest);
-        return ResponseEntity.ok(response);
+        return ApiResponseStandard.success(response, "Búsqueda de encuentros completada exitosamente");
     }
 
-    @GetMapping("/search")
-    public ResponseEntity<Page<EncuentroResponse>> searchEncuentrosWithQueryParams(
-            @RequestParam(required = false) String titulo,
+    @GetMapping("/search/params")
+    public ApiResponseStandard<Page<EncuentroResponse>> searchEncuentrosWithQueryParams(
             @RequestParam(required = false) Integer subcategoriaId,
-            @RequestParam(required = false) String fechaInicio,
-            @RequestParam(required = false) String fechaFin,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fechaInicio,
+                    @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fechaFin,
             @RequestParam(required = false) String estadioLugar,
             @RequestParam(required = false) String estado,
-            @PageableDefault(sort = "fechaHora", direction = org.springframework.data.domain.Sort.Direction.ASC) Pageable pageable) {
+            @RequestParam(required = false) Integer equipoId,
+            @PageableDefault(size = 10) Pageable pageable) {
 
-        EncuentroSearchRequest searchRequest = new EncuentroSearchRequest();
-        searchRequest.setSubcategoriaId(subcategoriaId);
-        // Convertir fechas de String a LocalDate si es necesario
-        // searchRequest.setFechaInicio(...);
-        // searchRequest.setFechaFin(...);
-        searchRequest.setEstadioLugar(estadioLugar);
-        searchRequest.setEstado(estado);
-
-        // Configurar paginación
-        searchRequest.setPage(pageable.getPageNumber());
-        searchRequest.setSize(pageable.getPageSize());
-
-        if (pageable.getSort().isSorted()) {
-            pageable.getSort().stream().findFirst().ifPresent(order -> {
-                searchRequest.setSortBy(order.getProperty());
-                searchRequest.setSortDirection(order.getDirection());
-            });
+        try {
+            Page<EncuentroResponse> response = encuentroService.searchEncuentros(
+                    subcategoriaId,
+                    fechaInicio,
+                    fechaFin,
+                    estadioLugar,
+                    estado,
+                    equipoId,
+                    pageable);
+            return ApiResponseStandard.success(response, "Búsqueda de encuentros completada exitosamente");
+        } catch (Exception e) {
+            // Fallback a resultados sin paginación si hay un error con la paginación
+            List<EncuentroResponse> response = encuentroService.searchEncuentrosWithoutPagination(
+                    subcategoriaId,
+                    fechaInicio,
+                    fechaFin,
+                    estadioLugar,
+                    estado,
+                    equipoId);
+            return ApiResponseStandard.success(new PageImpl<>(response),
+                    "Búsqueda de encuentros completada (sin paginación)");
         }
-
-        Page<EncuentroResponse> response = encuentroService.searchEncuentros(searchRequest);
-        return ResponseEntity.ok(response);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<EncuentroResponse> updateEncuentro(
+    public ApiResponseStandard<EncuentroResponse> updateEncuentro(
             @PathVariable Integer id,
             @Valid @RequestBody EncuentroRequest request) {
         EncuentroResponse response = encuentroService.updateEncuentro(id, request);
-        return ResponseEntity.ok(response);
+        return ApiResponseStandard.success(response, "Encuentro actualizado exitosamente");
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteEncuentro(@PathVariable Integer id) {
+    public ApiResponseStandard<Void> deleteEncuentro(@PathVariable Integer id) {
         encuentroService.deleteEncuentro(id);
-        return ResponseEntity.noContent().build();
+        return ApiResponseStandard.success(null, "Encuentro eliminado exitosamente");
     }
 }
