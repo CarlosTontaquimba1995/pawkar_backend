@@ -1,5 +1,23 @@
 # Documentación de la API
 
+## Equipos
+
+### Verificar existencia de equipos
+
+**URL**: `/equipos/existen`  
+**Método**: `GET`  
+**Descripción**: Verifica si existen equipos registrados en el sistema  
+**Autenticación Requerida**: No
+
+**Respuesta (200 OK)**:
+```
+true
+```
+o
+```
+false
+```
+
 ## Sanciones
 
 ### Obtener todas las sanciones

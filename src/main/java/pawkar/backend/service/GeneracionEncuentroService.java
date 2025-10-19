@@ -27,8 +27,6 @@ public class GeneracionEncuentroService {
     @Autowired
     private SubcategoriaRepository subcategoriaRepository;
 
-    private EncuentroService encuentroService;
-
     @Autowired
     private EncuentroRepository encuentroRepository;
     

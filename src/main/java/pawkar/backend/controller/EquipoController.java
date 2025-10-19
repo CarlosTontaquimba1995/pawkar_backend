@@ -69,4 +69,10 @@ public class EquipoController {
         equipoService.eliminarEquipo(id);
         return ApiResponseStandard.success("Equipo eliminado exitosamente");
     }
+
+    @GetMapping("/existen")
+    @ResponseBody
+    public boolean existenEquiposRegistrados() {
+        return equipoService.existenEquiposRegistrados();
+    }
 }

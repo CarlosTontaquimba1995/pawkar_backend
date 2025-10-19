@@ -147,6 +147,11 @@ public class EquipoService {
         }
         equipoRepository.deleteById(id);
     }
+    
+    @Transactional(readOnly = true)
+    public boolean existenEquiposRegistrados() {
+        return equipoRepository.count() > 0;
+    }
 
     private EquipoResponse mapToResponse(Equipo equipo) {
         EquipoResponse response = new EquipoResponse();
