@@ -38,4 +38,19 @@ public interface EquipoRepository extends JpaRepository<Equipo, Integer> {
         @Param("serieId") Integer serieId,
         @Param("excludeEquipoId") Integer excludeEquipoId
     );
+    
+    @Query("SELECT CASE WHEN COUNT(e) > 0 THEN true ELSE false END FROM Equipo e " +
+           "WHERE LOWER(e.nombre) = LOWER(:nombre) AND e.subcategoria.subcategoriaId = :subcategoriaId")
+    boolean existsByNombreAndSubcategoriaId(
+        @Param("nombre") String nombre, 
+        @Param("subcategoriaId") Integer subcategoriaId
+    );
+    
+    @Query("SELECT CASE WHEN COUNT(e) > 0 THEN true ELSE false END FROM Equipo e " +
+           "WHERE LOWER(e.nombre) = LOWER(:nombre) AND e.subcategoria.subcategoriaId = :subcategoriaId AND e.equipoId != :excludeEquipoId")
+    boolean existsByNombreAndSubcategoriaIdExcludingId(
+        @Param("nombre") String nombre, 
+        @Param("subcategoriaId") Integer subcategoriaId,
+        @Param("excludeEquipoId") Integer excludeEquipoId
+    );
 }

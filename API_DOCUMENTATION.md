@@ -2,24 +2,79 @@
 
 ## Equipos
 
-### Obtener todos los equipos (paginado)
+### Obtener todos los equipos (con búsqueda y paginación)
 
 **URL**: `/equipos`  
 **Método**: `GET`  
-**Descripción**: Obtiene una lista paginada de todos los equipos registrados en el sistema  
+**Descripción**: Obtiene una lista paginada de equipos. Permite búsqueda por nombre y ordenación.  
 **Autenticación Requerida**: No
 
 **Parámetros de Consulta**:
 - `page` (opcional): Número de página (comenzando desde 0). Por defecto: 0
 - `size` (opcional): Cantidad de elementos por página. Por defecto: 10
-- `sort` (opcional): Campo(s) de ordenación en formato `campo,direccion`. Por defecto: `nombre,asc`
+- `sort` (opcional): 
+  - Para ordenar: `campo,direccion` (ej: `nombre,desc`).
+  - Para buscar: texto a buscar (ej: `Equipo A`). 
+  - Por defecto: `nombre,asc`
+- `search` (opcional): Texto para buscar equipos por nombre (ignora mayúsculas/minúsculas)
+- `nombre` (obsoleto, usar `search` en su lugar): Texto para buscar equipos por nombre (mantenido por compatibilidad）
 
-**Ejemplo de solicitud**:
+**Ejemplos de solicitud**:
+
+1. Obtener primera página de equipos (10 por defecto):
 ```
-GET /equipos?page=0&size=5&sort=nombre,desc
+GET /equipos
+```
+
+2. Buscar equipos por nombre:
+```
+GET /equipos?search=Equipo A
+```
+
+3. Ordenar equipos por nombre descendente:
+```
+GET /equipos?sort=nombre,desc
+```
+
+4. Búsqueda con paginación:
+```
+GET /equipos?search=Equipo&page=0&size=5
+```
+
+5. Usando el parámetro `sort` para búsqueda (alternativa):
+```
+GET /equipos?sort=Equipo A
 ```
 
 **Respuesta exitosa (200 OK)**:
+
+1. Para búsquedas exitosas:
+```json
+{
+  "success": true,
+  "message": "Se encontraron 1 equipo(s) con el nombre que contiene: Equipo A",
+  "data": {
+    "content": [
+      {
+        "equipoId": 1,
+        "nombre": "Equipo A",
+        "subcategoriaId": 1,
+        "subcategoriaNombre": "Fútbol",
+        "serieId": 1,
+        "serieNombre": "Serie A",
+        "fundacion": "2000-01-01",
+        "jugadoresCount": 2
+      }
+    ],
+    "totalElements": 1,
+    "totalPages": 1,
+    "size": 10,
+    "number": 0
+  }
+}
+```
+
+2. Para listado general:
 ```json
 {
   "success": true,
@@ -30,10 +85,11 @@ GET /equipos?page=0&size=5&sort=nombre,desc
         "equipoId": 1,
         "nombre": "Equipo A",
         "subcategoriaId": 1,
-        "subcategoriaNombre": "Subcategoría 1",
+        "subcategoriaNombre": "Fútbol",
         "serieId": 1,
         "serieNombre": "Serie A",
-        "fundacion": "2020-01-01"
+        "fundacion": "2000-01-01",
+        "jugadoresCount": 2
       },
       ...
     ],
@@ -44,28 +100,27 @@ GET /equipos?page=0&size=5&sort=nombre,desc
         "empty": false
       },
       "pageNumber": 0,
-      "pageSize": 5,
+      "pageSize": 10,
       "offset": 0,
       "paged": true,
       "unpaged": false
     },
-    "totalElements": 42,
-    "totalPages": 9,
+    "totalElements": 11,
+    "totalPages": 2,
     "last": false,
-    "size": 5,
+    "size": 10,
     "number": 0,
     "sort": {
       "sorted": true,
       "unsorted": false,
       "empty": false
     },
-    "numberOfElements": 5,
+    "numberOfElements": 10,
     "first": true,
     "empty": false
   },
   "timestamp": "2025-10-19T20:40:00.000+00:00"
 }
-```
 
 ### Verificar existencia de equipos
 

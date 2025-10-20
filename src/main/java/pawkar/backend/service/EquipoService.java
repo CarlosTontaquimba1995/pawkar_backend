@@ -105,9 +105,9 @@ public class EquipoService {
 
     @Transactional
     public EquipoResponse crearEquipo(EquipoRequest request) {
-        // Verificar si ya existe un equipo con el mismo nombre en la misma serie
-        if (equipoRepository.existsByNombreAndSerieId(request.getNombre(), request.getSerieId())) {
-            throw new BadRequestException("Ya existe un equipo con el mismo nombre en esta serie");
+        // Verificar si ya existe un equipo con el mismo nombre en la misma subcategoría
+        if (equipoRepository.existsByNombreAndSubcategoriaId(request.getNombre(), request.getSubcategoriaId())) {
+            throw new BadRequestException("Ya existe un equipo con el mismo nombre en esta subcategoría");
         }
         
         // Obtener la subcategoría
@@ -135,10 +135,11 @@ public class EquipoService {
         Equipo equipo = equipoRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Equipo no encontrado con ID: " + id));
         
-        // Verificar si ya existe otro equipo con el mismo nombre en la misma serie
-        if (equipoRepository.existsByNombreAndSerieIdExcludingId(
-                request.getNombre(), request.getSerieId(), id)) {
-            throw new BadRequestException("Ya existe otro equipo con el mismo nombre en esta serie");
+        // Verificar si ya existe otro equipo con el mismo nombre en la misma
+        // subcategoría
+        if (equipoRepository.existsByNombreAndSubcategoriaIdExcludingId(
+                request.getNombre(), request.getSubcategoriaId(), id)) {
+            throw new BadRequestException("Ya existe un equipo con el mismo nombre en esta subcategoría");
         }
         
         // Obtener la subcategoría
@@ -166,23 +167,28 @@ public class EquipoService {
             throw new BadRequestException("La lista de equipos no puede estar vacía");
         }
 
-        // Verificar nombres duplicados en la misma serie dentro de la solicitud
+        // Verificar nombres duplicados en la misma subcategoría dentro de la solicitud
         long uniqueEquiposCount = request.getEquipos().stream()
-                .map(equipo -> equipo.getSerieId() + "_" + equipo.getNombre())
+                .map(equipo -> equipo.getSubcategoriaId() + "_" + equipo.getNombre().toLowerCase())
                 .distinct()
                 .count();
 
         if (uniqueEquiposCount != request.getEquipos().size()) {
             throw new BadRequestException(
-                    "No se permiten equipos duplicados en la misma serie dentro de la misma solicitud");
+                    "No se permiten equipos con el mismo nombre en la misma subcategoría");
         }
 
-        // Verificar si ya existen equipos con los mismos nombres en las series
-        // correspondientes
+        // Verificar si ya existen equipos con los mismos nombres en las subcategorías
         for (EquipoRequest equipoReq : request.getEquipos()) {
-            if (equipoRepository.existsByNombreAndSerieId(equipoReq.getNombre(), equipoReq.getSerieId())) {
+            if (equipoRepository.existsByNombreAndSubcategoriaId(equipoReq.getNombre(),
+                    equipoReq.getSubcategoriaId())) {
+                // Obtener el nombre de la subcategoría para el mensaje de error
+                String nombreSubcategoria = subcategoriaRepository.findById(equipoReq.getSubcategoriaId())
+                        .map(Subcategoria::getNombre)
+                        .orElse("Desconocida");
+
                 throw new BadRequestException("Ya existe un equipo con el nombre '" +
-                        equipoReq.getNombre() + "' en la serie con ID: " + equipoReq.getSerieId());
+                        equipoReq.getNombre() + "' en la categoría: " + nombreSubcategoria);
             }
         }
 
