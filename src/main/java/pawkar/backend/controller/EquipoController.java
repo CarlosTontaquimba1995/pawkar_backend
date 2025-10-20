@@ -166,7 +166,7 @@ public class EquipoController {
     public ApiResponseStandard<Void> eliminarEquipo(
             @PathVariable Integer id) {
         equipoService.eliminarEquipo(id);
-        return ApiResponseStandard.success("Equipo eliminado exitosamente");
+        return ApiResponseStandard.success(null, "Equipo eliminado exitosamente");
     }
 
     @GetMapping("/existen")

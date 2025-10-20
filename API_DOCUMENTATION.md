@@ -1,58 +1,81 @@
 # Documentación de la API
 
+## Tabla de Contenidos
+- [Equipos](#equipos)
+  - [Obtener equipos](#obtener-todos-los-equipos)
+  - [Verificar existencia de equipos](#verificar-existencia-de-equipos)
+  - [Obtener equipo por ID](#obtener-equipo-por-id)
+  - [Crear equipo](#crear-equipo)
+  - [Actualizar equipo](#actualizar-equipo)
+  - [Eliminar equipo](#eliminar-equipo)
+- [Sanciones](#sanciones)
+- [Tabla de Posiciones](#tabla-de-posiciones)
+- [Autenticación](#autenticación)
+
 ## Equipos
 
-### Obtener todos los equipos (con búsqueda y paginación)
+### Obtener todos los equipos
 
 **URL**: `/equipos`  
 **Método**: `GET`  
-**Descripción**: Obtiene una lista paginada de equipos. Permite búsqueda por nombre y ordenación.  
-**Autenticación Requerida**: No
+**Descripción**: Obtiene una lista paginada de equipos con opciones de búsqueda, filtrado y ordenación.  
+**Autenticación Requerida**: No  
+**Roles**: `ROLE_USER`, `ROLE_ADMIN`
+
+**Notas**:
+- Por defecto solo se muestran los equipos con `estado = true`
+- El parámetro `estado` permite filtrar por estado del equipo
+- Se requiere rol `ROLE_ADMIN` para ver equipos inactivos (`estado = false`)
+- Los equipos no se eliminan físicamente, se marcan como inactivos
 
 **Parámetros de Consulta**:
 - `page` (opcional): Número de página (comenzando desde 0). Por defecto: 0
 - `size` (opcional): Cantidad de elementos por página. Por defecto: 10
-- `sort` (opcional): 
-  - Para ordenar: `campo,direccion` (ej: `nombre,desc`).
-  - Para buscar: texto a buscar (ej: `Equipo A`). 
-  - Por defecto: `nombre,asc`
-- `search` (opcional): Texto para buscar equipos por nombre (ignora mayúsculas/minúsculas)
-- `nombre` (obsoleto, usar `search` en su lugar): Texto para buscar equipos por nombre (mantenido por compatibilidad）
+- `sort` (opcional): Campo de ordenación (ej: `nombre,desc`)
+- `search` (opcional): Texto para buscar equipos por nombre
+- `estado` (opcional, boolean): Filtra por estado del equipo (`true` para activos, `false` para inactivos)
+- `subcategoriaId` (opcional): Filtrar por ID de subcategoría
+- `serieId` (opcional): Filtrar por ID de serie
 
 **Ejemplos de solicitud**:
 
 1. Obtener primera página de equipos (10 por defecto):
-```
-GET /equipos
+```http
+GET /equipos HTTP/1.1
+Host: api.ejemplo.com
+Accept: application/json
 ```
 
 2. Buscar equipos por nombre:
-```
-GET /equipos?search=Equipo A
+```http
+GET /equipos?search=Equipo%20A&estado=true&page=0&size=10&sort=nombre,asc HTTP/1.1
+Host: api.ejemplo.com
+Accept: application/json
 ```
 
 3. Ordenar equipos por nombre descendente:
-```
-GET /equipos?sort=nombre,desc
+```http
+GET /equipos?sort=nombre,desc&estado=true HTTP/1.1
+Host: api.ejemplo.com
+Accept: application/json
 ```
 
 4. Búsqueda con paginación:
-```
-GET /equipos?search=Equipo&page=0&size=5
-```
-
-5. Usando el parámetro `sort` para búsqueda (alternativa):
-```
-GET /equipos?sort=Equipo A
+```http
+GET /equipos?search=Equipo&page=0&size=5&estado=true HTTP/1.1
+Host: api.ejemplo.com
+Accept: application/json
 ```
 
-**Respuesta exitosa (200 OK)**:
+**Respuestas**
+
+**200 OK** - Operación exitosa
 
 1. Para búsquedas exitosas:
 ```json
 {
   "success": true,
-  "message": "Se encontraron 1 equipo(s) con el nombre que contiene: Equipo A",
+  "message": "Equipos obtenidos exitosamente",
   "data": {
     "content": [
       {
@@ -63,14 +86,39 @@ GET /equipos?sort=Equipo A
         "serieId": 1,
         "serieNombre": "Serie A",
         "fundacion": "2000-01-01",
-        "jugadoresCount": 2
+        "jugadoresCount": 15,
+        "estado": true,
+        "fechaCreacion": "2025-01-15T10:30:00Z",
+        "fechaActualizacion": "2025-10-01T14:25:00Z"
       }
     ],
+    "pageable": {
+      "sort": {
+        "sorted": true,
+        "unsorted": false,
+        "empty": false
+      },
+      "pageNumber": 0,
+      "pageSize": 10,
+      "offset": 0,
+      "paged": true,
+      "unpaged": false
+    },
     "totalElements": 1,
     "totalPages": 1,
+    "last": true,
     "size": 10,
-    "number": 0
-  }
+    "number": 0,
+    "sort": {
+      "sorted": true,
+      "unsorted": false,
+      "empty": false
+    },
+    "numberOfElements": 1,
+    "first": true,
+    "empty": false
+  },
+  "timestamp": "2025-10-20T10:30:00.000+00:00"
 }
 ```
 
@@ -89,9 +137,11 @@ GET /equipos?sort=Equipo A
         "serieId": 1,
         "serieNombre": "Serie A",
         "fundacion": "2000-01-01",
-        "jugadoresCount": 2
-      },
-      ...
+        "jugadoresCount": 15,
+        "estado": true,
+        "fechaCreacion": "2025-01-15T10:30:00Z",
+        "fechaActualizacion": "2025-10-01T14:25:00Z"
+      }
     ],
     "pageable": {
       "sort": {
@@ -105,9 +155,9 @@ GET /equipos?sort=Equipo A
       "paged": true,
       "unpaged": false
     },
-    "totalElements": 11,
-    "totalPages": 2,
-    "last": false,
+    "totalElements": 1,
+    "totalPages": 1,
+    "last": true,
     "size": 10,
     "number": 0,
     "sort": {
@@ -115,27 +165,73 @@ GET /equipos?sort=Equipo A
       "unsorted": false,
       "empty": false
     },
-    "numberOfElements": 10,
+    "numberOfElements": 1,
     "first": true,
     "empty": false
   },
-  "timestamp": "2025-10-19T20:40:00.000+00:00"
+  "timestamp": "2025-10-20T10:30:00.000+00:00"
 }
+```
 
 ### Verificar existencia de equipos
 
 **URL**: `/equipos/existen`  
 **Método**: `GET`  
-**Descripción**: Verifica si existen equipos registrados en el sistema  
-**Autenticación Requerida**: No
+**Descripción**: Verifica si existen equipos registrados en el sistema según los criterios de búsqueda  
+**Autenticación Requerida**: No  
+**Roles**: `ROLE_USER`, `ROLE_ADMIN`
 
-**Respuesta (200 OK)**:
+**Parámetros de Consulta**:
+- `estado` (opcional, boolean): Filtra por estado del equipo (`true` para activos, `false` para inactivos)
+- `subcategoriaId` (opcional): Filtrar por ID de subcategoría
+- `serieId` (opcional): Filtrar por ID de serie
+
+**Respuestas**
+
+**200 OK** - Operación exitosa
+
+```json
+{
+  "success": true,
+  "message": "Se encontraron equipos registrados con los criterios especificados",
+  "data": true,
+  "timestamp": "2025-10-20T10:30:00.000+00:00"
+}
 ```
-true
+
+**200 OK** - No se encontraron equipos
+
+```json
+{
+  "success": true,
+  "message": "No se encontraron equipos registrados con los criterios especificados",
+  "data": false,
+  "timestamp": "2025-10-20T10:30:00.000+00:00"
+}
 ```
-o
+
+**Ejemplos de Uso**
+
+1. Verificar si existen equipos activos:
+```http
+GET /equipos/existen?estado=true HTTP/1.1
+Host: api.ejemplo.com
+Accept: application/json
 ```
-false
+
+2. Verificar si existen equipos en una subcategoría específica:
+```http
+GET /equipos/existen?subcategoriaId=1&estado=true HTTP/1.1
+Host: api.ejemplo.com
+Accept: application/json
+```
+
+3. Verificar si existen equipos inactivos en una serie específica:
+```http
+GET /equipos/existen?serieId=2&estado=false HTTP/1.1
+Host: api.ejemplo.com
+Accept: application/json
+Authorization: Bearer <token>
 ```
 
 ## Sanciones
