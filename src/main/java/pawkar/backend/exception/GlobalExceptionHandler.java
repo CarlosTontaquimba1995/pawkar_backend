@@ -38,6 +38,30 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 ));
     }
 
+    @ExceptionHandler(DuplicatePlantillaException.class)
+    public ResponseEntity<ApiResponseStandard<Object>> handleDuplicatePlantillaException(
+                    DuplicatePlantillaException ex, WebRequest request) {
+            return ResponseEntity
+                            .badRequest()
+                            .body(ApiResponseStandard.error(
+                                            ex.getMessage(),
+                                            request.getDescription(false),
+                                            "Conflicto de datos",
+                                            HttpStatus.BAD_REQUEST.value()));
+    }
+
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<ApiResponseStandard<Object>> handleIllegalStateException(
+                    IllegalStateException ex, WebRequest request) {
+            return ResponseEntity
+                            .badRequest()
+                            .body(ApiResponseStandard.error(
+                                            ex.getMessage(),
+                                            request.getDescription(false),
+                                            "Datos inválidos",
+                                            HttpStatus.BAD_REQUEST.value()));
+    }
+
     @ExceptionHandler(BadRequestException.class)
     public ResponseEntity<ApiResponseStandard<Object>> handleBadRequestException(
             BadRequestException ex, WebRequest request) {
