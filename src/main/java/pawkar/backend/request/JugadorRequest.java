@@ -1,6 +1,8 @@
 package pawkar.backend.request;
 
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
@@ -21,7 +23,16 @@ public class JugadorRequest {
     @Size(max = 20, message = "El documento de identidad no puede tener más de 20 caracteres")
     private String documentoIdentidad;
 
+    // Campos para la plantilla
+    @NotNull(message = "El ID del equipo es obligatorio")
     private Integer equipoId;
+
+    @NotNull(message = "El número de camiseta es obligatorio")
+    @Min(value = 1, message = "El número de camiseta debe ser mayor a 0")
+    private Integer numeroCamiseta;
+
+    @NotNull(message = "El ID del rol es obligatorio")
+    private Integer rolId;
 
     // Getters and Setters
     public String getNombre() {
@@ -54,6 +65,22 @@ public class JugadorRequest {
 
     public void setDocumentoIdentidad(String documentoIdentidad) {
         this.documentoIdentidad = documentoIdentidad;
+    }
+
+    public Integer getNumeroCamiseta() {
+        return numeroCamiseta;
+    }
+
+    public void setNumeroCamiseta(Integer numeroCamiseta) {
+        this.numeroCamiseta = numeroCamiseta;
+    }
+
+    public Integer getRolId() {
+        return rolId;
+    }
+
+    public void setRolId(Integer rolId) {
+        this.rolId = rolId;
     }
 
     public Integer getEquipoId() {
