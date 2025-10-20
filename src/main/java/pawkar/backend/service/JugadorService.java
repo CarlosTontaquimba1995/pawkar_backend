@@ -29,27 +29,34 @@ public class JugadorService {
 
     @Transactional(readOnly = true)
     public Page<JugadorResponse> obtenerTodosLosJugadores(Pageable pageable) {
-        return jugadorRepository.findAll(pageable)
+        return jugadorRepository.findByEstado(true, pageable)
                 .map(this::mapToResponse);
     }
     
     @Transactional(readOnly = true)
     public Page<JugadorResponse> buscarJugadoresPorNombreOApellido(String busqueda, Pageable pageable) {
-        return jugadorRepository.findByNombreContainingIgnoreCaseOrApellidoContainingIgnoreCase(
-                busqueda, busqueda, pageable)
+        return jugadorRepository.buscarPorNombreOApellidoYEstado(busqueda, true, pageable)
                 .map(this::mapToResponse);
+    }
+    
+    @Transactional
+    public void softDeleteJugador(Integer id) {
+        if (!jugadorRepository.existsByIdAndEstadoTrue(id)) {
+            throw new ResourceNotFoundException("Jugador no encontrado con ID: " + id);
+        }
+        jugadorRepository.softDelete(id);
     }
 
     @Transactional(readOnly = true)
     public JugadorResponse obtenerJugadorPorId(Integer id) {
-        Jugador jugador = jugadorRepository.findById(id)
+        Jugador jugador = jugadorRepository.findByIdAndEstadoTrue(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Jugador no encontrado con ID: " + id));
         return mapToResponse(jugador);
     }
 
     @Transactional
     public JugadorResponse crearJugador(JugadorRequest request) {
-        if (jugadorRepository.existsByDocumentoIdentidad(request.getDocumentoIdentidad())) {
+        if (jugadorRepository.existsByDocumentoIdentidadAndEstadoTrue(request.getDocumentoIdentidad())) {
             throw new BadRequestException(
                     "Ya existe un jugador con el documento de identidad: " + request.getDocumentoIdentidad());
         }
@@ -93,10 +100,7 @@ public class JugadorService {
 
     @Transactional
     public void eliminarJugador(Integer id) {
-        if (!jugadorRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Jugador no encontrado con ID: " + id);
-        }
-        jugadorRepository.deleteById(id);
+        softDeleteJugador(id);
     }
 
     @Transactional

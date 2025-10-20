@@ -128,9 +128,9 @@ public class JugadorController {
     }
 
     @DeleteMapping("/{id}")
-    @ResponseStatus(org.springframework.http.HttpStatus.NO_CONTENT)
-    public void eliminarJugador(@PathVariable Integer id) {
+    public ApiResponseStandard<Void> eliminarJugador(@PathVariable Integer id) {
         jugadorService.eliminarJugador(id);
+        return ApiResponseStandard.success(null, "Jugador eliminado exitosamente");
     }
 
     @PostMapping("/bulk")

@@ -1,10 +1,14 @@
 package pawkar.backend.entity;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 import java.time.LocalDate;
 
 @Entity
 @Table(name = "jugadores")
+@SQLDelete(sql = "UPDATE jugadores SET estado = false WHERE jugador_id = ?")
+@SQLRestriction("estado = true")
 public class Jugador {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,6 +29,9 @@ public class Jugador {
     
     @Transient
     private Equipo equipo;
+
+    @Column(name = "estado", nullable = false, columnDefinition = "boolean default true")
+    private boolean estado = true;
 
     // Getters and Setters
     public Integer getId() {
@@ -73,5 +80,13 @@ public class Jugador {
     
     public void setEquipo(Equipo equipo) {
         this.equipo = equipo;
+    }
+
+    public boolean isEstado() {
+        return estado;
+    }
+
+    public void setEstado(boolean estado) {
+        this.estado = estado;
     }
 }
