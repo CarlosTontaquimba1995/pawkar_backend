@@ -7,6 +7,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
+import pawkar.backend.exception.BadRequestException;
 import pawkar.backend.request.JugadorRequest;
 import pawkar.backend.response.JugadorResponse;
 import pawkar.backend.request.JugadorBulkRequest;
@@ -34,7 +35,7 @@ public class JugadorController {
             @RequestParam(required = false) String sort,
             @RequestParam(required = false) String search,
             @RequestParam Map<String, String> allParams) {
-        
+
         // Default sorting if not provided or invalid
         String sortField = "apellido"; // Default sort by last name
         Sort.Direction direction = Sort.Direction.ASC;
@@ -68,11 +69,10 @@ public class JugadorController {
         }
 
         Pageable pageable = PageRequest.of(
-            page, 
-            size, 
-            Sort.by(direction, sortField)
-        );
-        
+                page,
+                        size,
+                Sort.by(direction, sortField));
+
         Page<JugadorResponse> jugadores;
 
         // If search parameter is provided, use it for filtering by name or last name
@@ -88,11 +88,11 @@ public class JugadorController {
             return ApiResponseStandard.success(jugadores, "Jugadores obtenidos exitosamente");
         }
     }
-    
+
     // Helper method to validate sort fields to prevent SQL injection
     private boolean isValidSortField(String field) {
         // List of allowed fields to sort by
-        String[] allowedFields = {"id", "nombre", "apellido", "fechaNacimiento", "documentoIdentidad"};
+        String[] allowedFields = { "id", "nombre", "apellido", "fechaNacimiento", "documentoIdentidad" };
         for (String allowed : allowedFields) {
             if (allowed.equalsIgnoreCase(field)) {
                 return true;
@@ -136,10 +136,41 @@ public class JugadorController {
     @PostMapping("/bulk")
     @ResponseStatus(org.springframework.http.HttpStatus.CREATED)
     public ApiResponseStandard<List<JugadorResponse>> crearJugadoresEnLote(
-            @Valid @RequestBody JugadorBulkRequest request) {
-        List<JugadorResponse> jugadores = jugadorService.crearJugadoresEnLote(request);
-        return ApiResponseStandard.success(
-                jugadores,
-                "Jugadores creados exitosamente");
+            @Valid @RequestBody JugadorBulkRequest request,
+            jakarta.servlet.http.HttpServletRequest servletRequest) {
+        try {
+            List<JugadorResponse> jugadores = jugadorService.crearJugadoresEnLote(request);
+            return ApiResponseStandard.success(
+                    jugadores,
+                    "Jugadores creados exitosamente");
+        } catch (BadRequestException e) {
+            return ApiResponseStandard.error(
+                    e.getMessage(),
+                    servletRequest.getRequestURI(),
+                    "Error en la solicitud",
+                    org.springframework.http.HttpStatus.BAD_REQUEST.value()
+            );
+        } catch (org.springframework.dao.DataIntegrityViolationException e) {
+            // Extraer el número de documento del mensaje de error
+            String errorMessage = "Error al procesar la solicitud";
+            if (e.getMessage() != null && e.getMessage().contains("Detail:")) {
+                String detail = e.getMessage().substring(e.getMessage().indexOf("Detail:"));
+                errorMessage = detail.replaceAll("^.*\\(documento_identidad\\)=\\((.*?)\\).*$", "$1");
+            }
+            
+            return ApiResponseStandard.error(
+                    "El documento de identidad " + errorMessage + " ya se encuentra registrado",
+                    servletRequest.getRequestURI(),
+                    "Documento duplicado",
+                    org.springframework.http.HttpStatus.CONFLICT.value()
+            );
+        } catch (Exception e) {
+            return ApiResponseStandard.error(
+                    "Ocurrió un error al procesar la solicitud",
+                    servletRequest.getRequestURI(),
+                    "Error del servidor",
+                    org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR.value()
+            );
+        }
     }
 }

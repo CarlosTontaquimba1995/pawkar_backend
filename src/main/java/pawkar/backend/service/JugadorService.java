@@ -39,6 +39,11 @@ public class JugadorService {
                 .map(this::mapToResponse);
     }
     
+    @Transactional(readOnly = true)
+    public boolean existsByDocumentoIdentidad(String documentoIdentidad) {
+        return jugadorRepository.existsByDocumentoIdentidadAndEstadoTrue(documentoIdentidad);
+    }
+
     @Transactional
     public void softDeleteJugador(Integer id) {
         if (!jugadorRepository.existsByIdAndEstadoTrue(id)) {
