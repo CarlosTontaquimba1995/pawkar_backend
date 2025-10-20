@@ -95,6 +95,20 @@ public class EquipoService {
                 })
                 .collect(Collectors.toList());
     }
+    
+    @Transactional(readOnly = true)
+    public List<EquipoResponse> obtenerEquiposPorSubcategoriaYSerie(Integer subcategoriaId, Integer serieId) {
+        List<Equipo> equipos = equipoRepository.findBySubcategoriaIdAndSerieId(subcategoriaId, serieId);
+        return equipos.stream()
+                .map(equipo -> {
+                    EquipoResponse response = mapToResponse(equipo);
+                    // Contar jugadores en el equipo
+                    long jugadoresCount = plantillaRepository.countByEquipo_EquipoId(equipo.getEquipoId());
+                    response.setJugadoresCount((int) jugadoresCount);
+                    return response;
+                })
+                .collect(Collectors.toList());
+    }
 
     @Transactional(readOnly = true)
     public EquipoResponse obtenerEquipoPorId(Integer id) {

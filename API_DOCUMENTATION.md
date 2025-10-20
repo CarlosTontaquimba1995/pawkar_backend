@@ -1292,7 +1292,7 @@ false
 
 ### Obtener equipos por serie
 
-**URL**: `/api/equipos/serie/{serieId}`  
+**URL**: `/equipos/serie/{serieId}`  
 **Método**: `GET`  
 **Descripción**: Obtiene todos los equipos de una serie específica  
 **Autenticación requerida**: No
@@ -1316,57 +1316,67 @@ false
 }
 ```
 
----
-
 ### Obtener equipos por subcategoría
 
-**URL**: `/api/equipos/subcategoria/{subcategoriaId}`  
+**URL**: `/equipos/subcategoria/{subcategoriaId}`  
 **Método**: `GET`  
-**Descripción**: Obtiene todos los equipos de una subcategoría específica  
-**Autenticación requerida**: No
+**Descripción**: Obtiene una lista de equipos filtrados por subcategoría y opcionalmente por serie.  
+**Autenticación Requerida**: No
+
+**Parámetros de ruta**:
+- `subcategoriaId` (requerido): ID de la subcategoría
+
+**Parámetros de consulta**:
+- `serieId` (opcional): ID de la serie para filtrar adicionalmente por serie
+
+**Ejemplos de solicitud**:
+
+1. Obtener todos los equipos de una subcategoría:
+```
+GET /equipos/subcategoria/1
+```
+
+2. Obtener equipos de una subcategoría filtrados por serie:
+```
+GET /equipos/subcategoria/1?serieId=2
+```
 
 **Response (200 OK)**:
 ```json
 {
   "success": true,
-  "message": "Equipos obtenidos exitosamente",
+  "message": "Equipos obtenidos exitosamente (filtrados por subcategoría: 1 y serie: 2)",
   "data": [
     {
       "equipoId": 1,
       "subcategoriaId": 1,
       "subcategoriaNombre": "Fútbol",
-      "serieId": 1,
-      "serieNombre": "Serie A",
-      "nombre": "Equipo Ejemplo",
-      "fundacion": "1900-01-01"
+      "serieId": 2,
+      "serieNombre": "Serie B",
+      "nombre": "Equipo A",
+      "fundacion": "2000-01-01",
+      "jugadoresCount": 2
+    },
+    {
+      "equipoId": 2,
+      "subcategoriaId": 1,
+      "subcategoriaNombre": "Fútbol",
+      "serieId": 2,
+      "serieNombre": "Serie B",
+      "nombre": "Equipo B",
+      "fundacion": "2001-05-15",
+      "jugadoresCount": 3
     }
   ]
 }
 ```
 
----
-
-### Obtener un equipo por ID
-
-**URL**: `/api/equipos/{id}`  
-**Método**: `GET`  
-**Descripción**: Obtiene los detalles de un equipo específico  
-**Autenticación requerida**: No
-
-**Response (200 OK)**:
+**Respuesta cuando no se encuentran equipos**:
 ```json
 {
   "success": true,
-  "message": "Equipo obtenido exitosamente",
-  "data": {
-    "equipoId": 1,
-    "subcategoriaId": 1,
-    "subcategoriaNombre": "Fútbol",
-    "serieId": 1,
-    "serieNombre": "Serie A",
-    "nombre": "Equipo Ejemplo",
-    "fundacion": "1900-01-01"
-  }
+  "message": "No se encontraron equipos para los criterios especificados",
+  "data": []
 }
 ```
 

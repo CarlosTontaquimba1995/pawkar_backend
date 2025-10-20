@@ -46,6 +46,12 @@ public interface EquipoRepository extends JpaRepository<Equipo, Integer> {
         @Param("subcategoriaId") Integer subcategoriaId
     );
     
+    @Query("SELECT e FROM Equipo e WHERE e.subcategoria.subcategoriaId = :subcategoriaId AND e.serie.serieId = :serieId")
+    List<Equipo> findBySubcategoriaIdAndSerieId(
+        @Param("subcategoriaId") Integer subcategoriaId,
+        @Param("serieId") Integer serieId
+    );
+    
     @Query("SELECT CASE WHEN COUNT(e) > 0 THEN true ELSE false END FROM Equipo e " +
            "WHERE LOWER(e.nombre) = LOWER(:nombre) AND e.subcategoria.subcategoriaId = :subcategoriaId AND e.equipoId != :excludeEquipoId")
     boolean existsByNombreAndSubcategoriaIdExcludingId(

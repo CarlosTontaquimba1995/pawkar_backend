@@ -114,9 +114,21 @@ public class EquipoController {
 
     @GetMapping("/subcategoria/{subcategoriaId}")
     public ApiResponseStandard<List<EquipoResponse>> obtenerEquiposPorSubcategoria(
-            @PathVariable Integer subcategoriaId) {
-        List<EquipoResponse> equipos = equipoService.obtenerEquiposPorSubcategoria(subcategoriaId);
-        return ApiResponseStandard.success(equipos, "Equipos obtenidos exitosamente");
+            @PathVariable Integer subcategoriaId,
+            @RequestParam(required = false) Integer serieId) {
+        List<EquipoResponse> equipos;
+        if (serieId != null) {
+            equipos = equipoService.obtenerEquiposPorSubcategoriaYSerie(subcategoriaId, serieId);
+        } else {
+            equipos = equipoService.obtenerEquiposPorSubcategoria(subcategoriaId);
+        }
+        String message = "Equipos obtenidos exitosamente";
+        if (serieId != null) {
+            message += String.format(" (filtrados por subcategoría: %d y serie: %d)", subcategoriaId, serieId);
+        } else {
+            message += String.format(" (filtrados por subcategoría: %d)", subcategoriaId);
+        }
+        return ApiResponseStandard.success(equipos, message);
     }
 
     @GetMapping("/{id}")
