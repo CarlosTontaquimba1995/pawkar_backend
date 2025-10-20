@@ -8,6 +8,9 @@ public class JugadorResponse {
     private String apellido;
     private LocalDate fechaNacimiento;
     private String documentoIdentidad;
+    private String nombreEquipo;
+    private String nombreRol;
+    private Integer numeroCamiseta;
 
     // Getters and Setters
     public Integer getId() {
@@ -48,5 +51,29 @@ public class JugadorResponse {
 
     public void setDocumentoIdentidad(String documentoIdentidad) {
         this.documentoIdentidad = documentoIdentidad;
+    }
+
+    public String getNombreEquipo() {
+        return nombreEquipo;
+    }
+
+    public void setNombreEquipo(String nombreEquipo) {
+        this.nombreEquipo = nombreEquipo;
+    }
+
+    public String getNombreRol() {
+        return nombreRol;
+    }
+
+    public void setNombreRol(String nombreRol) {
+        this.nombreRol = nombreRol;
+    }
+
+    public Integer getNumeroCamiseta() {
+        return numeroCamiseta;
+    }
+
+    public void setNumeroCamiseta(Integer numeroCamiseta) {
+        this.numeroCamiseta = numeroCamiseta;
     }
 }

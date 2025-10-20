@@ -6,8 +6,10 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import pawkar.backend.entity.Plantilla;
 import pawkar.backend.entity.PlantillaId;
+import pawkar.backend.entity.Jugador;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface PlantillaRepository extends JpaRepository<Plantilla, PlantillaId> {
@@ -20,4 +22,6 @@ public interface PlantillaRepository extends JpaRepository<Plantilla, PlantillaI
     List<Plantilla> findByEquipo_EquipoId(Integer equipoId);
     
     long countByEquipo_EquipoId(Integer equipoId);
+    
+    Optional<Plantilla> findByJugador(Jugador jugador);
 }

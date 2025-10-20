@@ -260,6 +260,19 @@ public class JugadorService {
         response.setFechaNacimiento(jugador.getFechaNacimiento());
         response.setDocumentoIdentidad(jugador.getDocumentoIdentidad());
 
+        // Get plantilla info if exists
+        plantillaRepository.findByJugador(jugador).ifPresent(plantilla -> {
+            response.setNumeroCamiseta(plantilla.getNumeroCamiseta());
+
+            if (plantilla.getEquipo() != null) {
+                response.setNombreEquipo(plantilla.getEquipo().getNombre());
+            }
+
+            if (plantilla.getRol() != null) {
+                response.setNombreRol(plantilla.getRol().getName().name());
+            }
+        });
+
         return response;
     }
 }
