@@ -10,6 +10,9 @@ public class JugadorResponse {
     private String documentoIdentidad;
     private String nombreEquipo;
     private String nombreRol;
+    private String rolDetail;
+    private Long rolId;
+    private Integer subcategoriaId;
     private Integer numeroCamiseta;
 
     // Getters and Setters
@@ -65,8 +68,32 @@ public class JugadorResponse {
         return nombreRol;
     }
 
+    public String getRolDetail() {
+        return rolDetail;
+    }
+
+    public void setRolDetail(String rolDetail) {
+        this.rolDetail = rolDetail;
+    }
+
     public void setNombreRol(String nombreRol) {
         this.nombreRol = nombreRol;
+    }
+
+    public Long getRolId() {
+        return rolId;
+    }
+
+    public void setRolId(Long rolId) {
+        this.rolId = rolId;
+    }
+
+    public Integer getSubcategoriaId() {
+        return subcategoriaId;
+    }
+
+    public void setSubcategoriaId(Integer subcategoriaId) {
+        this.subcategoriaId = subcategoriaId;
     }
 
     public Integer getNumeroCamiseta() {

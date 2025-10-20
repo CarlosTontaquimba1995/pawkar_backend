@@ -266,10 +266,15 @@ public class JugadorService {
 
             if (plantilla.getEquipo() != null) {
                 response.setNombreEquipo(plantilla.getEquipo().getNombre());
+                if (plantilla.getEquipo().getSubcategoria() != null) {
+                    response.setSubcategoriaId(plantilla.getEquipo().getSubcategoria().getSubcategoriaId());
+                }
             }
 
             if (plantilla.getRol() != null) {
                 response.setNombreRol(plantilla.getRol().getName().name());
+                response.setRolDetail(plantilla.getRol().getDetail());
+                response.setRolId(plantilla.getRol().getId());
             }
         });
 
