@@ -1674,7 +1674,11 @@ false
 
 **URL**: `/api/equipos/{id}`  
 **Método**: `PUT`  
-**Descripción**: Actualiza los datos de un equipo existente  
+**Descripción**: Actualiza los datos de un equipo existente.  
+**Validaciones**:
+- El nombre del equipo debe ser único dentro de la misma subcategoría (no se permiten nombres duplicados, sin distinguir mayúsculas/minúsculas)
+- La subcategoría y la serie deben existir
+
 **Autenticación requerida**: Sí (Rol: ADMIN)
 
 **Request Body**:
@@ -1686,6 +1690,10 @@ false
   "fundacion": "2001-01-01"
 }
 ```
+
+**Códigos de error**:
+- `400 Bad Request`: Si ya existe un equipo con el mismo nombre en la misma categoría
+- `404 Not Found`: Si el equipo, subcategoría o serie no existen
 
 **Response (200 OK)**:
 ```json
@@ -1701,6 +1709,17 @@ false
     "nombre": "Equipo Actualizado",
     "fundacion": "2001-01-01"
   }
+}
+```
+
+**Ejemplo de error (400 Bad Request)**:
+```json
+{
+  "timestamp": "2025-10-20T13:07:00.000+00:00",
+  "status": 400,
+  "error": "Bad Request",
+  "message": "Ya existe un equipo con el nombre 'Equipo Actualizado' en la categoría: Fútbol",
+  "path": "/api/equipos/1"
 }
 ```
 
