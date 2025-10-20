@@ -1579,12 +1579,101 @@ GET /equipos/subcategoria/1?serieId=2
 
 ## Jugadores
 
-### Obtener todos los jugadores
+### Obtener jugadores con paginación y búsqueda
 
-**URL**: `/api/jugadores`  
+**URL**: `/jugadores`  
 **Método**: `GET`  
-**Descripción**: Obtiene una lista de todos los jugadores  
-**Autenticación requerida**: No
+**Descripción**: Obtiene una lista paginada de jugadores con opciones de búsqueda y ordenación.  
+**Autenticación Requerida**: Depende de la configuración de seguridad  
+**Roles**: Depende de la configuración de seguridad
+
+**Parámetros de Consulta**:
+- `page` (opcional): Número de página (comenzando desde 0). Por defecto: 0
+- `size` (opcional): Cantidad de elementos por página. Por defecto: 10
+- `sort` (opcional): Campo de ordenación (ej: `apellido,asc` o `nombre,desc`). Por defecto: `apellido,asc`
+- `search` (opcional): Texto para buscar jugadores por nombre o apellido (búsqueda insensible a mayúsculas/minúsculas)
+
+**Campos ordenables**: `id`, `nombre`, `apellido`, `fechaNacimiento`, `documentoIdentidad`
+
+**Ejemplos de solicitud**:
+
+1. Obtener primera página de jugadores (10 por defecto):
+```http
+GET /jugadores HTTP/1.1
+Host: api.ejemplo.com
+Accept: application/json
+```
+
+2. Buscar jugadores por nombre o apellido:
+```http
+GET /jugadores?search=Carlos HTTP/1.1
+Host: api.ejemplo.com
+Accept: application/json
+```
+
+3. Paginación personalizada y ordenamiento:
+```http
+GET /jugadores?page=1&size=20&sort=nombre,asc HTTP/1.1
+Host: api.ejemplo.com
+Accept: application/json
+```
+
+**Respuesta exitosa (200 OK)**:
+```json
+{
+  "success": true,
+  "message": "Jugadores obtenidos exitosamente",
+  "data": {
+    "content": [
+      {
+        "id": 1,
+        "nombre": "Carlos",
+        "apellido": "Pérez",
+        "fechaNacimiento": "1990-01-15",
+        "documentoIdentidad": "12345678"
+      },
+      {
+        "id": 2,
+        "nombre": "Ana",
+        "apellido": "Gómez",
+        "fechaNacimiento": "1992-05-20",
+        "documentoIdentidad": "87654321"
+      }
+    ],
+    "pageable": {
+      "sort": {
+        "sorted": true,
+        "unsorted": false,
+        "empty": false
+      },
+      "pageNumber": 0,
+      "pageSize": 10,
+      "offset": 0,
+      "paged": true,
+      "unpaged": false
+    },
+    "last": false,
+    "totalPages": 5,
+    "totalElements": 42,
+    "first": true,
+    "sort": {
+      "sorted": true,
+      "unsorted": false,
+      "empty": false
+    },
+    "numberOfElements": 10,
+    "size": 10,
+    "number": 0,
+    "empty": false
+  }
+}
+```
+
+**URL**: `/jugadores`  
+**Método**: `GET`  
+**Descripción**: Obtiene una lista paginada de jugadores con opciones de búsqueda y ordenación.  
+**Autenticación Requerida**: Depende de la configuración de seguridad  
+**Roles**: Depende de la configuración de seguridad
 
 **Response (200 OK)**:
 ```json

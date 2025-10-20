@@ -2,6 +2,10 @@ package pawkar.backend.controller;
 
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 import pawkar.backend.request.JugadorRequest;
 import pawkar.backend.response.JugadorResponse;
@@ -10,6 +14,7 @@ import pawkar.backend.response.ApiResponseStandard;
 import pawkar.backend.service.JugadorService;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/jugadores")
@@ -23,9 +28,77 @@ public class JugadorController {
     }
 
     @GetMapping
-    public ApiResponseStandard<List<JugadorResponse>> obtenerTodosLosJugadores() {
-        List<JugadorResponse> jugadores = jugadorService.obtenerTodosLosJugadores();
-        return ApiResponseStandard.success(jugadores, "Jugadores obtenidos exitosamente");
+    public ApiResponseStandard<Page<JugadorResponse>> obtenerTodosLosJugadores(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String sort,
+            @RequestParam(required = false) String search,
+            @RequestParam Map<String, String> allParams) {
+        
+        // Default sorting if not provided or invalid
+        String sortField = "apellido"; // Default sort by last name
+        Sort.Direction direction = Sort.Direction.ASC;
+
+        // Check if sort parameter is actually a search term (contains space)
+        if (sort != null && !sort.trim().isEmpty()) {
+            if (sort.contains(" ")) {
+                // If sort contains spaces, treat it as a search term
+                search = sort;
+                sort = null; // Reset sort to use default
+            } else {
+                // Otherwise, process it as a sort parameter
+                String[] sortParams = sort.split(",");
+                if (sortParams.length > 0) {
+                    // Only use the first part before comma as the sort field
+                    // and validate it's a valid field to prevent SQL injection
+                    String potentialField = sortParams[0].trim();
+                    if (isValidSortField(potentialField)) {
+                        sortField = potentialField;
+                    }
+
+                    // Check for sort direction
+                    if (sortParams.length > 1) {
+                        String dir = sortParams[1].trim();
+                        if ("desc".equalsIgnoreCase(dir)) {
+                            direction = Sort.Direction.DESC;
+                        }
+                    }
+                }
+            }
+        }
+
+        Pageable pageable = PageRequest.of(
+            page, 
+            size, 
+            Sort.by(direction, sortField)
+        );
+        
+        Page<JugadorResponse> jugadores;
+
+        // If search parameter is provided, use it for filtering by name or last name
+        if (search != null && !search.trim().isEmpty()) {
+            jugadores = jugadorService.buscarJugadoresPorNombreOApellido(search, pageable);
+            return ApiResponseStandard.success(jugadores,
+                    String.format("Se encontraron %d jugador(es) con nombre o apellido que contiene: %s",
+                            jugadores.getTotalElements(), search));
+        }
+        // If no search parameters, return all players with pagination
+        else {
+            jugadores = jugadorService.obtenerTodosLosJugadores(pageable);
+            return ApiResponseStandard.success(jugadores, "Jugadores obtenidos exitosamente");
+        }
+    }
+    
+    // Helper method to validate sort fields to prevent SQL injection
+    private boolean isValidSortField(String field) {
+        // List of allowed fields to sort by
+        String[] allowedFields = {"id", "nombre", "apellido", "fechaNacimiento", "documentoIdentidad"};
+        for (String allowed : allowedFields) {
+            if (allowed.equalsIgnoreCase(field)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @GetMapping("/{id}")

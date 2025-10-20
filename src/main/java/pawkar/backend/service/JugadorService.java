@@ -2,6 +2,8 @@ package pawkar.backend.service;
 
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import pawkar.backend.request.JugadorRequest;
 import pawkar.backend.response.JugadorResponse;
@@ -26,10 +28,16 @@ public class JugadorService {
     }
 
     @Transactional(readOnly = true)
-    public List<JugadorResponse> obtenerTodosLosJugadores() {
-        return jugadorRepository.findAll().stream()
-                .map(this::mapToResponse)
-                .collect(Collectors.toList());
+    public Page<JugadorResponse> obtenerTodosLosJugadores(Pageable pageable) {
+        return jugadorRepository.findAll(pageable)
+                .map(this::mapToResponse);
+    }
+    
+    @Transactional(readOnly = true)
+    public Page<JugadorResponse> buscarJugadoresPorNombreOApellido(String busqueda, Pageable pageable) {
+        return jugadorRepository.findByNombreContainingIgnoreCaseOrApellidoContainingIgnoreCase(
+                busqueda, busqueda, pageable)
+                .map(this::mapToResponse);
     }
 
     @Transactional(readOnly = true)
