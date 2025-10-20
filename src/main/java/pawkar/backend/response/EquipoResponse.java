@@ -10,6 +10,7 @@ public class EquipoResponse {
     private String serieNombre;
     private String nombre;
     private LocalDate fundacion;
+    private Integer jugadoresCount;
 
     // Getters and Setters
     public Integer getEquipoId() {
@@ -66,5 +67,13 @@ public class EquipoResponse {
 
     public void setFundacion(LocalDate fundacion) {
         this.fundacion = fundacion;
+    }
+
+    public Integer getJugadoresCount() {
+        return jugadoresCount;
+    }
+
+    public void setJugadoresCount(Integer jugadoresCount) {
+        this.jugadoresCount = jugadoresCount;
     }
 }

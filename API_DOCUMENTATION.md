@@ -2,6 +2,71 @@
 
 ## Equipos
 
+### Obtener todos los equipos (paginado)
+
+**URL**: `/equipos`  
+**Método**: `GET`  
+**Descripción**: Obtiene una lista paginada de todos los equipos registrados en el sistema  
+**Autenticación Requerida**: No
+
+**Parámetros de Consulta**:
+- `page` (opcional): Número de página (comenzando desde 0). Por defecto: 0
+- `size` (opcional): Cantidad de elementos por página. Por defecto: 10
+- `sort` (opcional): Campo(s) de ordenación en formato `campo,direccion`. Por defecto: `nombre,asc`
+
+**Ejemplo de solicitud**:
+```
+GET /equipos?page=0&size=5&sort=nombre,desc
+```
+
+**Respuesta exitosa (200 OK)**:
+```json
+{
+  "success": true,
+  "message": "Equipos obtenidos exitosamente",
+  "data": {
+    "content": [
+      {
+        "equipoId": 1,
+        "nombre": "Equipo A",
+        "subcategoriaId": 1,
+        "subcategoriaNombre": "Subcategoría 1",
+        "serieId": 1,
+        "serieNombre": "Serie A",
+        "fundacion": "2020-01-01"
+      },
+      ...
+    ],
+    "pageable": {
+      "sort": {
+        "sorted": true,
+        "unsorted": false,
+        "empty": false
+      },
+      "pageNumber": 0,
+      "pageSize": 5,
+      "offset": 0,
+      "paged": true,
+      "unpaged": false
+    },
+    "totalElements": 42,
+    "totalPages": 9,
+    "last": false,
+    "size": 5,
+    "number": 0,
+    "sort": {
+      "sorted": true,
+      "unsorted": false,
+      "empty": false
+    },
+    "numberOfElements": 5,
+    "first": true,
+    "empty": false
+  },
+  "timestamp": "2025-10-19T20:40:00.000+00:00"
+}
+```
+
 ### Verificar existencia de equipos
 
 **URL**: `/equipos/existen`  

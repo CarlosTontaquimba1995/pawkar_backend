@@ -2,6 +2,10 @@ package pawkar.backend.controller;
 
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 import pawkar.backend.request.BulkEquipoRequest;
 import pawkar.backend.request.EquipoRequest;
@@ -17,6 +21,28 @@ public class EquipoController {
 
     @Autowired
     private EquipoService equipoService;
+    
+    @GetMapping
+    public ApiResponseStandard<Page<EquipoResponse>> obtenerTodosLosEquipos(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "nombre,asc") String[] sort) {
+        
+        String sortField = sort[0];
+        String sortDirection = sort.length > 1 ? sort[1] : "asc";
+        
+        Sort.Direction direction = sortDirection.equalsIgnoreCase("desc") ? 
+            Sort.Direction.DESC : Sort.Direction.ASC;
+            
+        Pageable pageable = PageRequest.of(
+            page, 
+            size, 
+            Sort.by(direction, sortField)
+        );
+        
+        Page<EquipoResponse> equipos = equipoService.obtenerTodosLosEquipos(pageable);
+        return ApiResponseStandard.success(equipos, "Equipos obtenidos exitosamente");
+    }
 
     @GetMapping("/serie/{serieId}")
     public ApiResponseStandard<List<EquipoResponse>> obtenerEquiposPorSerie(

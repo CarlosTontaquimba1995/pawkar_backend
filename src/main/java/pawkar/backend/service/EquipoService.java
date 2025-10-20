@@ -1,6 +1,9 @@
 package pawkar.backend.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pawkar.backend.request.BulkEquipoRequest;
@@ -12,6 +15,7 @@ import pawkar.backend.entity.Subcategoria;
 import pawkar.backend.exception.BadRequestException;
 import pawkar.backend.exception.ResourceNotFoundException;
 import pawkar.backend.repository.EquipoRepository;
+import pawkar.backend.repository.PlantillaRepository;
 import pawkar.backend.repository.SerieRepository;
 import pawkar.backend.repository.SubcategoriaRepository;
 
@@ -29,7 +33,30 @@ public class EquipoService {
     
     @Autowired
     private SerieRepository serieRepository;
+    
+    @Autowired
+    private PlantillaRepository plantillaRepository;
 
+    @Transactional(readOnly = true)
+    public Page<EquipoResponse> obtenerTodosLosEquipos(Pageable pageable) {
+        Page<Equipo> equiposPage = equipoRepository.findAll(pageable);
+        List<EquipoResponse> equiposResponse = equiposPage.getContent().stream()
+                .map(equipo -> {
+                    EquipoResponse response = mapToResponse(equipo);
+                    // Contar jugadores en el equipo
+                    long jugadoresCount = plantillaRepository.countByEquipo_EquipoId(equipo.getEquipoId());
+                    response.setJugadoresCount((int) jugadoresCount);
+                    return response;
+                })
+                .collect(Collectors.toList());
+                
+        return new PageImpl<>(
+            equiposResponse,
+            pageable,
+            equiposPage.getTotalElements()
+        );
+    }
+    
     @Transactional(readOnly = true)
     public List<EquipoResponse> obtenerEquiposPorSerie(Integer serieId) {
         return equipoRepository.findBySerie_SerieId(serieId).stream()
@@ -39,8 +66,15 @@ public class EquipoService {
 
     @Transactional(readOnly = true)
     public List<EquipoResponse> obtenerEquiposPorSubcategoria(Integer subcategoriaId) {
-        return equipoRepository.findBySubcategoriaId(subcategoriaId).stream()
-                .map(this::mapToResponse)
+        List<Equipo> equipos = equipoRepository.findBySubcategoriaId(subcategoriaId);
+        return equipos.stream()
+                .map(equipo -> {
+                    EquipoResponse response = mapToResponse(equipo);
+                    // Contar jugadores en el equipo
+                    long jugadoresCount = plantillaRepository.countByEquipo_EquipoId(equipo.getEquipoId());
+                    response.setJugadoresCount((int) jugadoresCount);
+                    return response;
+                })
                 .collect(Collectors.toList());
     }
 
