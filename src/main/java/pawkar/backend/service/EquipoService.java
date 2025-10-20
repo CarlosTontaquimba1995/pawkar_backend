@@ -39,7 +39,25 @@ public class EquipoService {
 
     @Transactional(readOnly = true)
     public Page<EquipoResponse> obtenerTodosLosEquipos(Pageable pageable) {
-        Page<Equipo> equiposPage = equipoRepository.findAll(pageable);
+        return obtenerEquiposFiltrados(pageable, null);
+    }
+    
+    @Transactional(readOnly = true)
+    public Page<EquipoResponse> buscarEquiposPorNombre(String nombre, Pageable pageable) {
+        if (nombre == null || nombre.trim().isEmpty()) {
+            throw new BadRequestException("El parámetro 'nombre' no puede estar vacío");
+        }
+        return obtenerEquiposFiltrados(pageable, nombre);
+    }
+    
+    private Page<EquipoResponse> obtenerEquiposFiltrados(Pageable pageable, String nombre) {
+        Page<Equipo> equiposPage;
+        if (nombre != null && !nombre.trim().isEmpty()) {
+            equiposPage = equipoRepository.findByNombreContainingIgnoreCase(nombre, pageable);
+        } else {
+            equiposPage = equipoRepository.findAll(pageable);
+        }
+        
         List<EquipoResponse> equiposResponse = equiposPage.getContent().stream()
                 .map(equipo -> {
                     EquipoResponse response = mapToResponse(equipo);

@@ -14,6 +14,7 @@ import pawkar.backend.response.ApiResponseStandard;
 import pawkar.backend.service.EquipoService;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/equipos")
@@ -26,22 +27,82 @@ public class EquipoController {
     public ApiResponseStandard<Page<EquipoResponse>> obtenerTodosLosEquipos(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "nombre,asc") String[] sort) {
+            @RequestParam(required = false) String sort,
+            @RequestParam(required = false) String nombre,
+            @RequestParam(required = false) String search,
+            @RequestParam Map<String, String> allParams) {
         
-        String sortField = sort[0];
-        String sortDirection = sort.length > 1 ? sort[1] : "asc";
-        
-        Sort.Direction direction = sortDirection.equalsIgnoreCase("desc") ? 
-            Sort.Direction.DESC : Sort.Direction.ASC;
-            
+        // Default sorting if not provided or invalid
+        String sortField = "nombre";
+        Sort.Direction direction = Sort.Direction.ASC;
+
+        // Check if sort parameter is actually a search term (contains space)
+        if (sort != null && !sort.trim().isEmpty()) {
+            if (sort.contains(" ")) {
+                // If sort contains spaces, treat it as a search term
+                search = sort;
+                sort = null; // Reset sort to use default
+            } else {
+                // Otherwise, process it as a sort parameter
+                String[] sortParams = sort.split(",");
+                if (sortParams.length > 0) {
+                    // Only use the first part before comma as the sort field
+                    // and validate it's a valid field to prevent SQL injection
+                    String potentialField = sortParams[0].trim();
+                    if (isValidSortField(potentialField)) {
+                        sortField = potentialField;
+                    }
+
+                    // Check for sort direction
+                    if (sortParams.length > 1) {
+                        String dir = sortParams[1].trim();
+                        if ("desc".equalsIgnoreCase(dir)) {
+                            direction = Sort.Direction.DESC;
+                        }
+                    }
+                }
+            }
+        }
+
         Pageable pageable = PageRequest.of(
             page, 
             size, 
             Sort.by(direction, sortField)
         );
         
-        Page<EquipoResponse> equipos = equipoService.obtenerTodosLosEquipos(pageable);
-        return ApiResponseStandard.success(equipos, "Equipos obtenidos exitosamente");
+        Page<EquipoResponse> equipos;
+
+        // If search parameter is provided, use it for filtering
+        if (search != null && !search.trim().isEmpty()) {
+            equipos = equipoService.buscarEquiposPorNombre(search, pageable);
+            return ApiResponseStandard.success(equipos,
+                    String.format("Se encontraron %d equipo(s) con el nombre que contiene: %s",
+                            equipos.getTotalElements(), search));
+        }
+        // If nombre parameter is provided (for backward compatibility)
+        else if (nombre != null && !nombre.trim().isEmpty()) {
+            equipos = equipoService.buscarEquiposPorNombre(nombre, pageable);
+            return ApiResponseStandard.success(equipos,
+                    String.format("Se encontraron %d equipo(s) con el nombre que contiene: %s",
+                            equipos.getTotalElements(), nombre));
+        }
+        // If no search parameters, return all teams
+        else {
+            equipos = equipoService.obtenerTodosLosEquipos(pageable);
+            return ApiResponseStandard.success(equipos, "Equipos obtenidos exitosamente");
+        }
+    }
+
+    // Helper method to validate sort fields to prevent SQL injection
+    private boolean isValidSortField(String field) {
+        // List of allowed fields to sort by
+        String[] allowedFields = { "nombre", "fechaCreacion", "equipoId" };
+        for (String allowed : allowedFields) {
+            if (allowed.equalsIgnoreCase(field)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @GetMapping("/serie/{serieId}")
