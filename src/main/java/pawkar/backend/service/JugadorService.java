@@ -52,6 +52,11 @@ public class JugadorService {
     }
     
     @Transactional(readOnly = true)
+    public long contarJugadoresActivos() {
+        return jugadorRepository.countByEstadoTrue();
+    }
+    
+    @Transactional(readOnly = true)
     public Page<JugadorResponse> buscarJugadoresPorNombreOApellido(String busqueda, Pageable pageable) {
         return jugadorRepository.buscarPorNombreOApellidoYEstado(busqueda, true, pageable)
                 .map(this::mapToResponse);

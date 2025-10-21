@@ -1,6 +1,7 @@
 package pawkar.backend.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -9,7 +10,7 @@ import pawkar.backend.response.ExistenRegistrosResponse;
 import pawkar.backend.service.VerificacionService;
 
 @RestController
-@RequestMapping("/verificacion")
+@RequestMapping("/api/verificacion")
 public class VerificacionController {
 
     private final VerificacionService verificacionService;
@@ -20,8 +21,9 @@ public class VerificacionController {
     }
 
     @GetMapping("/existen-registros")
-    public ApiResponseStandard<ExistenRegistrosResponse> verificarRegistros() {
+    public ResponseEntity<ApiResponseStandard<ExistenRegistrosResponse>> verificarRegistros() {
         ExistenRegistrosResponse response = verificacionService.verificarRegistros();
-        return ApiResponseStandard.success(response, "Verificación de registros exitosa");
+        return ResponseEntity.ok(
+                ApiResponseStandard.success(response, "Verificación de registros exitosa"));
     }
 }

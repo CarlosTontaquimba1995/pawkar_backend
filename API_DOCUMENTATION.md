@@ -1584,6 +1584,156 @@ GET /equipos/subcategoria/1?serieId=2
 **URL**: `/jugadores`  
 **Método**: `GET`  
 **Descripción**: Obtiene una lista paginada de jugadores con opciones de búsqueda y ordenación.  
+**Autenticación Requerida**: No  
+
+**Parámetros de Consulta**:
+- `page` (opcional): Número de página (comenzando desde 0). Por defecto: 0
+- `size` (opcional): Cantidad de elementos por página. Por defecto: 10
+- `sort` (opcional): Campo de ordenación (ej: `apellido,asc` o `nombre,desc`). Campos disponibles: `id`, `nombre`, `apellido`, `fechaNacimiento`, `documentoIdentidad`
+- `search` (opcional): Texto para buscar jugadores por nombre o apellido
+
+**Ejemplo de solicitud**:
+```http
+GET /jugadores?page=0&size=10&sort=apellido,asc&search=González HTTP/1.1
+Host: api.ejemplo.com
+Accept: application/json
+```
+
+**Respuesta Exitosa (200 OK)**:
+```json
+{
+  "success": true,
+  "message": "Se encontraron 5 jugador(es) con nombre o apellido que contiene: González",
+  "data": {
+    "content": [
+      {
+        "id": 1,
+        "nombre": "Carlos",
+        "apellido": "González",
+        "fechaNacimiento": "1995-05-15",
+        "documentoIdentidad": "12345678",
+        "equipoId": 1,
+        "equipoNombre": "Equipo A"
+      }
+    ],
+    "pageable": {
+      "sort": {
+        "sorted": true,
+        "unsorted": false,
+        "empty": false
+      },
+      "pageNumber": 0,
+      "pageSize": 10,
+      "offset": 0,
+      "paged": true,
+      "unpaged": false
+    },
+    "totalElements": 1,
+    "totalPages": 1,
+    "last": true,
+    "first": true,
+    "sort": {
+      "sorted": true,
+      "unsorted": false,
+      "empty": false
+    },
+    "numberOfElements": 1,
+    "size": 10,
+    "number": 0,
+    "empty": false
+  }
+}
+```
+
+### Obtener jugador por ID
+
+**URL**: `/jugadores/{id}`  
+**Método**: `GET`  
+**Descripción**: Obtiene los detalles de un jugador específico.  
+**Autenticación Requerida**: No  
+
+**Parámetros de Ruta**:
+- `id`: ID del jugador a consultar
+
+**Ejemplo de solicitud**:
+```http
+GET /jugadores/1 HTTP/1.1
+Host: api.ejemplo.com
+Accept: application/json
+```
+
+### Crear jugador
+
+**URL**: `/jugadores`  
+**Método**: `POST`  
+**Descripción**: Crea un nuevo jugador.  
+**Autenticación Requerida**: Sí (Rol: ADMIN)  
+
+**Cuerpo de la Solicitud**:
+```json
+{
+  "nombre": "Nuevo",
+  "apellido": "Jugador",
+  "fechaNacimiento": "2000-01-01",
+  "documentoIdentidad": "87654321",
+  "equipoId": 1
+}
+```
+
+### Actualizar jugador
+
+**URL**: `/jugadores/{id}`  
+**Método**: `PUT`  
+**Descripción**: Actualiza los datos de un jugador existente.  
+**Autenticación Requerida**: Sí (Rol: ADMIN)  
+
+**Parámetros de Ruta**:
+- `id`: ID del jugador a actualizar
+
+**Cuerpo de la Solicitud**:
+```json
+{
+  "nombre": "Nombre Actualizado",
+  "apellido": "Apellido Actualizado",
+  "fechaNacimiento": "2000-01-01",
+  "documentoIdentidad": "87654321",
+  "equipoId": 2
+}
+```
+
+### Eliminar jugador
+
+**URL**: `/jugadores/{id}`  
+**Método**: `DELETE`  
+**Descripción**: Elimina un jugador.  
+**Autenticación Requerida**: Sí (Rol: ADMIN)  
+
+**Parámetros de Ruta**:
+- `id`: ID del jugador a eliminar
+
+### Obtener conteo de jugadores
+
+**URL**: `/jugadores/count`  
+**Método**: `GET`  
+**Descripción**: Obtiene el conteo total de jugadores.  
+**Autenticación Requerida**: No  
+
+**Ejemplo de respuesta exitosa (200 OK)**:
+```json
+{
+  "success": true,
+  "message": "Conteo de jugadores obtenido exitosamente",
+  "data": {
+    "totalJugadores": 124,
+    "jugadoresActivos": 120,
+    "jugadoresInactivos": 4
+  }
+}
+```
+
+**URL**: `/jugadores`  
+**Método**: `GET`  
+**Descripción**: Obtiene una lista paginada de jugadores con opciones de búsqueda y ordenación.  
 **Autenticación Requerida**: Depende de la configuración de seguridad  
 **Roles**: Depende de la configuración de seguridad
 

@@ -45,4 +45,7 @@ public interface JugadorRepository extends JpaRepository<Jugador, Integer> {
 
     @Query("SELECT CASE WHEN COUNT(j) > 0 THEN true ELSE false END FROM Jugador j WHERE j.id = :id AND j.estado = true")
     boolean existsByIdAndEstadoTrue(@Param("id") Integer id);
+    
+    @Query("SELECT COUNT(j) FROM Jugador j WHERE j.estado = true")
+    long countByEstadoTrue();
 }

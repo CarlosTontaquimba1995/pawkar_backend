@@ -8,9 +8,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 import pawkar.backend.exception.BadRequestException;
-import pawkar.backend.request.JugadorRequest;
-import pawkar.backend.response.JugadorResponse;
 import pawkar.backend.request.JugadorBulkRequest;
+import pawkar.backend.request.JugadorRequest;
+import pawkar.backend.response.JugadorCountResponse;
+import pawkar.backend.response.JugadorResponse;
 import pawkar.backend.response.ApiResponseStandard;
 import pawkar.backend.service.JugadorService;
 
@@ -70,7 +71,7 @@ public class JugadorController {
 
         Pageable pageable = PageRequest.of(
                 page,
-                        size,
+                size,
                 Sort.by(direction, sortField));
 
         Page<JugadorResponse> jugadores;
@@ -99,6 +100,14 @@ public class JugadorController {
             }
         }
         return false;
+    }
+
+    @GetMapping("/count")
+    public ApiResponseStandard<JugadorCountResponse> contarJugadoresActivos() {
+        long total = jugadorService.contarJugadoresActivos();
+        return ApiResponseStandard.success(
+                new JugadorCountResponse(total),
+                "Total de jugadores activos obtenido exitosamente");
     }
 
     @GetMapping("/{id}")
