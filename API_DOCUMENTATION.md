@@ -1,6 +1,13 @@
 # Documentación de la API
 
 ## Tabla de Contenidos
+- [Categorías](#categorías)
+  - [Obtener todas las categorías](#obtener-todas-las-categorías)
+  - [Obtener categoría por ID](#obtener-categoría-por-id)
+  - [Crear categoría](#crear-categoría)
+  - [Crear múltiples categorías](#crear-múltiples-categorías)
+  - [Actualizar categoría](#actualizar-categoría)
+  - [Eliminar categoría](#eliminar-categoría)
 - [Equipos](#equipos)
   - [Obtener equipos](#obtener-todos-los-equipos)
   - [Verificar existencia de equipos](#verificar-existencia-de-equipos)
@@ -11,6 +18,175 @@
 - [Sanciones](#sanciones)
 - [Tabla de Posiciones](#tabla-de-posiciones)
 - [Autenticación](#autenticación)
+
+## Categorías
+
+### Obtener todas las categorías
+
+**URL**: `/categorias`  
+**Método**: `GET`  
+**Descripción**: Obtiene una lista de categorías  
+**Autenticación Requerida**: No  
+**Roles**: `ROLE_USER`, `ROLE_ADMIN`
+
+**Respuestas**
+
+**200 OK** - Operación exitosa
+
+```json
+{
+  "success": true,
+  "message": "Categorías obtenidas exitosamente",
+  "data": [
+    {
+      "categoriaId": 1,
+      "nombre": "Categoría A"
+    }
+  ],
+  "timestamp": "2025-10-20T10:30:00.000+00:00"
+}
+```
+
+### Obtener categoría por ID
+
+**URL**: `/categorias/{categoriaId}`  
+**Método**: `GET`  
+**Descripción**: Obtiene una categoría por ID  
+**Autenticación Requerida**: No  
+**Roles**: `ROLE_USER`, `ROLE_ADMIN`
+
+**Parámetros de Ruta**:
+- `categoriaId` (requerido): ID de la categoría
+
+**Respuestas**
+
+**200 OK** - Operación exitosa
+
+```json
+{
+  "success": true,
+  "message": "Categoría obtenida exitosamente",
+  "data": {
+    "categoriaId": 1,
+    "nombre": "Categoría A"
+  },
+  "timestamp": "2025-10-20T10:30:00.000+00:00"
+}
+```
+
+### Crear categoría
+
+**URL**: `/categorias`  
+**Método**: `POST`  
+**Descripción**: Crea una nueva categoría  
+**Autenticación Requerida**: Sí  
+**Roles**: `ROLE_ADMIN`
+
+**Cuerpo de la Solicitud**:
+- `nombre` (requerido): Nombre de la categoría
+
+**Respuestas**
+
+**201 Created** - Operación exitosa
+
+```json
+{
+  "success": true,
+  "message": "Categoría creada exitosamente",
+  "data": {
+    "categoriaId": 1,
+    "nombre": "Categoría A"
+  },
+  "timestamp": "2025-10-20T10:30:00.000+00:00"
+}
+```
+
+### Crear múltiples categorías
+
+**URL**: `/categorias/multiple`  
+**Método**: `POST`  
+**Descripción**: Crea múltiples categorías  
+**Autenticación Requerida**: Sí  
+**Roles**: `ROLE_ADMIN`
+
+**Cuerpo de la Solicitud**:
+- `categorias` (requerido): Lista de categorías a crear
+
+**Respuestas**
+
+**201 Created** - Operación exitosa
+
+```json
+{
+  "success": true,
+  "message": "Categorías creadas exitosamente",
+  "data": [
+    {
+      "categoriaId": 1,
+      "nombre": "Categoría A"
+    },
+    {
+      "categoriaId": 2,
+      "nombre": "Categoría B"
+    }
+  ],
+  "timestamp": "2025-10-20T10:30:00.000+00:00"
+}
+```
+
+### Actualizar categoría
+
+**URL**: `/categorias/{categoriaId}`  
+**Método**: `PUT`  
+**Descripción**: Actualiza una categoría  
+**Autenticación Requerida**: Sí  
+**Roles**: `ROLE_ADMIN`
+
+**Parámetros de Ruta**:
+- `categoriaId` (requerido): ID de la categoría
+
+**Cuerpo de la Solicitud**:
+- `nombre` (requerido): Nuevo nombre de la categoría
+
+**Respuestas**
+
+**200 OK** - Operación exitosa
+
+```json
+{
+  "success": true,
+  "message": "Categoría actualizada exitosamente",
+  "data": {
+    "categoriaId": 1,
+    "nombre": "Categoría A actualizada"
+  },
+  "timestamp": "2025-10-20T10:30:00.000+00:00"
+}
+```
+
+### Eliminar categoría
+
+**URL**: `/categorias/{categoriaId}`  
+**Método**: `DELETE`  
+**Descripción**: Elimina una categoría  
+**Autenticación Requerida**: Sí  
+**Roles**: `ROLE_ADMIN`
+
+**Parámetros de Ruta**:
+- `categoriaId` (requerido): ID de la categoría
+
+**Respuestas**
+
+**200 OK** - Operación exitosa
+
+```json
+{
+  "success": true,
+  "message": "Categoría eliminada exitosamente",
+  "data": null,
+  "timestamp": "2025-10-20T10:30:00.000+00:00"
+}
+```
 
 ## Equipos
 
@@ -2568,7 +2744,69 @@ Accept: application/json
 ]
 ```
 
-### Actualizar una Categoría
+### Actualizar categoría
+
+**URL**: `/api/categorias/{id}`  
+**Método**: `PUT`  
+**Roles Requeridos**: `ROLE_MODERATOR`, `ROLE_ADMIN`
+
+**Request Body**:
+```json
+{
+  "nombre": "Electrónica Actualizada"
+}
+```
+
+**Response (200 OK)**:
+```json
+{
+  "categoriaId": 1,
+  "nombre": "Electrónica Actualizada"
+}
+```
+
+### Eliminar una Categoría
+
+**URL**: `/api/categorias/{id}`  
+**Método**: `DELETE`  
+**Roles Requeridos**: `ROLE_ADMIN`
+
+**Response (200 OK)**:
+```json
+{
+  "success": true,
+  "message": "Categoría eliminada exitosamente",
+  "data": null,
+  "timestamp": "2025-10-18T14:30:00-05:00"
+}
+```
+
+## Manejo de Errores
+
+### Respuesta de Error Genérico
+
+**Status Code**: 4xx/5xx  
+**Response**:
+```json
+{
+  "success": false,
+  "message": "Mensaje descriptivo del error",
+  "error": "Tipo de error",
+  "status": 400,
+  "timestamp": "2025-10-18T14:30:00-05:00"
+}
+```
+
+### Códigos de Estado Comunes
+
+- `200 OK`: Solicitud exitosa
+- `201 Created`: Recurso creado exitosamente
+- `400 Bad Request`: Error en la solicitud (validación, formato incorrecto, etc.)
+- `401 Unauthorized`: No autenticado
+- `403 Forbidden`: No autorizado para acceder al recurso
+- `404 Not Found`: Recurso no encontrado
+- `500 Internal Server Error`: Error interno del servidor
+
 
 ## Subcategorías
 
@@ -2882,70 +3120,6 @@ Accept: application/json
 }
 ```
 
-## Categorías
-
-### Actualizar categoría
-
-**URL**: `/api/categorias/{id}`  
-**Método**: `PUT`  
-**Roles Requeridos**: `ROLE_MODERATOR`, `ROLE_ADMIN`
-
-**Request Body**:
-```json
-{
-  "nombre": "Electrónica Actualizada"
-}
-```
-
-**Response (200 OK)**:
-```json
-{
-  "categoriaId": 1,
-  "nombre": "Electrónica Actualizada"
-}
-```
-
-### Eliminar una Categoría
-
-**URL**: `/api/categorias/{id}`  
-**Método**: `DELETE`  
-**Roles Requeridos**: `ROLE_ADMIN`
-
-**Response (200 OK)**:
-```json
-{
-  "success": true,
-  "message": "Categoría eliminada exitosamente",
-  "data": null,
-  "timestamp": "2025-10-18T14:30:00-05:00"
-}
-```
-
-## Manejo de Errores
-
-### Respuesta de Error Genérico
-
-**Status Code**: 4xx/5xx  
-**Response**:
-```json
-{
-  "success": false,
-  "message": "Mensaje descriptivo del error",
-  "error": "Tipo de error",
-  "status": 400,
-  "timestamp": "2025-10-18T14:30:00-05:00"
-}
-```
-
-### Códigos de Estado Comunes
-
-- `200 OK`: Solicitud exitosa
-- `201 Created`: Recurso creado exitosamente
-- `400 Bad Request`: Error en la solicitud (validación, formato incorrecto, etc.)
-- `401 Unauthorized`: No autenticado
-- `403 Forbidden`: No autorizado para acceder al recurso
-- `404 Not Found`: Recurso no encontrado
-- `500 Internal Server Error`: Error interno del servidor
 
 ## Autenticación
 

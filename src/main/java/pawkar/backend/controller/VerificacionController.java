@@ -10,7 +10,7 @@ import pawkar.backend.response.ExistenRegistrosResponse;
 import pawkar.backend.service.VerificacionService;
 
 @RestController
-@RequestMapping("/api/verificacion")
+@RequestMapping("/verificacion")
 public class VerificacionController {
 
     private final VerificacionService verificacionService;

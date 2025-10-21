@@ -23,6 +23,11 @@ public class SubcategoriaService {
     private CategoriaRepository categoriaRepository;
 
     public Subcategoria crearSubcategoria(SubcategoriaRequest request) {
+        // Verificar si ya existe una subcategoría con el mismo nombre (ignorando mayúsculas/minúsculas)
+        if (subcategoriaRepository.existsByNombreIgnoreCase(request.getNombre())) {
+            throw new RuntimeException("Ya existe una subcategoría con el nombre: " + request.getNombre());
+        }
+
         Categoria categoria = categoriaRepository.findById(request.getCategoriaId())
                 .orElseThrow(() -> new RuntimeException("Categoría no encontrada"));
 
@@ -36,6 +41,24 @@ public class SubcategoriaService {
 
     @Transactional
     public List<Subcategoria> crearSubcategoriasBulk(BulkSubcategoriaRequest request) {
+        // Verificar nombres duplicados en la solicitud
+        List<String> nombres = request.getSubcategorias().stream()
+                .map(SubcategoriaRequest::getNombre)
+                .map(String::toLowerCase)
+                .toList();
+        
+        // Verificar duplicados en la solicitud
+        if (nombres.size() != nombres.stream().distinct().count()) {
+            throw new RuntimeException("No se permiten nombres de subcategorías duplicados en la misma solicitud");
+        }
+        
+        // Verificar duplicados en la base de datos
+        for (String nombre : nombres) {
+            if (subcategoriaRepository.existsByNombreIgnoreCase(nombre)) {
+                throw new RuntimeException("Ya existe una subcategoría con el nombre: " + nombre);
+            }
+        }
+        
         return request.getSubcategorias().stream()
                 .map(subcategoriaRequest -> {
                     Categoria categoria = categoriaRepository.findById(subcategoriaRequest.getCategoriaId())
