@@ -18,6 +18,8 @@ public interface EquipoRepository extends JpaRepository<Equipo, Integer> {
     @Query("SELECT e FROM Equipo e WHERE e.subcategoria.subcategoriaId = :subcategoriaId")
     List<Equipo> findBySubcategoriaId(@Param("subcategoriaId") Integer subcategoriaId);
     
+    long countByEstado(boolean estado);
+    
     @Query("SELECT e FROM Equipo e WHERE LOWER(e.nombre) LIKE LOWER(CONCAT('%', :nombre, '%'))")
     Page<Equipo> findByNombreContainingIgnoreCase(@Param("nombre") String nombre, Pageable pageable);
     

@@ -11,6 +11,7 @@ import pawkar.backend.request.BulkEquipoRequest;
 import pawkar.backend.request.EquipoRequest;
 import pawkar.backend.response.EquipoResponse;
 import pawkar.backend.response.ApiResponseStandard;
+import pawkar.backend.response.EquipoCountResponse;
 import pawkar.backend.service.EquipoService;
 
 import java.util.List;
@@ -173,5 +174,13 @@ public class EquipoController {
     @ResponseBody
     public boolean existenEquiposRegistrados() {
         return equipoService.existenEquiposRegistrados();
+    }
+    
+    @GetMapping("/count")
+    public ApiResponseStandard<EquipoCountResponse> contarEquipos() {
+        return ApiResponseStandard.success(
+            equipoService.contarEquipos(),
+            "Conteo de equipos obtenido exitosamente"
+        );
     }
 }

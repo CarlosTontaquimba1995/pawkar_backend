@@ -18,6 +18,7 @@ import pawkar.backend.repository.EquipoRepository;
 import pawkar.backend.repository.PlantillaRepository;
 import pawkar.backend.repository.SerieRepository;
 import pawkar.backend.repository.SubcategoriaRepository;
+import pawkar.backend.response.EquipoCountResponse;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -40,6 +41,15 @@ public class EquipoService {
     @Transactional(readOnly = true)
     public Page<EquipoResponse> obtenerTodosLosEquipos(Pageable pageable) {
         return obtenerEquiposFiltrados(pageable, null);
+    }
+    
+    @Transactional(readOnly = true)
+    public EquipoCountResponse contarEquipos() {
+        long totalEquipos = equipoRepository.count();
+        long equiposActivos = equipoRepository.countByEstado(true);
+        long equiposInactivos = totalEquipos - equiposActivos;
+        
+        return new EquipoCountResponse(totalEquipos, equiposActivos, equiposInactivos);
     }
     
     @Transactional(readOnly = true)
