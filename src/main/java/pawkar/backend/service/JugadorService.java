@@ -272,8 +272,7 @@ public class JugadorService {
             }
 
             if (plantilla.getRol() != null) {
-                response.setNombreRol(plantilla.getRol().getName().name());
-                response.setRolDetail(plantilla.getRol().getDetail());
+                response.setNombreRol(plantilla.getRol().getDetail());
                 response.setRolId(plantilla.getRol().getId());
             }
         });
