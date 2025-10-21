@@ -271,6 +271,7 @@ public class JugadorService {
 
             if (plantilla.getEquipo() != null) {
                 response.setNombreEquipo(plantilla.getEquipo().getNombre());
+                response.setEquipoId(plantilla.getEquipo().getEquipoId());
                 if (plantilla.getEquipo().getSubcategoria() != null) {
                     response.setSubcategoriaId(plantilla.getEquipo().getSubcategoria().getSubcategoriaId());
                 }
