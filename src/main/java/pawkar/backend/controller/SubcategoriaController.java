@@ -25,20 +25,15 @@ public class SubcategoriaController {
     private SubcategoriaService subcategoriaService;
 
     @PostMapping("/bulk")
-    @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @ResponseStatus(org.springframework.http.HttpStatus.CREATED)
     public ApiResponseStandard<List<SubcategoriaResponse>> crearSubcategoriasBulk(
             @Valid @RequestBody BulkSubcategoriaRequest request) {
-        try {
-            List<Subcategoria> subcategorias = subcategoriaService.crearSubcategoriasBulk(request);
-            List<SubcategoriaResponse> response = subcategorias.stream()
-                    .map(this::toSubcategoriaResponse)
-                    .collect(Collectors.toList());
-            return ApiResponseStandard.success(response, "Subcategorías creadas exitosamente");
-        } catch (Exception e) {
-            return ApiResponseStandard.error("Error al crear subcategorías: " + e.getMessage(), 
-                    "/api/subcategorias/bulk", "Bad Request", 400);
-        }
+        List<Subcategoria> subcategorias = subcategoriaService.crearSubcategoriasBulk(request);
+        List<SubcategoriaResponse> response = subcategorias.stream()
+                .map(this::toSubcategoriaResponse)
+                .collect(Collectors.toList());
+        return ApiResponseStandard.success(response, "Subcategorías creadas exitosamente");
     }
 
     @PostMapping
@@ -73,6 +68,7 @@ public class SubcategoriaController {
         response.setSubcategoriaId(subcategoria.getSubcategoriaId());
         response.setNombre(subcategoria.getNombre());
         response.setDescripcion(subcategoria.getDescripcion());
+        response.setEstado(subcategoria.getEstado());
         
         if (subcategoria.getCategoria() != null) {
             Categoria categoria = subcategoria.getCategoria();

@@ -5,11 +5,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pawkar.backend.entity.Categoria;
 import pawkar.backend.entity.Subcategoria;
+import pawkar.backend.exception.BadRequestException;
+import pawkar.backend.exception.ResourceNotFoundException;
 import pawkar.backend.repository.CategoriaRepository;
 import pawkar.backend.repository.SubcategoriaRepository;
 import pawkar.backend.request.BulkSubcategoriaRequest;
 import pawkar.backend.request.SubcategoriaRequest;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -39,40 +42,83 @@ public class SubcategoriaService {
         return subcategoriaRepository.save(subcategoria);
     }
 
-    @Transactional
-    public List<Subcategoria> crearSubcategoriasBulk(BulkSubcategoriaRequest request) {
-        // Verificar nombres duplicados en la solicitud
-        List<String> nombres = request.getSubcategorias().stream()
-                .map(SubcategoriaRequest::getNombre)
-                .map(String::toLowerCase)
-                .toList();
-        
-        // Verificar duplicados en la solicitud
-        if (nombres.size() != nombres.stream().distinct().count()) {
-            throw new RuntimeException("No se permiten nombres de subcategorías duplicados en la misma solicitud");
+    @Transactional(rollbackFor = Exception.class)
+    public List<Subcategoria> crearSubcategoriasBulk(BulkSubcategoriaRequest request) throws BadRequestException {
+        // Verificar que la lista de subcategorías no esté vacía
+        if (request.getSubcategorias() == null || request.getSubcategorias().isEmpty()) {
+            throw new BadRequestException("La lista de subcategorías no puede estar vacía");
         }
-        
+
+        // Verificar nombres duplicados en la misma categoría dentro de la solicitud
+        long uniqueSubcategoriasCount = request.getSubcategorias().stream()
+                .map(sc -> sc.getCategoriaId() + "_" + sc.getNombre().toLowerCase())
+                .distinct()
+                .count();
+
+        if (uniqueSubcategoriasCount < request.getSubcategorias().size()) {
+            throw new BadRequestException("No se permiten nombres de subcategorías duplicados en la misma categoría");
+        }
+
+        // Verificar que las categorías existan
+        List<Long> categoriaIds = request.getSubcategorias().stream()
+                .map(subcategoria -> subcategoria.getCategoriaId().longValue())
+                .distinct()
+                .toList();
+
+        List<Categoria> categorias = categoriaRepository.findAllById(categoriaIds);
+
+        if (categorias.size() != categoriaIds.size()) {
+            List<Long> categoriasNoEncontradas = categoriaIds.stream()
+                    .filter(id -> categorias.stream()
+                            .mapToInt(Categoria::getCategoriaId)
+                            .noneMatch(catId -> catId == id))
+                    .collect(Collectors.toList());
+
+            throw new ResourceNotFoundException(
+                    "Las siguientes categorías no existen: " + categoriasNoEncontradas);
+        }
+
         // Verificar duplicados en la base de datos
-        for (String nombre : nombres) {
-            if (subcategoriaRepository.existsByNombreIgnoreCase(nombre)) {
-                throw new RuntimeException("Ya existe una subcategoría con el nombre: " + nombre);
+        List<String> subcategoriasDuplicadas = new ArrayList<>();
+        for (SubcategoriaRequest subcategoriaRequest : request.getSubcategorias()) {
+            if (subcategoriaRepository.existsByCategoriaCategoriaIdAndNombreIgnoreCase(
+                    subcategoriaRequest.getCategoriaId().intValue(), subcategoriaRequest.getNombre())) {
+                // Obtener el nombre de la categoría
+                final Long categoriaId = subcategoriaRequest.getCategoriaId();
+                String nombreCategoria = categorias.stream()
+                        .filter(c -> c.getCategoriaId().equals(categoriaId.intValue()))
+                        .findFirst()
+                        .map(Categoria::getNombre)
+                        .orElse("Desconocida");
+
+                subcategoriasDuplicadas.add(String.format("'%s' en la categoría '%s'",
+                        subcategoriaRequest.getNombre(),
+                        nombreCategoria));
             }
         }
-        
-        return request.getSubcategorias().stream()
+
+        if (!subcategoriasDuplicadas.isEmpty()) {
+            throw new BadRequestException(
+                    "Las siguientes subcategorías ya existen: " + String.join(", ", subcategoriasDuplicadas));
+        }
+
+        // Mapear y guardar todas las subcategorías
+        List<Subcategoria> subcategorias = request.getSubcategorias().stream()
                 .map(subcategoriaRequest -> {
-                    Categoria categoria = categoriaRepository.findById(subcategoriaRequest.getCategoriaId())
-                            .orElseThrow(() -> new RuntimeException(
-                                    "Categoría no encontrada con ID: " + subcategoriaRequest.getCategoriaId()));
+                    Categoria categoria = categorias.stream()
+                            .filter(c -> c.getCategoriaId().equals(subcategoriaRequest.getCategoriaId().intValue()))
+                            .findFirst()
+                            .orElseThrow();
 
                     Subcategoria subcategoria = new Subcategoria();
                     subcategoria.setCategoria(categoria);
                     subcategoria.setNombre(subcategoriaRequest.getNombre());
                     subcategoria.setDescripcion(subcategoriaRequest.getDescripcion());
-
-                    return subcategoriaRepository.save(subcategoria);
+                    return subcategoria;
                 })
-                .collect(Collectors.toList());
+                .toList();
+
+        return subcategoriaRepository.saveAll(subcategorias);
     }
 
     public List<Subcategoria> listarSubcategorias() {

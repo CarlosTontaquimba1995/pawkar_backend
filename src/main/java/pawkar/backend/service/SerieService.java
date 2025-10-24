@@ -12,8 +12,10 @@ import pawkar.backend.exception.ResourceNotFoundException;
 import pawkar.backend.repository.SerieRepository;
 import pawkar.backend.repository.SubcategoriaRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import pawkar.backend.exception.BadRequestException;
 
 @Service
 public class SerieService {
@@ -90,7 +92,7 @@ public class SerieService {
     public List<SerieResponse> crearSeriesEnLote(BulkSerieRequest request) {
         // Verificar que la lista de series no esté vacía
         if (request.getSeries() == null || request.getSeries().isEmpty()) {
-            throw new IllegalArgumentException("La lista de series no puede estar vacía");
+            throw new BadRequestException("La lista de series no puede estar vacía");
         }
 
         // Verificar nombres duplicados en la misma subcategoría dentro de la solicitud
@@ -100,7 +102,7 @@ public class SerieService {
                 .count();
 
         if (uniqueSeriesCount < request.getSeries().size()) {
-            throw new IllegalArgumentException("No se permiten nombres de series duplicados en la misma subcategoría");
+            throw new BadRequestException("No se permiten nombres de series duplicados en la misma subcategoría");
         }
 
         // Verificar que las subcategorías existan
@@ -112,16 +114,35 @@ public class SerieService {
         List<Subcategoria> subcategorias = subcategoriaRepository.findAllById(subcategoriaIds);
 
         if (subcategorias.size() != subcategoriaIds.size()) {
-            throw new ResourceNotFoundException("Una o más subcategorías no existen");
+            List<Integer> subcategoriasNoEncontradas = new ArrayList<>(subcategoriaIds);
+            subcategoriasNoEncontradas.removeAll(
+                    subcategorias.stream()
+                            .map(Subcategoria::getSubcategoriaId)
+                            .collect(Collectors.toList()));
+            throw new ResourceNotFoundException(
+                    "Las siguientes subcategorías no existen: " + subcategoriasNoEncontradas);
         }
 
         // Verificar duplicados en la base de datos
+        List<String> seriesDuplicadas = new ArrayList<>();
         for (SerieRequest serieRequest : request.getSeries()) {
             if (serieRepository.existsBySubcategoriaAndNombreSerie(
                     serieRequest.getSubcategoriaId(), serieRequest.getNombreSerie())) {
-                throw new IllegalArgumentException(
-                        "La serie '" + serieRequest.getNombreSerie() + "' ya existe en la subcategoría especificada");
+                // Obtener el nombre de la subcategoría
+                String nombreSubcategoria = subcategorias.stream()
+                        .filter(sc -> sc.getSubcategoriaId().equals(serieRequest.getSubcategoriaId()))
+                        .findFirst()
+                        .map(Subcategoria::getNombre)
+                        .orElse("Desconocida");
+
+                seriesDuplicadas.add(String.format("'%s' en la subcategoría '%s'",
+                        serieRequest.getNombreSerie(),
+                        nombreSubcategoria));
             }
+        }
+
+        if (!seriesDuplicadas.isEmpty()) {
+            throw new BadRequestException("Las siguientes series ya existen: " + String.join(", ", seriesDuplicadas));
         }
 
         // Mapear y guardar todas las series
@@ -158,6 +179,7 @@ public class SerieService {
                 serie.getSerieId(),
                 serie.getSubcategoria().getSubcategoriaId(),
                 serie.getSubcategoria().getNombre(),
-                serie.getNombreSerie());
+                serie.getNombreSerie(),
+                serie.isEstado());
     }
 }

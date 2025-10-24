@@ -184,7 +184,7 @@ public class TablaPosicionService {
                     if (tp.getSubcategoria() != null && tp.getSubcategoria().getCategoria() != null) {
                         response.setCategoriaId(tp.getSubcategoria().getCategoria().getCategoriaId());
                         response.setCategoriaNombre(tp.getSubcategoria().getCategoria().getNombre());
-                    }
+                    }   
 
                     return response;
                 })

@@ -12,4 +12,5 @@ public class SerieResponse {
     private Integer subcategoriaId;
     private String subcategoriaNombre;
     private String nombreSerie;
+    private Boolean estado;
 }

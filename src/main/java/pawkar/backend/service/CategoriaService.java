@@ -114,6 +114,10 @@ public class CategoriaService {
     }
 
     private CategoriaResponse convertToResponse(Categoria categoria) {
-        return new CategoriaResponse(categoria.getCategoriaId(), categoria.getNombre());
+        CategoriaResponse response = new CategoriaResponse();
+        response.setCategoriaId(categoria.getCategoriaId());
+        response.setNombre(categoria.getNombre());
+        response.setEstado(categoria.isEstado());
+        return response;
     }
 }

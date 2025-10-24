@@ -2,7 +2,9 @@ package pawkar.backend.controller;
 
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
 import pawkar.backend.request.BulkSerieRequest;
 import pawkar.backend.response.ApiResponseStandard;
 import pawkar.backend.request.SerieRequest;
@@ -41,21 +43,13 @@ public class SerieController {
     }
 
     @PostMapping("/bulk")
-    @ResponseStatus(org.springframework.http.HttpStatus.CREATED)
+    @PreAuthorize("permitAll() or hasRole('ADMIN')")
     public ApiResponseStandard<List<SerieResponse>> crearSeriesEnLote(
             @Valid @RequestBody BulkSerieRequest request) {
-        try {
-            List<SerieResponse> series = serieService.crearSeriesEnLote(request);
-            return ApiResponseStandard.success(
-                    series,
-                    "Series creadas exitosamente");
-        } catch (Exception e) {
-            return ApiResponseStandard.error(
-                    e.getMessage(),
-                    "/api/series/bulk",
-                    "Error al crear las series",
-                    400);
-        }
+        List<SerieResponse> series = serieService.crearSeriesEnLote(request);
+        return ApiResponseStandard.success(
+                series,
+                "Series creadas exitosamente");
     }
 
     @GetMapping("/subcategoria/{subcategoriaId}")

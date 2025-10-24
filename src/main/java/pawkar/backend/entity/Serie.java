@@ -28,4 +28,15 @@ public class Serie {
 
     @Column(name = "nombre_serie", nullable = false, length = 100)
     private String nombreSerie;
+
+    @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT TRUE")
+    private Boolean estado = true;
+
+    public Boolean isEstado() {
+        return estado;
+    }
+
+    public void setEstado(Boolean estado) {
+        this.estado = estado;
+    }
 }

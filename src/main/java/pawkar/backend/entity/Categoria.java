@@ -12,11 +12,15 @@ public class Categoria {
     @Column(nullable = false, unique = true, length = 100)
     private String nombre;
 
+    @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT TRUE")
+    private Boolean estado = true;
+
     public Categoria() {
     }
 
     public Categoria(String nombre) {
         this.nombre = nombre;
+        this.estado = true;
     }
 
     // Getters and Setters
@@ -34,5 +38,13 @@ public class Categoria {
 
     public void setNombre(String nombre) {
         this.nombre = nombre;
+    }
+
+    public Boolean isEstado() {
+        return estado;
+    }
+
+    public void setEstado(Boolean estado) {
+        this.estado = estado;
     }
 }

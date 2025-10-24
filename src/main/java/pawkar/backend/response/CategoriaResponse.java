@@ -3,13 +3,15 @@ package pawkar.backend.response;
 public class CategoriaResponse {
     private Integer categoriaId;
     private String nombre;
+    private Boolean estado;
 
     public CategoriaResponse() {
     }
 
-    public CategoriaResponse(Integer categoriaId, String nombre) {
+    public CategoriaResponse(Integer categoriaId, String nombre, Boolean estado) {
         this.categoriaId = categoriaId;
         this.nombre = nombre;
+        this.estado = estado;
     }
 
     // Getters and Setters
@@ -27,5 +29,13 @@ public class CategoriaResponse {
 
     public void setNombre(String nombre) {
         this.nombre = nombre;
+    }
+
+    public Boolean getEstado() {
+        return estado;
+    }
+
+    public void setEstado(Boolean estado) {
+        this.estado = estado;
     }
 }

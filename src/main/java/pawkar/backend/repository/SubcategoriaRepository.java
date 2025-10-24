@@ -11,4 +11,6 @@ public interface SubcategoriaRepository extends JpaRepository<Subcategoria, Inte
     List<Subcategoria> findByCategoria_CategoriaId(Integer categoriaId);
     
     boolean existsByNombreIgnoreCase(String nombre);
+    
+    boolean existsByCategoriaCategoriaIdAndNombreIgnoreCase(Integer categoriaId, String nombre);
 }

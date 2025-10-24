@@ -18,6 +18,9 @@ public class Subcategoria {
 
     @Column(columnDefinition = "TEXT")
     private String descripcion;
+    
+    @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT TRUE")
+    private Boolean estado = true;
 
     public Subcategoria() {
     }
@@ -26,6 +29,7 @@ public class Subcategoria {
         this.categoria = categoria;
         this.nombre = nombre;
         this.descripcion = descripcion;
+        this.estado = true;
     }
 
     // Getters and Setters
@@ -59,5 +63,13 @@ public class Subcategoria {
 
     public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;
+    }
+    
+    public Boolean getEstado() {
+        return estado;
+    }
+    
+    public void setEstado(Boolean estado) {
+        this.estado = estado;
     }
 }
