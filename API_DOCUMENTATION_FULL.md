@@ -33,6 +33,15 @@
   - [Crear o Actualizar Múltiples Roles](#crear-o-actualizar-múltiples-roles-bulk)
   - [Obtener Todos los Roles](#obtener-todos-los-roles)
   - [Obtener Rol por Nombre](#obtener-rol-por-nombre)
+- [Sanciones](#sanciones)
+  - [Obtener todas las sanciones](#obtener-todas-las-sanciones)
+  - [Obtener sanción por ID](#obtener-sanción-por-id)
+  - [Crear sanción](#crear-sanción)
+  - [Actualizar sanción](#actualizar-sanción)
+  - [Eliminar sanción](#eliminar-sanción)
+  - [Obtener sanciones por jugador](#obtener-sanciones-por-jugador)
+  - [Obtener sanciones por encuentro](#obtener-sanciones-por-encuentro)
+  - [Obtener sanciones por tipo](#obtener-sanciones-por-tipo)
 - [Series](#series)
   - [Obtener series por subcategoría](#obtener-series-por-subcategoría)
   - [Obtener serie por ID](#obtener-serie-por-id)
@@ -1492,8 +1501,11 @@ Obtiene todos los roles asignados a una subcategoría específica.
   "message": "Roles obtenidos correctamente",
   "data": [
     {
-      "id": 1,
-      "nombre": "ROLE_USER"
+      "rolId": 3,
+      "rolName": "PORTERO",
+      "rolDetail": "Portero",
+      "subcategoriaId": 5,
+      "subcategoriaName": "Fútbol"
     },
     {
       "id": 2,
@@ -1728,5 +1740,421 @@ Obtiene los detalles de un rol específico por su nombre.
   "message": "Nombre de rol no válido: ROL_INVALIDO",
   "error": "Bad Request",
   "path": "/api/roles/ROL_INVALIDO"
+}
+```
+
+### Obtener Rol por ID
+
+Obtiene los detalles de un rol específico por su ID.
+
+**URL**: `/roles/{id}`  
+**Método**: `GET`  
+**Autenticación Requerida**: Sí  
+**Roles**: Cualquier rol autenticado
+
+**Parámetros de Ruta**:
+- `id` (requerido): ID numérico del rol
+
+**Respuesta Exitosa (200 OK)**
+```json
+{
+  "success": true,
+  "message": "Rol encontrado exitosamente",
+  "data": {
+    "id": 1,
+    "name": "ROLE_USER",
+    "detail": "Rol de usuario estándar",
+    "estado": true
+  },
+  "timestamp": "2025-10-24T11:30:00.000+00:00"
+}
+```
+
+**Respuesta de Error (404 Not Found)**
+```json
+{
+  "success": false,
+  "message": "No se encontró el rol con ID: 999",
+  "error": "Not Found",
+  "path": "/roles/999"
+}
+```
+
+### Actualizar Rol
+
+Actualiza los detalles de un rol existente.
+
+**URL**: `/roles/{id}`  
+**Método**: `PUT`  
+**Autenticación Requerida**: Sí  
+**Roles**: `ROLE_ADMIN`
+
+**Parámetros de Ruta**:
+- `id` (requerido): ID numérico del rol a actualizar
+
+**Cuerpo de la Solicitud**
+```json
+{
+  "name": "ROLE_UPDATED",
+  "detail": "Descripción actualizada del rol"
+}
+```
+
+**Respuesta Exitosa (200 OK)**
+```json
+{
+  "success": true,
+  "message": "Rol actualizado exitosamente",
+  "data": {
+    "id": 1,
+    "name": "ROLE_UPDATED",
+    "detail": "Descripción actualizada del rol",
+    "estado": true
+  },
+  "timestamp": "2025-10-24T11:45:00.000+00:00"
+}
+```
+
+**Respuesta de Error (404 Not Found)**
+```json
+{
+  "success": false,
+  "message": "No se encontró el rol con ID: 999",
+  "error": "Not Found",
+  "path": "/roles/999"
+}
+```
+
+**Respuesta de Error (400 Bad Request)**
+```json
+{
+  "success": false,
+  "message": "El campo 'name' no puede estar vacío",
+  "error": "Bad Request",
+  "path": "/roles/1"
+}
+```
+
+### Eliminar Rol
+
+Elimina un rol existente del sistema.
+
+**URL**: `/roles/{id}`  
+**Método**: `DELETE`  
+**Autenticación Requerida**: Sí  
+**Roles**: `ROLE_ADMIN`
+
+**Parámetros de Ruta**:
+- `id` (requerido): ID numérico del rol a eliminar
+
+**Respuesta Exitosa (200 OK)**
+```json
+{
+  "success": true,
+  "message": "Rol eliminado exitosamente",
+  "data": null,
+  "timestamp": "2025-10-24T12:00:00.000+00:00"
+}
+```
+
+**Respuesta de Error (404 Not Found)**
+```json
+{
+  "success": false,
+  "message": "No se encontró el rol con ID: 999",
+  "error": "Not Found",
+  "path": "/roles/999"
+}
+```
+
+## Sanciones
+
+### Obtener todas las sanciones
+
+Obtiene una lista de todas las sanciones registradas en el sistema.
+
+**URL**: `/sanciones`  
+**Método**: `GET`  
+**Autenticación Requerida**: No
+
+**Respuesta Exitosa (200 OK)**
+```json
+{
+  "success": true,
+  "message": "Sanciones obtenidas exitosamente",
+  "data": [
+    {
+      "id": 1,
+      "jugadorId": 3,
+      "jugadorNombre": "Jugador 3 Apellido 3",
+      "encuentroId": 102,
+      "encuentroTitulo": "Equipo A vs Equipo C",
+      "tipoSancion": "TARJETA_ROJA",
+      "motivo": "Motivo",
+      "detalleSancion": "3 días",
+      "fechaRegistro": "2025-10-19"
+    }
+  ]
+}
+```
+
+### Obtener sanción por ID
+
+Obtiene los detalles de una sanción específica por su ID.
+
+**URL**: `/sanciones/{id}`  
+**Método**: `GET`  
+**Autenticación Requerida**: No
+
+**Parámetros de Ruta**:
+- `id` (requerido): ID de la sanción a consultar
+
+**Respuesta Exitosa (200 OK)**
+```json
+{
+  "success": true,
+  "message": "Sanción obtenida exitosamente",
+  "data": {
+    "id": 1,
+    "jugadorId": 1,
+    "jugadorNombre": "Juan Pérez",
+    "encuentroId": 1,
+    "encuentroTitulo": "Partido 1",
+    "tipoSancion": "Tarjeta Amarilla",
+    "motivo": "Falta técnica",
+    "detalleSancion": "Jugador amonestado por conducta antideportiva",
+    "fechaRegistro": "2023-10-24"
+  }
+}
+```
+
+### Crear sanción
+
+Crea una nueva sanción en el sistema.
+
+**URL**: `/sanciones`  
+**Método**: `POST`  
+**Autenticación Requerida**: Sí  
+**Roles**: `ROLE_ADMIN`, `ROLE_MODERATOR`
+
+**Cuerpo de la Solicitud (JSON)**:
+```json
+{
+  "jugadorId": 1,
+  "encuentroId": 1,
+  "tipoSancion": "Tarjeta Roja",
+  "motivo": "Juego brusco grave",
+  "detalleSancion": "Entrada violenta sobre el jugador contrario",
+  "fechaRegistro": "2023-10-24"
+}
+```
+
+**Respuesta Exitosa (201 Created)**
+```json
+{
+  "success": true,
+  "message": "Sanción creada exitosamente",
+  "data": {
+    "id": 2,
+    "jugadorId": 1,
+    "jugadorNombre": "Juan Pérez",
+    "encuentroId": 1,
+    "encuentroTitulo": "Partido 1",
+    "tipoSancion": "Tarjeta Roja",
+    "motivo": "Juego brusco grave",
+    "detalleSancion": "Entrada violenta sobre el jugador contrario",
+    "fechaRegistro": "2023-10-24"
+  }
+}
+```
+
+### Actualizar sanción
+
+Actualiza una sanción existente.
+
+**URL**: `/sanciones/{id}`  
+**Método**: `PUT`  
+**Autenticación Requerida**: Sí  
+**Roles**: `ROLE_ADMIN`, `ROLE_MODERATOR`
+
+**Parámetros de Ruta**:
+- `id` (requerido): ID de la sanción a actualizar
+
+**Cuerpo de la Solicitud (JSON)**:
+```json
+{
+  "jugadorId": 1,
+  "encuentroId": 1,
+  "tipoSancion": "Tarjeta Roja",
+  "motivo": "Juego brusco grave",
+  "detalleSancion": "Entrada violenta sobre el jugador contrario - Sanción confirmada por el árbitro",
+  "fechaRegistro": "2023-10-24"
+}
+```
+
+**Respuesta Exitosa (200 OK)**
+```json
+{
+  "success": true,
+  "message": "Sanción actualizada exitosamente",
+  "data": {
+    "id": 2,
+    "jugadorId": 1,
+    "jugadorNombre": "Juan Pérez",
+    "encuentroId": 1,
+    "encuentroTitulo": "Partido 1",
+    "tipoSancion": "Tarjeta Roja",
+    "motivo": "Juego brusco grave",
+    "detalleSancion": "Entrada violenta sobre el jugador contrario - Sanción confirmada por el árbitro",
+    "fechaRegistro": "2023-10-24"
+  }
+}
+```
+
+### Eliminar sanción
+
+Elimina una sanción del sistema.
+
+**URL**: `/sanciones/{id}`  
+**Método**: `DELETE`  
+**Autenticación Requerida**: Sí  
+**Roles**: `ROLE_ADMIN`
+
+**Parámetros de Ruta**:
+- `id` (requerido): ID de la sanción a eliminar
+
+**Respuesta Exitosa (200 OK)**
+```json
+{
+  "success": true,
+  "message": "Sanción eliminada exitosamente"
+}
+```
+
+### Obtener sanciones por jugador
+
+Obtiene todas las sanciones asociadas a un jugador específico.
+
+**URL**: `/sanciones/jugador/{jugadorId}`  
+**Método**: `GET`  
+**Autenticación Requerida**: No
+
+**Parámetros de Ruta**:
+- `jugadorId` (requerido): ID del jugador
+
+**Respuesta Exitosa (200 OK)**
+```json
+{
+  "success": true,
+  "message": "Sanciones por jugador obtenidas exitosamente",
+  "data": [
+    {
+      "id": 1,
+      "jugadorId": 1,
+      "jugadorNombre": "Juan Pérez",
+      "encuentroId": 1,
+      "encuentroTitulo": "Partido 1",
+      "tipoSancion": "Tarjeta Amarilla",
+      "motivo": "Falta técnica",
+      "detalleSancion": "Jugador amonestado por conducta antideportiva",
+      "fechaRegistro": "2023-10-24"
+    }
+  ]
+}
+```
+
+### Obtener sanciones por encuentro
+
+Obtiene todas las sanciones asociadas a un encuentro específico.
+
+**URL**: `/sanciones/encuentro/{encuentroId}`  
+**Método**: `GET`  
+**Autenticación Requerida**: No
+
+**Parámetros de Ruta**:
+- `encuentroId` (requerido): ID del encuentro
+
+**Respuesta Exitosa (200 OK)**
+```json
+{
+  "success": true,
+  "message": "Sanciones por encuentro obtenidas exitosamente",
+  "data": [
+    {
+      "id": 1,
+      "jugadorId": 1,
+      "jugadorNombre": "Juan Pérez",
+      "encuentroId": 1,
+      "encuentroTitulo": "Partido 1",
+      "tipoSancion": "Tarjeta Amarilla",
+      "motivo": "Falta técnica",
+      "detalleSancion": "Jugador amonestado por conducta antideportiva",
+      "fechaRegistro": "2023-10-24"
+    },
+    {
+      "id": 2,
+      "jugadorId": 2,
+      "jugadorNombre": "Carlos Gómez",
+      "encuentroId": 1,
+      "encuentroTitulo": "Partido 1",
+      "tipoSancion": "Tarjeta Roja",
+      "motivo": "Juego brusco grave",
+      "detalleSancion": "Entrada violenta sobre el jugador contrario",
+      "fechaRegistro": "2023-10-24"
+    }
+  ]
+}
+```
+
+### Obtener sanciones por tipo
+
+Obtiene todas las sanciones de un tipo específico.
+
+**URL**: `/sanciones/tipo/{tipoSancion}`  
+**Método**: `GET`  
+**Autenticación Requerida**: No
+
+**Parámetros de Ruta**:
+- `tipoSancion` (requerido): Tipo de sanción a buscar (ej: "Tarjeta Amarilla", "Tarjeta Roja")
+
+**Respuesta Exitosa (200 OK)**
+```json
+{
+  "success": true,
+  "message": "Sanciones por tipo obtenidas exitosamente",
+  "data": [
+    {
+      "id": 1,
+      "jugadorId": 1,
+      "jugadorNombre": "Juan Pérez",
+      "encuentroId": 1,
+      "encuentroTitulo": "Partido 1",
+      "tipoSancion": "Tarjeta Amarilla",
+      "motivo": "Falta técnica",
+      "detalleSancion": "Jugador amonestado por conducta antideportiva",
+      "fechaRegistro": "2023-10-24"
+    },
+    {
+      "id": 3,
+      "jugadorId": 3,
+      "jugadorNombre": "Ana López",
+      "encuentroId": 2,
+      "encuentroTitulo": "Partido 2",
+      "tipoSancion": "Tarjeta Amarilla",
+      "motivo": "Tiempo perdido",
+      "detalleSancion": "Demora en la ejecución de un saque de banda",
+      "fechaRegistro": "2023-10-25"
+    }
+  ]
+}
+```
+
+**Respuesta de Error (404 Not Found)**
+```json
+{
+  "success": false,
+  "message": "No se encontraron sanciones del tipo especificado",
+  "error": "Not Found",
+  "path": "/sanciones/tipo/TipoInexistente"
 }
 ```

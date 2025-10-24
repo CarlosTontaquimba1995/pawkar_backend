@@ -49,7 +49,14 @@ public class RoleController {
         return ApiResponseStandard.success(roles, message);
     }
 
-    @GetMapping("/{name}")
+    @GetMapping("/{id}")
+    public ApiResponseStandard<RoleResponse> getRoleById(@PathVariable Long id) {
+        return roleService.getRoleById(id)
+                .map(role -> ApiResponseStandard.success(role, "Rol encontrado exitosamente"))
+                .orElseThrow(() -> new ResourceNotFoundException("No se encontró el rol con ID: " + id));
+    }
+
+    @GetMapping("/name/{name}")
     public ApiResponseStandard<RoleResponse> getRoleByName(@PathVariable String name) {
         try {
             ERole roleEnum = ERole.valueOf(name.toUpperCase());
@@ -58,6 +65,37 @@ public class RoleController {
                     .orElseThrow(() -> new ResourceNotFoundException("No se encontró el rol especificado"));
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("Nombre de rol no válido: " + name);
+        }
+    }
+
+    @PutMapping("/{id}")
+    public ApiResponseStandard<RoleResponse> updateRole(
+            @PathVariable Long id,
+            @Valid @RequestBody RoleRequest roleRequest) {
+        return ApiResponseStandard.success(
+                roleService.updateRole(id, roleRequest),
+                "Rol actualizado exitosamente");
+    }
+
+    @DeleteMapping("/{id}")
+    public ApiResponseStandard<Void> deleteRole(@PathVariable Long id) {
+        try {
+            roleService.deleteRole(id);
+            return ApiResponseStandard.success(
+                    null,
+                    "Rol eliminado exitosamente");
+        } catch (ResourceNotFoundException e) {
+            return ApiResponseStandard.error(
+                    e.getMessage(),
+                    "/api/roles/" + id,
+                    "Error al eliminar el rol",
+                    404);
+        } catch (IllegalStateException e) {
+            return ApiResponseStandard.error(
+                    e.getMessage(),
+                    "/api/roles/" + id,
+                    "No se puede eliminar el rol",
+                    400);
         }
     }
 }

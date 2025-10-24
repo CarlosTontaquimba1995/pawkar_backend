@@ -15,6 +15,7 @@ public class RoleResponse {
     private Long id;
     private ERole name;
     private String detail;
+    private boolean estado;
 
     public static RoleResponse fromEntity(Role role) {
         if (role == null) {
@@ -23,7 +24,8 @@ public class RoleResponse {
         return new RoleResponse(
             role.getId(),
             role.getName(),
-            role.getDetail()
+                role.getDetail(),
+                role.getEstado()
         );
     }
 }

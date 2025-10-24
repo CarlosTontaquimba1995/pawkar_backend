@@ -7,6 +7,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import pawkar.backend.enums.ERole;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -25,8 +28,15 @@ public class Role {
     @Column(length = 100)
     private String detail;
 
+    @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT TRUE")
+    private Boolean estado = true;
+
+    @ManyToMany(mappedBy = "roles")
+    private Set<Subcategoria> subcategorias = new HashSet<>();
+
     public Role(ERole name, String detail) {
         this.name = name;
         this.detail = detail;
+        this.estado = true;
     }
 }

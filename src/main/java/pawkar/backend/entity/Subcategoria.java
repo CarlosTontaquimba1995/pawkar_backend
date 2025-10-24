@@ -2,7 +2,9 @@ package pawkar.backend.entity;
 
 import jakarta.persistence.*;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "subcategorias")
@@ -26,6 +28,10 @@ public class Subcategoria {
 
     @OneToMany(mappedBy = "subcategoria", fetch = FetchType.LAZY)
     private List<Encuentro> encuentros = new ArrayList<>();
+
+    @ManyToMany
+    @JoinTable(name = "subcategoria_roles", joinColumns = @JoinColumn(name = "subcategoria_id"), inverseJoinColumns = @JoinColumn(name = "rol_id"))
+    private Set<Role> roles = new HashSet<>();
 
     public Subcategoria() {
     }
@@ -78,6 +84,25 @@ public class Subcategoria {
         this.estado = estado;
     }
     
+    public Set<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
+    }
+
+    // Helper methods for managing the relationship
+    public void addRole(Role role) {
+        this.roles.add(role);
+        role.getSubcategorias().add(this);
+    }
+
+    public void removeRole(Role role) {
+        this.roles.remove(role);
+        role.getSubcategorias().remove(this);
+    }
+
     public List<Encuentro> getEncuentros() {
         return encuentros;
     }
