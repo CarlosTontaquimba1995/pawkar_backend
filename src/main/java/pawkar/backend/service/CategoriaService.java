@@ -4,9 +4,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pawkar.backend.entity.Categoria;
+import pawkar.backend.entity.Subcategoria;
 import pawkar.backend.exception.BadRequestException;
 import pawkar.backend.exception.ResourceNotFoundException;
 import pawkar.backend.repository.CategoriaRepository;
+import pawkar.backend.repository.SubcategoriaRepository;
 import pawkar.backend.request.BulkCategoriaRequest;
 import pawkar.backend.request.CategoriaRequest;
 import pawkar.backend.response.CategoriaResponse;
@@ -18,10 +20,12 @@ import java.util.stream.Collectors;
 public class CategoriaService {
 
     private final CategoriaRepository categoriaRepository;
+    private final SubcategoriaRepository subcategoriaRepository;
 
     @Autowired
-    public CategoriaService(CategoriaRepository categoriaRepository) {
+    public CategoriaService(CategoriaRepository categoriaRepository, SubcategoriaRepository subcategoriaRepository) {
         this.categoriaRepository = categoriaRepository;
+        this.subcategoriaRepository = subcategoriaRepository;
     }
 
     @Transactional(readOnly = true)
@@ -109,7 +113,19 @@ public class CategoriaService {
     @Transactional
     public void deleteCategoria(Long id) {
         Categoria categoria = categoriaRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Categoria no encontrada con id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Categoría no encontrada con id: " + id));
+        
+        // Verificar si hay subcategorías asociadas
+        List<Subcategoria> subcategorias = subcategoriaRepository.findByCategoria_CategoriaId(id.intValue());
+        if (!subcategorias.isEmpty()) {
+            String subcategoriasNombres = subcategorias.stream()
+                    .map(Subcategoria::getNombre)
+                    .collect(Collectors.joining(", "));
+            throw new BadRequestException(String.format(
+                    "No se puede eliminar la categoría '%s' porque está siendo utilizada por las siguientes subcategorías: %s",
+                    categoria.getNombre(), subcategoriasNombres));
+        }
+        
         categoriaRepository.delete(categoria);
     }
 

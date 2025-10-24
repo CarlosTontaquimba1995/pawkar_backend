@@ -7,6 +7,8 @@ import pawkar.backend.entity.Categoria;
 import pawkar.backend.entity.Subcategoria;
 import pawkar.backend.exception.BadRequestException;
 import pawkar.backend.exception.ResourceNotFoundException;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import pawkar.backend.repository.CategoriaRepository;
 import pawkar.backend.repository.SubcategoriaRepository;
 import pawkar.backend.request.BulkSubcategoriaRequest;
@@ -24,6 +26,9 @@ public class SubcategoriaService {
 
     @Autowired
     private CategoriaRepository categoriaRepository;
+
+    @PersistenceContext
+    private EntityManager entityManager;
 
     public Subcategoria crearSubcategoria(SubcategoriaRequest request) {
         // Verificar si ya existe una subcategoría con el mismo nombre (ignorando mayúsculas/minúsculas)
@@ -148,10 +153,28 @@ public class SubcategoriaService {
         return subcategoriaRepository.save(subcategoria);
     }
 
+    @Transactional
     public void eliminarSubcategoria(Integer id) {
-        if (!subcategoriaRepository.existsById(id)) {
-            throw new RuntimeException("Subcategoría no encontrada");
+        // Cargar la entidad con la relación de encuentros
+        Subcategoria subcategoria = subcategoriaRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Subcategoría no encontrada con id: " + id));
+
+        // Forzar la carga de los encuentros asociados
+        entityManager.refresh(subcategoria);
+
+        // Verificar si hay encuentros asociados usando una consulta directa
+        Long countEncuentros = (Long) entityManager.createQuery(
+                "SELECT COUNT(e) FROM Encuentro e WHERE e.subcategoria.id = :subcategoriaId")
+                .setParameter("subcategoriaId", id)
+                .getSingleResult();
+
+        if (countEncuentros > 0) {
+            throw new BadRequestException(String.format(
+                    "No se puede eliminar la subcategoría '%s' porque está siendo utilizada por %d encuentro(s)",
+                    subcategoria.getNombre(),
+                    countEncuentros));
         }
-        subcategoriaRepository.deleteById(id);
+
+        subcategoriaRepository.delete(subcategoria);
     }
 }

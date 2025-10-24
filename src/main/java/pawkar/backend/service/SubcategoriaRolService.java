@@ -14,6 +14,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import pawkar.backend.request.BulkSubcategoriaRolRequest;
 import pawkar.backend.dto.SubcategoriaRolResponseDto;
+import pawkar.backend.dto.SubcategoriaRolDto;
 
 @Service
 public class SubcategoriaRolService {
@@ -61,13 +62,20 @@ public class SubcategoriaRolService {
         subcategoriaRolRepository.deleteBySubcategoria_SubcategoriaIdAndRol_Id(subcategoriaId, rolId);
     }
 
-    @Transactional
-    public List<SubcategoriaRol> obtenerRolesPorSubcategoria(Integer subcategoriaId) {
+    @Transactional(readOnly = true)
+    public List<SubcategoriaRolDto> obtenerRolesPorSubcategoria(Integer subcategoriaId) {
         if (!subcategoriaRepository.existsById(subcategoriaId)) {
             throw new RuntimeException("Subcategoría no encontrada");
         }
 
-        return subcategoriaRolRepository.findBySubcategoria_SubcategoriaId(subcategoriaId);
+        return subcategoriaRolRepository.findBySubcategoria_SubcategoriaId(subcategoriaId).stream()
+                .map(sr -> new SubcategoriaRolDto(
+                        sr.getRol().getId(),
+                        sr.getRol().getName().name(),
+                        sr.getRol().getDetail(),
+                        sr.getSubcategoria().getSubcategoriaId(),
+                        sr.getSubcategoria().getNombre()))
+                .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)

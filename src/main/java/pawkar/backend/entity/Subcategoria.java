@@ -1,6 +1,8 @@
 package pawkar.backend.entity;
 
 import jakarta.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "subcategorias")
@@ -21,6 +23,9 @@ public class Subcategoria {
     
     @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT TRUE")
     private Boolean estado = true;
+
+    @OneToMany(mappedBy = "subcategoria", fetch = FetchType.LAZY)
+    private List<Encuentro> encuentros = new ArrayList<>();
 
     public Subcategoria() {
     }
@@ -71,5 +76,13 @@ public class Subcategoria {
     
     public void setEstado(Boolean estado) {
         this.estado = estado;
+    }
+    
+    public List<Encuentro> getEncuentros() {
+        return encuentros;
+    }
+    
+    public void setEncuentros(List<Encuentro> encuentros) {
+        this.encuentros = encuentros;
     }
 }

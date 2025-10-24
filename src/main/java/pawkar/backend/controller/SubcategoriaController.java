@@ -4,7 +4,6 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.http.HttpStatus;
 import pawkar.backend.entity.Subcategoria;
 import pawkar.backend.entity.Categoria;
 import pawkar.backend.request.BulkSubcategoriaRequest;

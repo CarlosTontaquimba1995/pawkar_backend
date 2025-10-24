@@ -22,6 +22,17 @@
   - [Crear múltiples subcategorías](#crear-múltiples-subcategorías)
   - [Actualizar subcategoría](#actualizar-subcategoría)
   - [Eliminar subcategoría](#eliminar-subcategoría)
+- [Gestión de Roles por Subcategoría](#gestión-de-roles-por-subcategoría)
+  - [Asignar un Rol a una Subcategoría](#asignar-un-rol-a-una-subcategoría)
+  - [Eliminar un Rol de una Subcategoría](#eliminar-un-rol-de-una-subcategoría)
+  - [Obtener Roles por ID de Subcategoría](#obtener-roles-por-id-de-subcategoría)
+  - [Obtener Roles por Nombre de Subcategoría](#obtener-roles-por-nombre-de-subcategoría)
+  - [Asignar Múltiples Roles a una Subcategoría](#asignar-múltiples-roles-a-una-subcategoría-bulk)
+- [Gestión de Roles](#gestión-de-roles)
+  - [Crear o Actualizar un Rol](#crear-o-actualizar-un-rol)
+  - [Crear o Actualizar Múltiples Roles](#crear-o-actualizar-múltiples-roles-bulk)
+  - [Obtener Todos los Roles](#obtener-todos-los-roles)
+  - [Obtener Rol por Nombre](#obtener-rol-por-nombre)
 - [Series](#series)
   - [Obtener series por subcategoría](#obtener-series-por-subcategoría)
   - [Obtener serie por ID](#obtener-serie-por-id)
@@ -1410,3 +1421,312 @@ true
 
 **Propiedades de la respuesta**:
 - `existenRegistros`: `true` si existen tanto subcategorías como series, `false` en caso contrario
+
+## Gestión de Roles por Subcategoría
+
+### Asignar un Rol a una Subcategoría
+
+Asigna un rol específico a una subcategoría.
+
+**URL**: `/api/subcategoria-roles/subcategoria/{subcategoriaId}/rol/{rolId}`
+**Método**: `POST`
+**Autenticación Requerida**: Sí  
+**Roles**: `ROLE_ADMIN`
+
+**Parámetros de Ruta**:
+- `subcategoriaId` (requerido): ID de la subcategoría
+- `rolId` (requerido): ID del rol a asignar
+
+**Respuesta Exitosa (200 OK)**
+```json
+{
+  "success": true,
+  "message": "Rol asignado correctamente a la subcategoría",
+  "data": {
+    "subcategoriaId": 1,
+    "rolId": 1,
+    "nombreSubcategoria": "Fútbol",
+    "nombreRol": "ROLE_USER"
+  }
+}
+```
+
+### Eliminar un Rol de una Subcategoría
+
+Elimina un rol específico de una subcategoría.
+
+**URL**: `/api/subcategoria-roles/subcategoria/{subcategoriaId}/rol/{rolId}`
+**Método**: `DELETE`
+**Autenticación Requerida**: Sí  
+**Roles**: `ROLE_ADMIN`
+
+**Parámetros de Ruta**:
+- `subcategoriaId` (requerido): ID de la subcategoría
+- `rolId` (requerido): ID del rol a eliminar
+
+**Respuesta Exitosa (200 OK)**
+```json
+{
+  "success": true,
+  "message": "Rol eliminado correctamente de la subcategoría",
+  "data": null
+}
+```
+
+### Obtener Roles por ID de Subcategoría
+
+Obtiene todos los roles asignados a una subcategoría específica.
+
+**URL**: `/api/subcategoria-roles/subcategoria/{subcategoriaId}`
+**Método**: `GET`
+**Autenticación Requerida**: Sí  
+**Roles**: Cualquier rol autenticado
+
+**Parámetros de Ruta**:
+- `subcategoriaId` (requerido): ID de la subcategoría
+
+**Respuesta Exitosa (200 OK)**
+```json
+{
+  "success": true,
+  "message": "Roles obtenidos correctamente",
+  "data": [
+    {
+      "id": 1,
+      "nombre": "ROLE_USER"
+    },
+    {
+      "id": 2,
+      "nombre": "ROLE_MODERATOR"
+    }
+  ]
+}
+```
+
+### Obtener Roles por Nombre de Subcategoría
+
+Obtiene todos los roles asignados a una subcategoría específica por su nombre.
+
+**URL**: `/api/subcategoria-roles/subcategoria/nombre/{nombreSubcategoria}`
+**Método**: `GET`
+**Autenticación Requerida**: Sí  
+**Roles**: Cualquier rol autenticado
+
+**Parámetros de Ruta**:
+- `nombreSubcategoria` (requerido): Nombre de la subcategoría
+
+**Respuesta Exitosa (200 OK)**
+```json
+{
+  "success": true,
+  "message": "Roles obtenidos correctamente para la subcategoría: Fútbol",
+  "data": [
+    {
+      "id": 1,
+      "nombre": "ROLE_USER"
+    },
+    {
+      "id": 2,
+      "nombre": "ROLE_MODERATOR"
+    }
+  ]
+}
+```
+
+### Asignar Múltiples Roles a una Subcategoría (Bulk)
+
+Asigna múltiples roles a una subcategoría en una sola operación.
+
+**URL**: `/api/subcategoria-roles/bulk`
+**Método**: `POST`
+**Autenticación Requerida**: Sí  
+**Roles**: `ROLE_ADMIN`
+
+**Cuerpo de la Solicitud (JSON)**:
+```json
+{
+  "subcategoriaId": 1,
+  "rolesIds": [1, 2, 3]
+}
+```
+
+**Respuesta Exitosa (200 OK)**
+```json
+{
+  "success": true,
+  "message": "Roles asignados correctamente a la subcategoría",
+  "data": {
+    "subcategoriaId": 1,
+    "rolesAsignados": [
+      {
+        "id": 1,
+        "nombre": "ROLE_USER"
+      },
+      {
+        "id": 2,
+        "nombre": "ROLE_MODERATOR"
+      },
+      {
+        "id": 3,
+        "nombre": "ROLE_ADMIN"
+      }
+    ]
+  }
+}
+```
+
+## Gestión de Roles
+
+### Crear o Actualizar un Rol
+
+Crea un nuevo rol o actualiza uno existente si ya existe.
+
+**URL**: `/api/roles`  
+**Método**: `POST`  
+**Autenticación Requerida**: Sí  
+**Roles**: `ROLE_ADMIN`
+
+**Cuerpo de la Solicitud (JSON)**:
+```json
+{
+  "name": "ROLE_NUEVO",
+  "description": "Descripción del nuevo rol"
+}
+```
+
+**Respuesta Exitosa (201 Created)**
+```json
+{
+  "success": true,
+  "message": "Rol creado exitosamente",
+  "data": {
+    "id": 4,
+    "name": "ROLE_NUEVO",
+    "description": "Descripción del nuevo rol"
+  }
+}
+```
+
+### Crear o Actualizar Múltiples Roles (Bulk)
+
+Crea o actualiza múltiples roles en una sola operación.
+
+**URL**: `/api/roles/bulk`  
+**Método**: `POST`  
+**Autenticación Requerida**: Sí  
+**Roles**: `ROLE_ADMIN`
+
+**Cuerpo de la Solicitud (JSON)**:
+```json
+{
+  "roles": [
+    {
+      "name": "ROLE_NUEVO1",
+      "description": "Descripción del rol 1"
+    },
+    {
+      "name": "ROLE_NUEVO2",
+      "description": "Descripción del rol 2"
+    }
+  ]
+}
+```
+
+**Respuesta Exitosa (201 Created)**
+```json
+{
+  "success": true,
+  "message": "Roles procesados exitosamente",
+  "data": [
+    {
+      "id": 5,
+      "name": "ROLE_NUEVO1",
+      "description": "Descripción del rol 1"
+    },
+    {
+      "id": 6,
+      "name": "ROLE_NUEVO2",
+      "description": "Descripción del rol 2"
+    }
+  ]
+}
+```
+
+### Obtener Todos los Roles
+
+Obtiene una lista de todos los roles disponibles en el sistema.
+
+**URL**: `/api/roles`  
+**Método**: `GET`  
+**Autenticación Requerida**: Sí  
+**Roles**: Cualquier rol autenticado
+
+**Respuesta Exitosa (200 OK)**
+```json
+{
+  "success": true,
+  "message": "Lista de roles obtenida exitosamente",
+  "data": [
+    {
+      "id": 1,
+      "name": "ROLE_USER",
+      "description": "Rol de usuario estándar"
+    },
+    {
+      "id": 2,
+      "name": "ROLE_MODERATOR",
+      "description": "Rol de moderador"
+    },
+    {
+      "id": 3,
+      "name": "ROLE_ADMIN",
+      "description": "Rol de administrador"
+    }
+  ]
+}
+```
+
+### Obtener Rol por Nombre
+
+Obtiene los detalles de un rol específico por su nombre.
+
+**URL**: `/api/roles/{name}`  
+**Método**: `GET`  
+**Autenticación Requerida**: Sí  
+**Roles**: Cualquier rol autenticado
+
+**Parámetros de Ruta**:
+- `name` (requerido): Nombre del rol (ej: ROLE_USER, ROLE_ADMIN)
+
+**Respuesta Exitosa (200 OK)**
+```json
+{
+  "success": true,
+  "message": "Rol encontrado exitosamente",
+  "data": {
+    "id": 1,
+    "name": "ROLE_USER",
+    "description": "Rol de usuario estándar"
+  }
+}
+```
+
+**Respuesta de Error (404 Not Found)**
+```json
+{
+  "success": false,
+  "message": "No se encontró el rol especificado",
+  "error": "Not Found",
+  "path": "/api/roles/ROL_INEXISTENTE"
+}
+```
+
+**Respuesta de Error (400 Bad Request)**
+```json
+{
+  "success": false,
+  "message": "Nombre de rol no válido: ROL_INVALIDO",
+  "error": "Bad Request",
+  "path": "/api/roles/ROL_INVALIDO"
+}
+```
