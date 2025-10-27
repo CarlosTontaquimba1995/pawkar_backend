@@ -26,6 +26,7 @@
   - [Asignar un Rol a una Subcategoría](#asignar-un-rol-a-una-subcategoría)
   - [Eliminar un Rol de una Subcategoría](#eliminar-un-rol-de-una-subcategoría)
   - [Obtener Roles por ID de Subcategoría](#obtener-roles-por-id-de-subcategoría)
+  - [Actualizar Relación Subcategoría-Rol](#actualizar-relación-subcategoría-rol)
   - [Obtener Roles por Nombre de Subcategoría](#obtener-roles-por-nombre-de-subcategoría)
   - [Asignar Múltiples Roles a una Subcategoría](#asignar-múltiples-roles-a-una-subcategoría-bulk)
 - [Gestión de Roles](#gestión-de-roles)
@@ -1514,6 +1515,43 @@ Obtiene todos los roles asignados a una subcategoría específica.
   ]
 }
 ```
+
+### Actualizar Relación Subcategoría-Rol
+
+Actualiza la relación entre una subcategoría y un rol existente.
+
+**URL**: `/api/subcategoria-roles/{id}`  
+**Método**: `PUT`  
+**Autenticación Requerida**: Sí  
+**Roles**: `ROLE_ADMIN`
+
+**Parámetros de Ruta**:
+- `id` (requerido): ID de la relación subcategoría-rol a actualizar
+
+**Cuerpo de la Solicitud**:
+```json
+{
+  "subcategoriaId": 1,
+  "rolId": 2
+}
+```
+
+**Respuesta Exitosa (200 OK)**
+```json
+{
+  "success": true,
+  "message": "Relación entre subcategoría y rol actualizada exitosamente",
+  "data": {
+    "id": 1,
+    "subcategoriaId": 1,
+    "rolId": 2
+  }
+}
+```
+
+**Errores**:
+- `400 Bad Request`: Si ya existe una relación idéntica o los datos son inválidos
+- `404 Not Found`: Si la relación, subcategoría o rol no existen
 
 ### Obtener Roles por Nombre de Subcategoría
 

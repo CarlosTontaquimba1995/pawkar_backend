@@ -6,8 +6,10 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import pawkar.backend.request.BulkSubcategoriaRolRequest;
 import pawkar.backend.response.ApiResponseStandard;
 import pawkar.backend.service.SubcategoriaRolService;
+import pawkar.backend.request.SubcategoriaRolRequest;
 
 import java.util.Map;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/subcategoria-roles")
@@ -80,13 +82,35 @@ public class SubcategoriaRolController {
 
     @PostMapping("/bulk")
     @PreAuthorize("hasRole('ADMIN')")
-    public ApiResponseStandard<?> asignarRolesASubcategoria(@RequestBody BulkSubcategoriaRolRequest request) {
+    public ApiResponseStandard<Map<String, Object>> asignarRolesASubcategoria(
+            @RequestBody BulkSubcategoriaRolRequest request) {
+        Map<String, Object> result = subcategoriaRolService.asignarRolesASubcategoria(request);
+        return ApiResponseStandard.success(result, "Roles asignados correctamente a la subcategoría");
+    }
+
+    /**
+     * Actualiza la relación entre una subcategoría y un rol
+     * 
+     * @param id      ID de la relación a actualizar
+     * @param request Datos de la relación actualizada
+     * @return Respuesta con la relación actualizada
+     */
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ApiResponseStandard<Map<String, Object>> actualizarRolSubcategoria(
+            @PathVariable Integer id,
+            @Valid @RequestBody SubcategoriaRolRequest request) {
         try {
-            Map<String, Object> result = subcategoriaRolService.asignarRolesASubcategoria(request);
-            return ApiResponseStandard.success(result, "Roles asignados correctamente a la subcategoría");
+            Map<String, Object> resultado = subcategoriaRolService.actualizarRolSubcategoria(id, request);
+            return ApiResponseStandard.success(
+                    resultado,
+                    "Relación entre subcategoría y rol actualizada exitosamente");
         } catch (Exception e) {
-            return ApiResponseStandard.error(e.getMessage(), "/api/subcategoria-roles/bulk",
-                    "Bad Request", 400);
+            return ApiResponseStandard.error(
+                    e.getMessage(),
+                    "/api/subcategoria-roles/" + id,
+                    "Error al actualizar la relación",
+                    400);
         }
     }
 }
