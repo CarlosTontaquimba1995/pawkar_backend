@@ -5,7 +5,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import pawkar.backend.entity.Role;
-import pawkar.backend.enums.ERole;
 
 @Getter
 @Setter
@@ -13,7 +12,7 @@ import pawkar.backend.enums.ERole;
 @AllArgsConstructor
 public class RoleResponse {
     private Long id;
-    private ERole name;
+    private String name;
     private String detail;
     private boolean estado;
 

@@ -175,7 +175,7 @@ public class PlantillaService {
                 .jugadorNombreCompleto(plantilla.getJugador().getNombre() + " " + plantilla.getJugador().getApellido())
                 .numeroCamiseta(plantilla.getNumeroCamiseta())
                 .rolId(plantilla.getRol().getId())
-                .rolNombre(plantilla.getRol().getName().name())
+                .rolNombre(plantilla.getRol().getName())
                 .tieneSancion(!sanciones.isEmpty())
                 .sanciones(sancionesInfo)
                 .build();

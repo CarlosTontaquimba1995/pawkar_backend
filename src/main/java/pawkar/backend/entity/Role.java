@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import pawkar.backend.enums.ERole;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -21,9 +20,8 @@ public class Role {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Enumerated(EnumType.STRING)
-    @Column(length = 50)
-    private ERole name;
+    @Column(length = 50, unique = true, nullable = false)
+    private String name;
 
     @Column(length = 100)
     private String detail;
@@ -34,7 +32,7 @@ public class Role {
     @ManyToMany(mappedBy = "roles")
     private Set<Subcategoria> subcategorias = new HashSet<>();
 
-    public Role(ERole name, String detail) {
+    public Role(String name, String detail) {
         this.name = name;
         this.detail = detail;
         this.estado = true;

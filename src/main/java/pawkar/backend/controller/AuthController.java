@@ -12,7 +12,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-import pawkar.backend.enums.ERole;
 import pawkar.backend.entity.Role;
 import pawkar.backend.entity.User;
 import pawkar.backend.repository.RoleRepository;
@@ -115,24 +114,31 @@ public class AuthController {
         Set<String> strRoles = signUpRequest.getRole();
         Set<Role> roles = new HashSet<>();
 
-        if (strRoles == null) {
-            Role userRole = roleRepository.findByName(ERole.ROLE_USER)
-                    .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+        if (strRoles == null || strRoles.isEmpty()) {
+            // Default role if none specified
+            Role userRole = roleRepository.findByName("ROLE_USER")
+                    .orElseGet(() -> {
+                        // Create the default role if it doesn't exist
+                        Role newRole = new Role("ROLE_USER", "Default user role");
+                        return roleRepository.save(newRole);
+                    });
             roles.add(userRole);
         } else {
-            strRoles.forEach(role -> {
-                switch (role) {
-                    case "admin":
-                        Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
-                                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                        roles.add(adminRole);
-                        break;
-                    default:
-                        Role userRole = roleRepository.findByName(ERole.ROLE_USER)
-                                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                        roles.add(userRole);
+            for (String role : strRoles) {
+                String roleName = role.toUpperCase();
+                if (!roleName.startsWith("ROLE_")) {
+                    roleName = "ROLE_" + roleName;
                 }
-            });
+                
+                String finalRoleName = roleName;
+                Role foundRole = roleRepository.findByName(roleName)
+                        .orElseGet(() -> {
+                            // Create the role if it doesn't exist
+                            Role newRole = new Role(finalRoleName, "Automatically created role");
+                            return roleRepository.save(newRole);
+                        });
+                roles.add(foundRole);
+            }
         }
 
         user.setRoles(roles);

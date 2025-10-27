@@ -74,8 +74,8 @@ public class SubcategoriaRolService {
         return subcategoriaRolRepository.findBySubcategoria_SubcategoriaId(subcategoriaId).stream()
                 .map(sr -> new SubcategoriaRolDto(
                         sr.getRol().getId(),
-                        sr.getRol().getName().name(),
-                        sr.getRol().getDetail(),
+                        sr.getRol().getName(),
+                                sr.getRol().getDetail(),
                         sr.getSubcategoria().getSubcategoriaId(),
                         sr.getSubcategoria().getNombre()))
                 .collect(Collectors.toList());
@@ -138,7 +138,7 @@ public class SubcategoriaRolService {
         response.put("subcategoriaId", nuevaSubcategoria.getSubcategoriaId());
         response.put("subcategoriaNombre", nuevaSubcategoria.getNombre());
         response.put("rolId", nuevoRol.getId());
-        response.put("rolName", nuevoRol.getName().name());
+        response.put("rolName", nuevoRol.getName());
         response.put("mensaje", "Relación actualizada exitosamente");
 
         return response;
@@ -185,7 +185,7 @@ public class SubcategoriaRolService {
 
         if (!existingRelations.isEmpty()) {
             List<String> existingRoleNames = existingRelations.stream()
-                    .map(sr -> sr.getRol().getName().name())
+                    .map(sr -> sr.getRol().getName())
                     .collect(Collectors.toList());
             throw new BadRequestException("La subcategoría, ya tiene asignado los siguientes roles: " +
                     String.join(", ", existingRoleNames));
@@ -200,7 +200,7 @@ public class SubcategoriaRolService {
 
         // Obtener nombres de los roles asignados
         List<String> nombresRolesAsignados = newRelations.stream()
-                .map(sr -> sr.getRol().getName().name())
+                .map(sr -> sr.getRol().getName())
                 .collect(Collectors.toList());
 
         // Preparar respuesta

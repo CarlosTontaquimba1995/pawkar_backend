@@ -6,7 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import pawkar.backend.request.RoleRequest;
 import pawkar.backend.response.RoleResponse;
 import pawkar.backend.entity.Role;
-import pawkar.backend.enums.ERole;
+import pawkar.backend.exception.BadRequestException;
 import pawkar.backend.exception.ResourceNotFoundException;
 import pawkar.backend.repository.RoleRepository;
 
@@ -26,12 +26,19 @@ public class RoleService {
 
     @Transactional
     public RoleResponse createOrUpdateRole(RoleRequest roleRequest) {
-        Role role = roleRepository.findByName(roleRequest.getName())
+        if (roleRequest.getName() == null || roleRequest.getName().trim().isEmpty()) {
+            throw new BadRequestException("El nombre del rol no puede estar vacío");
+        }
+
+        // Convertir a mayúsculas para evitar duplicados por diferencias en mayúsculas/minúsculas
+        String roleName = roleRequest.getName().trim().toUpperCase();
+        
+        Role role = roleRepository.findByName(roleName)
                 .map(existingRole -> {
                     existingRole.setDetail(roleRequest.getDetail());
                     return existingRole;
                 })
-                .orElseGet(() -> new Role(roleRequest.getName(), roleRequest.getDetail()));
+                .orElseGet(() -> new Role(roleName, roleRequest.getDetail()));
 
         Role savedRole = roleRepository.save(role);
         return RoleResponse.fromEntity(savedRole);
@@ -50,8 +57,11 @@ public class RoleService {
                 .collect(Collectors.toList());
     }
 
-    public Optional<RoleResponse> getRoleByName(ERole name) {
-        return roleRepository.findByName(name)
+    public Optional<RoleResponse> getRoleByName(String name) {
+        if (name == null || name.trim().isEmpty()) {
+            return Optional.empty();
+        }
+        return roleRepository.findByName(name.trim().toUpperCase())
                 .map(RoleResponse::fromEntity);
     }
 
@@ -62,10 +72,23 @@ public class RoleService {
 
     @Transactional
     public RoleResponse updateRole(Long id, RoleRequest roleRequest) {
+        if (roleRequest.getName() == null || roleRequest.getName().trim().isEmpty()) {
+            throw new BadRequestException("El nombre del rol no puede estar vacío");
+        }
+
+        String newName = roleRequest.getName().trim().toUpperCase();
+        
+        // Verificar si ya existe otro rol con el mismo nombre (excluyendo el actual)
+        roleRepository.findByName(newName)
+            .filter(existingRole -> !existingRole.getId().equals(id))
+            .ifPresent(role -> {
+                throw new BadRequestException("Ya existe un rol con el nombre: " + newName);
+            });
+
         Role role = roleRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("No se encontró el rol con ID: " + id));
 
-        role.setName(roleRequest.getName());
+        role.setName(newName);
         role.setDetail(roleRequest.getDetail());
         Role updatedRole = roleRepository.save(role);
         return RoleResponse.fromEntity(updatedRole);

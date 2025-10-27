@@ -2,12 +2,10 @@ package pawkar.backend.controller;
 
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import pawkar.backend.request.BulkRoleRequest;
 import pawkar.backend.request.RoleRequest;
 import pawkar.backend.response.RoleResponse;
-import pawkar.backend.enums.ERole;
 import pawkar.backend.response.ApiResponseStandard;
 import pawkar.backend.service.RoleService;
 import pawkar.backend.exception.ResourceNotFoundException;
@@ -26,7 +24,6 @@ public class RoleController {
     }
 
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
     public ApiResponseStandard<RoleResponse> createOrUpdateRole(
             @Valid @RequestBody RoleRequest roleRequest) {
         RoleResponse response = roleService.createOrUpdateRole(roleRequest);
@@ -35,7 +32,6 @@ public class RoleController {
     }
 
     @PostMapping("/bulk")
-    @ResponseStatus(HttpStatus.CREATED)
     public ApiResponseStandard<List<RoleResponse>> createOrUpdateRoles(
             @Valid @RequestBody BulkRoleRequest bulkRequest) {
         List<RoleResponse> responses = roleService.createOrUpdateRoles(bulkRequest.getRoles());
@@ -58,14 +54,16 @@ public class RoleController {
 
     @GetMapping("/name/{name}")
     public ApiResponseStandard<RoleResponse> getRoleByName(@PathVariable String name) {
-        try {
-            ERole roleEnum = ERole.valueOf(name.toUpperCase());
-            return roleService.getRoleByName(roleEnum)
-                    .map(role -> ApiResponseStandard.success(role, "Rol encontrado exitosamente"))
-                    .orElseThrow(() -> new ResourceNotFoundException("No se encontró el rol especificado"));
-        } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Nombre de rol no válido: " + name);
+        if (name == null || name.trim().isEmpty()) {
+            throw new IllegalArgumentException("El nombre del rol no puede estar vacío");
         }
+
+        // Convertir a mayúsculas para asegurar consistencia
+        String roleName = name.trim().toUpperCase();
+
+        return roleService.getRoleByName(roleName)
+                .map(role -> ApiResponseStandard.success(role, "Rol encontrado exitosamente"))
+                .orElseThrow(() -> new ResourceNotFoundException("No se encontró el rol: " + roleName));
     }
 
     @PutMapping("/{id}")

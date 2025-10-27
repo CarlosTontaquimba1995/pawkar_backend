@@ -15,9 +15,9 @@ public class DataInitializer {
         return args -> {
             // Create roles if they don't exist
             for (ERole role : ERole.values()) {
-                if (!roleRepository.existsByName(role)) {
+                if (!roleRepository.existsByName(role.name())) {
                     String detail = getRoleDetail(role);
-                    Role newRole = new Role(role, detail);
+                    Role newRole = new Role(role.name(), detail);
                     roleRepository.save(newRole);
                 }
             }
