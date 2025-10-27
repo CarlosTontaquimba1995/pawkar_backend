@@ -37,7 +37,7 @@ public class SubcategoriaRolService {
 
     @Transactional
     public Map<String, Object> asignarRolASubcategoria(Integer subcategoriaId, Long rolId) {
-        if (subcategoriaRolRepository.existsBySubcategoria_SubcategoriaIdAndRol_Id(subcategoriaId, rolId)) {
+        if (subcategoriaRolRepository.existsBySubcategoriaSubcategoriaIdAndRolId(subcategoriaId, rolId)) {
             throw new RuntimeException("El rol ya está asignado a esta subcategoría");
         }
 
@@ -59,10 +59,10 @@ public class SubcategoriaRolService {
 
     @Transactional
     public void eliminarRolDeSubcategoria(Integer subcategoriaId, Long rolId) {
-        if (!subcategoriaRolRepository.existsBySubcategoria_SubcategoriaIdAndRol_Id(subcategoriaId, rolId)) {
+        if (!subcategoriaRolRepository.existsBySubcategoriaSubcategoriaIdAndRolId(subcategoriaId, rolId)) {
             throw new RuntimeException("No se encontró la relación entre la subcategoría y el rol");
         }
-        subcategoriaRolRepository.deleteBySubcategoria_SubcategoriaIdAndRol_Id(subcategoriaId, rolId);
+        subcategoriaRolRepository.deleteBySubcategoriaSubcategoriaIdAndRolId(subcategoriaId, rolId);
     }
 
     @Transactional(readOnly = true)
@@ -71,7 +71,7 @@ public class SubcategoriaRolService {
             throw new RuntimeException("Subcategoría no encontrada");
         }
 
-        return subcategoriaRolRepository.findBySubcategoria_SubcategoriaId(subcategoriaId).stream()
+        return subcategoriaRolRepository.findBySubcategoriaSubcategoriaId(subcategoriaId).stream()
                 .map(sr -> new SubcategoriaRolDto(
                         sr.getRol().getId(),
                         sr.getRol().getName(),
@@ -116,7 +116,7 @@ public class SubcategoriaRolService {
                 .orElseThrow(() -> new RuntimeException("Rol no encontrado con ID: " + request.getRolId()));
 
         // Verificar si ya existe la misma relación (subcategoría + rol)
-        if (subcategoriaRolRepository.existsBySubcategoria_SubcategoriaIdAndRol_Id(
+        if (subcategoriaRolRepository.existsBySubcategoriaSubcategoriaIdAndRolId(
                 request.getSubcategoriaId(), request.getRolId())) {
             throw new RuntimeException("Ya existe una relación entre esta subcategoría y el rol");
         }
@@ -181,7 +181,7 @@ public class SubcategoriaRolService {
 
         // Verificar roles ya asignados a la subcategoría
         List<SubcategoriaRol> existingRelations = subcategoriaRolRepository
-                .findBySubcategoria_SubcategoriaIdAndRol_IdIn(subcategoriaId, rolIds);
+                .findBySubcategoriaSubcategoriaIdAndRolIdIn(subcategoriaId, rolIds);
 
         if (!existingRelations.isEmpty()) {
             List<String> existingRoleNames = existingRelations.stream()

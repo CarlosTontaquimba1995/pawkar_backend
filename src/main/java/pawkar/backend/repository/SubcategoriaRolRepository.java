@@ -15,18 +15,18 @@ import java.util.Optional;
 @Repository
 public interface SubcategoriaRolRepository extends JpaRepository<SubcategoriaRol, SubcategoriaRol.SubcategoriaRolId> {
 
-    boolean existsBySubcategoria_SubcategoriaIdAndRol_Id(Integer subcategoriaId, Long rolId);
+        boolean existsBySubcategoriaSubcategoriaIdAndRolId(Integer subcategoriaId, Long rolId);
 
     @Modifying
     @Query("DELETE FROM SubcategoriaRol sr WHERE sr.subcategoria.subcategoriaId = :subcategoriaId AND sr.rol.id = :rolId")
-    void deleteBySubcategoria_SubcategoriaIdAndRol_Id(@Param("subcategoriaId") Integer subcategoriaId,
-            @Param("rolId") Long rolId);
+    void deleteBySubcategoriaSubcategoriaIdAndRolId(@Param("subcategoriaId") Integer subcategoriaId,
+                    @Param("rolId") Long rolId);
 
     @Query("SELECT sr FROM SubcategoriaRol sr WHERE sr.subcategoria.subcategoriaId = :subcategoriaId")
-    java.util.List<SubcategoriaRol> findBySubcategoria_SubcategoriaId(@Param("subcategoriaId") Integer subcategoriaId);
+    java.util.List<SubcategoriaRol> findBySubcategoriaSubcategoriaId(@Param("subcategoriaId") Integer subcategoriaId);
     
     @Query("SELECT sr FROM SubcategoriaRol sr WHERE sr.subcategoria.subcategoriaId = :subcategoriaId AND sr.rol.id IN :rolIds")
-    List<SubcategoriaRol> findBySubcategoria_SubcategoriaIdAndRol_IdIn(
+    List<SubcategoriaRol> findBySubcategoriaSubcategoriaIdAndRolIdIn(
             @Param("subcategoriaId") Integer subcategoriaId, 
             @Param("rolIds") List<Long> rolIds
     );
