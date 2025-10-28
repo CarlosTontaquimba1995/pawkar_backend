@@ -7,6 +7,18 @@
   - [Registrar usuario](#registrar-usuario)
   - [Refrescar token](#refrescar-token)
 
+- [Encuentros](#encuentros)
+  - [Crear un encuentro](#crear-un-encuentro)
+  - [Crear múltiples encuentros](#crear-múltiples-encuentros)
+  - [Obtener todos los encuentros](#obtener-todos-los-encuentros)
+  - [Obtener encuentro por ID](#obtener-encuentro-por-id)
+  - [Obtener encuentros por subcategoría](#obtener-encuentros-por-subcategoría)
+  - [Buscar encuentros (POST)](#buscar-encuentros-post)
+  - [Buscar encuentros con parámetros de consulta](#buscar-encuentros-con-parámetros-de-consulta)
+  - [Obtener encuentros por equipo](#obtener-encuentros-por-equipo)
+  - [Actualizar encuentro](#actualizar-encuentro)
+  - [Eliminar encuentro](#eliminar-encuentro)
+
 - [Categorías](#categorías)
   - [Obtener todas las categorías](#obtener-todas-las-categorías)
   - [Obtener categoría por ID](#obtener-categoría-por-id)
@@ -172,6 +184,442 @@
 **Errores**:
 - `400 Bad Request`: No se pudo refrescar el token
 - `401 Unauthorized`: Token no proporcionado o inválido
+
+## Encuentros
+
+### Crear un encuentro
+
+**URL**: `/encuentros`  
+**Método**: `POST`  
+**Descripción**: Crea un nuevo encuentro  
+**Autenticación Requerida**: Sí  
+**Roles**: `ROLE_ADMIN`, `ROLE_MODERATOR`
+
+**Cuerpo de la Solicitud**:
+```json
+{
+  "fechaHora": "2025-12-31T20:00:00",
+  "estadioLugar": "Estadio Principal",
+  "subcategoriaId": 1,
+  "equipoLocalId": 1,
+  "equipoVisitanteId": 2,
+  "estado": "PENDIENTE"
+}
+```
+
+**Respuesta Exitosa (200 OK)**
+```json
+{
+  "success": true,
+  "message": "Encuentro creado exitosamente",
+  "data": {
+    "id": 1,
+    "fechaHora": "2025-12-31T20:00:00",
+    "estadioLugar": "Estadio Principal",
+    "estado": "PENDIENTE",
+    "subcategoriaId": 1,
+    "equipoLocalId": 1,
+    "equipoVisitanteId": 2
+  }
+}
+```
+
+### Crear múltiples encuentros
+
+**URL**: `/encuentros/bulk`  
+**Método**: `POST`  
+**Descripción**: Crea múltiples encuentros en una sola operación  
+**Autenticación Requerida**: Sí  
+**Roles**: `ROLE_ADMIN`, `ROLE_MODERATOR`
+
+**Cuerpo de la Solicitud**:
+```json
+[
+  {
+    "fechaHora": "2025-12-31T20:00:00",
+    "estadioLugar": "Estadio Principal",
+    "subcategoriaId": 1,
+    "equipoLocalId": 1,
+    "equipoVisitanteId": 2,
+    "estado": "PENDIENTE"
+  },
+  {
+    "fechaHora": "2026-01-07T20:00:00",
+    "estadioLugar": "Estadio Secundario",
+    "subcategoriaId": 1,
+    "equipoLocalId": 3,
+    "equipoVisitanteId": 4,
+    "estado": "PENDIENTE"
+  }
+]
+```
+
+**Respuesta Exitosa (200 OK)**
+```json
+{
+  "success": true,
+  "message": "Encuentros creados exitosamente",
+  "data": [
+    {
+      "id": 1,
+      "fechaHora": "2025-12-31T20:00:00",
+      "estadioLugar": "Estadio Principal",
+      "estado": "PENDIENTE",
+      "subcategoriaId": 1,
+      "equipoLocalId": 1,
+      "equipoVisitanteId": 2
+    },
+    {
+      "id": 2,
+      "fechaHora": "2026-01-07T20:00:00",
+      "estadioLugar": "Estadio Secundario",
+      "estado": "PENDIENTE",
+      "subcategoriaId": 1,
+      "equipoLocalId": 3,
+      "equipoVisitanteId": 4
+    }
+  ]
+}
+```
+
+### Obtener todos los encuentros
+
+**URL**: `/encuentros`  
+**Método**: `GET`  
+**Descripción**: Obtiene una lista de todos los encuentros  
+**Autenticación Requerida**: No
+
+**Respuesta Exitosa (200 OK)**
+```json
+{
+  "success": true,
+  "message": "Lista de encuentros obtenida exitosamente",
+  "data": [
+    {
+      "id": 1,
+      "fechaHora": "2025-12-31T20:00:00",
+      "estadioLugar": "Estadio Principal",
+      "estado": "PENDIENTE",
+      "subcategoriaId": 1,
+      "equipoLocalId": 1,
+      "equipoVisitanteId": 2
+    }
+  ]
+}
+```
+
+### Obtener encuentro por ID
+
+**URL**: `/encuentros/{id}`  
+**Método**: `GET`  
+**Descripción**: Obtiene un encuentro específico por su ID  
+**Autenticación Requerida**: No
+
+**Parámetros de Ruta**:
+- `id` (requerido): ID del encuentro
+
+**Respuesta Exitosa (200 OK)**
+```json
+{
+  "success": true,
+  "message": "Encuentro obtenido exitosamente",
+  "data": {
+    "id": 1,
+    "fechaHora": "2025-12-31T20:00:00",
+    "estadioLugar": "Estadio Principal",
+    "estado": "PENDIENTE",
+    "subcategoriaId": 1,
+    "equipoLocalId": 1,
+    "equipoVisitanteId": 2
+  }
+}
+```
+
+### Obtener encuentros por subcategoría
+
+**URL**: `/encuentros/subcategoria/{subcategoriaId}`  
+**Método**: `GET`  
+**Descripción**: Obtiene todos los encuentros de una subcategoría específica  
+**Autenticación Requerida**: No
+
+**Parámetros de Ruta**:
+- `subcategoriaId` (requerido): ID de la subcategoría
+
+**Respuesta Exitosa (200 OK)**
+```json
+{
+  "success": true,
+  "message": "Encuentros por subcategoría obtenidos exitosamente",
+  "data": [
+    {
+      "id": 1,
+      "fechaHora": "2025-12-31T20:00:00",
+      "estadioLugar": "Estadio Principal",
+      "estado": "PENDIENTE",
+      "subcategoriaId": 1,
+      "equipoLocalId": 1,
+      "equipoVisitanteId": 2
+    }
+  ]
+}
+```
+
+### Buscar encuentros (POST)
+
+**URL**: `/encuentros/search`  
+**Método**: `POST`  
+**Descripción**: Busca encuentros según criterios específicos  
+**Autenticación Requerida**: No
+
+**Cuerpo de la Solicitud**:
+```json
+{
+  "titulo": "Partido",
+  "fechaInicio": "2025-12-01",
+  "fechaFin": "2025-12-31",
+  "subcategoriaId": 1,
+  "equipoId": 1,
+  "estadioLugar": "Principal"
+}
+```
+
+**Respuesta Exitosa (200 OK)**
+```json
+{
+  "success": true,
+  "message": "Búsqueda de encuentros completada exitosamente",
+  "data": {
+    "content": [
+      {
+        "id": 1,
+        "fechaHora": "2025-12-31T20:00:00",
+        "estadioLugar": "Estadio Principal",
+        "estado": "PENDIENTE",
+        "subcategoriaId": 1,
+        "equipoLocalId": 1,
+        "equipoVisitanteId": 2
+      }
+    ],
+    "pageable": {
+      "sort": {
+        "sorted": false,
+        "unsorted": true,
+        "empty": true
+      },
+      "pageNumber": 0,
+      "pageSize": 10,
+      "offset": 0,
+      "paged": true,
+      "unpaged": false
+    },
+    "totalElements": 1,
+    "totalPages": 1,
+    "last": true,
+    "first": true,
+    "sort": {
+      "sorted": false,
+      "unsorted": true,
+      "empty": true
+    },
+    "numberOfElements": 1,
+    "size": 10,
+    "number": 0,
+    "empty": false
+  }
+}
+```
+
+### Buscar encuentros con parámetros de consulta
+
+**URL**: `/encuentros/search/params`  
+**Método**: `GET`  
+**Descripción**: Busca encuentros usando parámetros de consulta  
+**Autenticación Requerida**: No
+
+**Parámetros de Consulta**:
+- `subcategoriaId` (opcional): ID de la subcategoría
+- `fechaInicio` (opcional): Fecha de inicio (formato ISO 8601)
+- `fechaFin` (opcional): Fecha de fin (formato ISO 8601)
+- `estadioLugar` (opcional): Nombre o parte del nombre del estadio
+- `estado` (opcional): Estado del encuentro
+- `equipoId` (opcional): ID del equipo (local o visitante)
+- `page` (opcional): Número de página (por defecto 0)
+- `size` (opcional): Tamaño de página (por defecto 10)
+
+**Respuesta Exitosa (200 OK)**
+```json
+{
+  "success": true,
+  "message": "Búsqueda de encuentros completada exitosamente",
+  "data": {
+    "content": [
+      {
+        "id": 1,
+        "fechaHora": "2025-12-31T20:00:00",
+        "estadioLugar": "Estadio Principal",
+        "estado": "PENDIENTE",
+        "subcategoriaId": 1,
+        "equipoLocalId": 1,
+        "equipoVisitanteId": 2
+      }
+    ],
+    "pageable": {
+      "sort": {
+        "sorted": false,
+        "unsorted": true,
+        "empty": true
+      },
+      "pageNumber": 0,
+      "pageSize": 10,
+      "offset": 0,
+      "paged": true,
+      "unpaged": false
+    },
+    "totalElements": 1,
+    "totalPages": 1,
+    "last": true,
+    "first": true,
+    "sort": {
+      "sorted": false,
+      "unsorted": true,
+      "empty": true
+    },
+    "numberOfElements": 1,
+    "size": 10,
+    "number": 0,
+    "empty": false
+  }
+}
+```
+
+### Obtener encuentros por equipo
+
+**URL**: `/encuentros/equipo/{equipoId}`  
+**Método**: `GET`  
+**Descripción**: Obtiene todos los encuentros en los que participa un equipo específico  
+**Autenticación Requerida**: No
+
+**Parámetros de Ruta**:
+- `equipoId` (requerido): ID del equipo
+
+**Parámetros de Consulta**:
+- `page` (opcional): Número de página (por defecto 0)
+- `size` (opcional): Tamaño de página (por defecto 10)
+
+**Respuesta Exitosa (200 OK)**
+```json
+{
+  "success": true,
+  "message": "Encuentros del equipo obtenidos exitosamente",
+  "data": {
+    "content": [
+      {
+        "id": 1,
+        "fechaHora": "2025-12-31T20:00:00",
+        "estadioLugar": "Estadio Principal",
+        "estado": "PENDIENTE",
+        "subcategoriaId": 1,
+        "equipoLocalId": 1,
+        "equipoVisitanteId": 2
+      }
+    ],
+    "pageable": {
+      "sort": {
+        "sorted": false,
+        "unsorted": true,
+        "empty": true
+      },
+      "pageNumber": 0,
+      "pageSize": 10,
+      "offset": 0,
+      "paged": true,
+      "unpaged": false
+    },
+    "totalElements": 1,
+    "totalPages": 1,
+    "last": true,
+    "first": true,
+    "sort": {
+      "sorted": false,
+      "unsorted": true,
+      "empty": true
+    },
+    "numberOfElements": 1,
+    "size": 10,
+    "number": 0,
+    "empty": false
+  }
+}
+```
+
+### Actualizar encuentro
+
+**URL**: `/encuentros/{id}`  
+**Método**: `PUT`  
+**Descripción**: Actualiza un encuentro existente  
+**Autenticación Requerida**: Sí  
+**Roles**: `ROLE_ADMIN`, `ROLE_MODERATOR`
+
+**Parámetros de Ruta**:
+- `id` (requerido): ID del encuentro a actualizar
+
+**Cuerpo de la Solicitud**:
+```json
+{
+  "fechaHora": "2025-12-31T21:00:00",
+  "estadioLugar": "Estadio Principal Actualizado",
+  "estado": "EN_JUEGO",
+  "subcategoriaId": 1,
+  "equipoLocalId": 1,
+  "equipoVisitanteId": 2
+}
+```
+
+**Respuesta Exitosa (200 OK)**
+```json
+{
+  "success": true,
+  "message": "Encuentro actualizado exitosamente",
+  "data": {
+    "id": 1,
+    "fechaHora": "2025-12-31T21:00:00",
+    "estadioLugar": "Estadio Principal Actualizado",
+    "estado": "EN_JUEGO",
+    "subcategoriaId": 1,
+    "equipoLocalId": 1,
+    "equipoVisitanteId": 2
+  }
+}
+```
+
+### Eliminar encuentro
+
+**URL**: `/encuentros/{id}`  
+**Método**: `DELETE`  
+**Descripción**: Elimina un encuentro existente  
+**Autenticación Requerida**: Sí  
+**Roles**: `ROLE_ADMIN`, `ROLE_MODERATOR`
+
+**Parámetros de Ruta**:
+- `id` (requerido): ID del encuentro a eliminar
+
+**Respuesta Exitosa (200 OK)**
+```json
+{
+  "success": true,
+  "message": "Encuentro eliminado exitosamente",
+  "data": null
+}
+```
+
+### Códigos de Estado HTTP
+
+- `200 OK`: La solicitud se completó exitosamente
+- `400 Bad Request`: Error en los datos de la solicitud
+- `401 Unauthorized`: No autorizado (token no proporcionado o inválido)
+- `403 Forbidden`: No tiene permisos para realizar esta acción
+- `404 Not Found`: Recurso no encontrado
+- `500 Internal Server Error`: Error interno del servidor
 
 ## Categorías
 

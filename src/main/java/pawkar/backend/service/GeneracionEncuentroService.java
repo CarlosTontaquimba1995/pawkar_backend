@@ -236,28 +236,87 @@ public class GeneracionEncuentroService {
     }
 
     private List<Encuentro> generarEncuentrosManuales(GeneracionEncuentroRequest request) {
-        return request.getEncuentrosManuales().stream()
-                .map(manual -> {
-                    Equipo local = equipoRepository.findById(manual.getEquipoLocalId())
-                            .orElseThrow(() -> new RuntimeException(
-                                    "Equipo local no encontrado: " + manual.getEquipoLocalId()));
-
-                    Equipo visitante = equipoRepository.findById(manual.getEquipoVisitanteId())
-                            .orElseThrow(() -> new RuntimeException(
-                                    "Equipo visitante no encontrado: " + manual.getEquipoVisitanteId()));
-
-                    Encuentro encuentro = new Encuentro();
-                    encuentro.setSubcategoria(local.getSubcategoria());
-                    encuentro.setTitulo(String.format("%s vs %s", local.getNombre(), visitante.getNombre()));
-                    encuentro.setFechaHora(LocalDateTime.of(manual.getFecha(), manual.getHora()));
-                    encuentro.setEstadioLugar("Por definir");
-                    encuentro.setEstado("Pendiente");
-
-                    return encuentro;
-                })
-                .collect(Collectors.toList());
+    List<Encuentro> encuentros = new ArrayList<>();
+    
+    // Mapa para rastrear los horarios ocupados por estadio y fecha
+    Map<String, Map<LocalDate, List<LocalTime>>> horariosOcupados = new HashMap<>();
+    
+    // Inicializar el mapa con los estadios
+    List<String> estadios = List.of("Peguche", "Agato", "La Bolsa");
+    for (String estadio : estadios) {
+        horariosOcupados.put(estadio, new HashMap<>());
     }
 
+    // Procesar cada encuentro manual
+    for (GeneracionEncuentroRequest.EncuentroManualRequest manualRequest : request.getEncuentrosManuales()) {
+        // Verificar que los equipos existan
+        Equipo local = equipoRepository.findById(manualRequest.getEquipoLocalId())
+                .orElseThrow(() -> new RuntimeException("Equipo local no encontrado"));
+        
+        Equipo visitante = equipoRepository.findById(manualRequest.getEquipoVisitanteId())
+                .orElseThrow(() -> new RuntimeException("Equipo visitante no encontrado"));
+
+        // Crear el encuentro
+        Encuentro encuentro = new Encuentro();
+        encuentro.setSubcategoria(subcategoriaRepository.findById(request.getSubcategoriaId())
+                .orElseThrow(() -> new RuntimeException("Subcategoría no encontrada")));
+        encuentro.setTitulo(String.format("%s vs %s", local.getNombre(), visitante.getNombre()));
+        encuentro.setEstado("Programado");
+
+        // Asignar estadio según la distribución de probabilidad
+        String estadio;
+        double random = Math.random();
+        if (random < 0.6) { // 60% de probabilidad para Peguche
+            estadio = "Peguche";
+        } else if (random < 0.9) { // 30% de probabilidad para Agato (0.6 a 0.9)
+            estadio = "Agato";
+        } else { // 10% de probabilidad para La Bolsa (0.9 a 1.0)
+            estadio = "La Bolsa";
+        }
+        
+        // Establecer estadio
+        encuentro.setEstadioLugar(estadio);
+        
+        // Establecer fecha y hora
+        LocalDateTime fechaHora = LocalDateTime.of(manualRequest.getFecha(), manualRequest.getHora());
+        encuentro.setFechaHora(fechaHora);
+
+        // Guardar el encuentro
+        Encuentro savedEncuentro = encuentroRepository.save(encuentro);
+        
+        // Crear participación para el equipo local
+        ParticipacionEncuentro participacionLocal = new ParticipacionEncuentro();
+        ParticipacionEncuentroId participacionLocalId = new ParticipacionEncuentroId();
+        participacionLocalId.setEncuentroId(savedEncuentro.getId());
+        participacionLocalId.setEquipoId(local.getEquipoId());
+        participacionLocal.setId(participacionLocalId);
+        participacionLocal.setEncuentro(savedEncuentro);
+        participacionLocal.setEquipo(local);
+        participacionLocal.setEsLocal(true);
+        participacionLocal.setGolesPuntos(0);
+        
+        // Crear participación para el equipo visitante
+        ParticipacionEncuentro participacionVisitante = new ParticipacionEncuentro();
+        ParticipacionEncuentroId participacionVisitanteId = new ParticipacionEncuentroId();
+        participacionVisitanteId.setEncuentroId(savedEncuentro.getId());
+        participacionVisitanteId.setEquipoId(visitante.getEquipoId());
+        participacionVisitante.setId(participacionVisitanteId);
+        participacionVisitante.setEncuentro(savedEncuentro);
+        participacionVisitante.setEquipo(visitante);
+        participacionVisitante.setEsLocal(false);
+        participacionVisitante.setGolesPuntos(0);
+        
+        // Guardar las participaciones
+        participacionEncuentroRepository.save(participacionLocal);
+        participacionEncuentroRepository.save(participacionVisitante);
+        
+        // Agregar a la lista
+        encuentros.add(savedEncuentro);
+    }
+    
+    return encuentros;
+}
+    
     /**
      * Saves multiple Encuentro entities in a batch operation
      * 
