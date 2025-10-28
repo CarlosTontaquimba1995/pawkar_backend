@@ -237,15 +237,6 @@ public class GeneracionEncuentroService {
 
     private List<Encuentro> generarEncuentrosManuales(GeneracionEncuentroRequest request) {
     List<Encuentro> encuentros = new ArrayList<>();
-    
-    // Mapa para rastrear los horarios ocupados por estadio y fecha
-    Map<String, Map<LocalDate, List<LocalTime>>> horariosOcupados = new HashMap<>();
-    
-    // Inicializar el mapa con los estadios
-    List<String> estadios = List.of("Peguche", "Agato", "La Bolsa");
-    for (String estadio : estadios) {
-        horariosOcupados.put(estadio, new HashMap<>());
-    }
 
     // Procesar cada encuentro manual
     for (GeneracionEncuentroRequest.EncuentroManualRequest manualRequest : request.getEncuentrosManuales()) {
@@ -263,19 +254,8 @@ public class GeneracionEncuentroService {
         encuentro.setTitulo(String.format("%s vs %s", local.getNombre(), visitante.getNombre()));
         encuentro.setEstado("Programado");
 
-        // Asignar estadio según la distribución de probabilidad
-        String estadio;
-        double random = Math.random();
-        if (random < 0.6) { // 60% de probabilidad para Peguche
-            estadio = "Peguche";
-        } else if (random < 0.9) { // 30% de probabilidad para Agato (0.6 a 0.9)
-            estadio = "Agato";
-        } else { // 10% de probabilidad para La Bolsa (0.9 a 1.0)
-            estadio = "La Bolsa";
-        }
-        
-        // Establecer estadio
-        encuentro.setEstadioLugar(estadio);
+        // Usar el estadio del request
+        encuentro.setEstadioLugar(manualRequest.getEstadio());
         
         // Establecer fecha y hora
         LocalDateTime fechaHora = LocalDateTime.of(manualRequest.getFecha(), manualRequest.getHora());
