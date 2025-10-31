@@ -13,6 +13,4 @@ public class EstadioRequest {
     private String nombre;
 
     private String detalle;
-
-    private Boolean activo;
 }

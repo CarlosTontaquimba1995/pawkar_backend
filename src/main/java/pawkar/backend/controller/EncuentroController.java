@@ -17,7 +17,6 @@ import pawkar.backend.request.EncuentroSearchRequest;
 import pawkar.backend.response.ApiResponseStandard;
 import pawkar.backend.service.EncuentroService;
 
-import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/encuentros")

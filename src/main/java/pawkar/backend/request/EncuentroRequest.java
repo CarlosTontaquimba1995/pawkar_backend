@@ -24,9 +24,8 @@ public class EncuentroRequest {
     @NotNull(message = "La fecha y hora son obligatorias")
     private LocalDateTime fechaHora;
 
-    @NotBlank(message = "El estadio o lugar es obligatorio")
-    @Size(max = 150, message = "El lugar no puede tener más de 150 caracteres")
-    private String estadioLugar;
+    @NotNull(message = "El ID del estadio es obligatorio")
+    private Long estadioId;
 
     @Size(max = 50, message = "El estado no puede tener más de 50 caracteres")
     private String estado;

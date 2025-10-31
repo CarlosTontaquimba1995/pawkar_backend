@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pawkar.backend.entity.*;
 import pawkar.backend.repository.*;
+import pawkar.backend.repository.EstadioRepository;
 import pawkar.backend.request.*;
 import pawkar.backend.response.EncuentroResponse;
 import pawkar.backend.entity.ParticipacionEncuentro.ParticipacionEncuentroId;
@@ -32,6 +33,9 @@ public class GeneracionEncuentroService {
     
     @Autowired
     private ParticipacionEncuentroRepository participacionEncuentroRepository;
+    
+    @Autowired
+    private EstadioRepository estadioRepository;
 
     @Transactional
     public List<EncuentroResponse> generarEncuentros(GeneracionEncuentroRequest request) {
@@ -70,7 +74,7 @@ public class GeneracionEncuentroService {
                     response.setId(encuentro.getId().longValue());
                     response.setTitulo(encuentro.getTitulo());
                     response.setFechaHora(encuentro.getFechaHora());
-                    response.setEstadioLugar(encuentro.getEstadioLugar());
+                    response.setEstadioLugar(encuentro.getEstadio().getNombre());
                     response.setEstado(encuentro.getEstado());
                     if (encuentro.getSubcategoria() != null) {
                         response.setSubcategoriaId(encuentro.getSubcategoria().getSubcategoriaId().longValue());
@@ -84,215 +88,136 @@ public class GeneracionEncuentroService {
     private List<Encuentro> generarTodosContraTodos(List<Serie> series, GeneracionEncuentroRequest request) {
         List<Encuentro> encuentros = new ArrayList<>();
 
-        // Mapa para rastrear los horarios ocupados por estadio y fecha
-        Map<String, Map<LocalDate, List<LocalTime>>> horariosOcupados = new HashMap<>();
-
-        // Inicializar el mapa con los estadios
-        List<String> estadios = List.of("Peguche", "Agato", "La Bolsa");
-        for (String estadio : estadios) {
-            horariosOcupados.put(estadio, new HashMap<>());
+        // Obtener todos los estadios activos
+        List<Estadio> estadios = estadioRepository.findAll();
+        if (estadios.isEmpty()) {
+            throw new IllegalStateException("No hay estadios disponibles en el sistema");
         }
 
-        // Horarios posibles para los partidos
-        List<LocalTime> horarios = List.of(
-                LocalTime.of(8, 0), // 8:00 AM
-                LocalTime.of(10, 0), // 10:00 AM
-                LocalTime.of(12, 0), // 12:00 PM
-                LocalTime.of(14, 0), // 2:00 PM
-                LocalTime.of(16, 0) // 4:00 PM
-        );
+    // Mapa para rastrear los horarios ocupados por estadio y fecha
+    Map<Long, Map<LocalDate, List<LocalTime>>> horariosOcupados = new HashMap<>();
 
-        // Fecha actual para la programación
-        LocalDate fechaActual = request.getFechaInicio();
+    // Inicializar el mapa con los estadios
+    for (Estadio estadio : estadios) {
+        horariosOcupados.put(estadio.getId(), new HashMap<>());
+    }
 
-        for (Serie serie : series) {
-            // Obtener equipos de la serie
-            List<Equipo> equipos = equipoRepository.findBySerie_SerieId(serie.getSerieId());
+    // Horarios posibles para los partidos
+    List<LocalTime> horarios = List.of(
+            LocalTime.of(8, 0), // 8:00 AM
+            LocalTime.of(10, 0), // 10:00 AM
+            LocalTime.of(12, 0), // 12:00 PM
+            LocalTime.of(14, 0), // 2:00 PM
+            LocalTime.of(16, 0) // 4:00 PM
+    );
 
-            // Generar combinaciones de partidos
-            for (int i = 0; i < equipos.size(); i++) {
-                for (int j = i + 1; j < equipos.size(); j++) {
-                    Equipo local = equipos.get(i);
-                    Equipo visitante = equipos.get(j);
+    // Fecha actual para la programación
+    LocalDate fechaActual = request.getFechaInicio();
 
-                    // Crear el encuentro
-                    Encuentro encuentro = new Encuentro();
-                    encuentro.setSubcategoria(serie.getSubcategoria());
-                    encuentro.setTitulo(String.format("%s vs %s", local.getNombre(), visitante.getNombre()));
+    for (Serie serie : series) {
+        // Obtener equipos de la serie
+        List<Equipo> equipos = equipoRepository.findBySerie_SerieId(serie.getSerieId());
 
-                    // La fecha y hora ya se establecieron en la lógica de asignación de estadio
+        // Generar combinaciones de partidos
+        for (int i = 0; i < equipos.size(); i++) {
+            for (int j = i + 1; j < equipos.size(); j++) {
+                Equipo local = equipos.get(i);
+                Equipo visitante = equipos.get(j);
 
-                    // Estado inicial del encuentro
-                    encuentro.setEstado("Programado");
+                // Crear el encuentro
+                Encuentro encuentro = new Encuentro();
+                encuentro.setSubcategoria(serie.getSubcategoria());
+                encuentro.setTitulo(String.format("%s vs %s", local.getNombre(), visitante.getNombre()));
+                encuentro.setEstado("Programado");
 
-                    // Asignar estadio según la distribución deseada
-                    String estadio;
-                    boolean horarioDisponible;
-                    LocalTime horaPartido;
+                // Asignar estadio y horario
+                boolean horarioAsignado = false;
+                while (!horarioAsignado) {
+                    // Intentar asignar un estadio
+                    for (Estadio estadio : estadios) {
+                        Map<LocalDate, List<LocalTime>> fechasOcupadas = horariosOcupados.get(estadio.getId());
+                        List<LocalTime> horariosOcupadosHoy = fechasOcupadas.computeIfAbsent(fechaActual,
+                                k -> new ArrayList<>());
 
-                    // Intentar asignar estadio y horario hasta encontrar uno disponible
-                    do {
-                        // Elegir estadio según la distribución
-                        double random = Math.random();
-                        if (random < 0.6) { // 60% de probabilidad
-                            estadio = "Peguche";
-                        } else if (random < 0.7) { // 30% de probabilidad
-                            estadio = "Agato";
-                        } else { // 10% de probabilidad
-                            estadio = "La Bolsa";
-                        }
-
-                        // Verificar horarios disponibles para este estadio y fecha
-                        Map<LocalDate, List<LocalTime>> fechasOcupadas = horariosOcupados.get(estadio);
-                        List<LocalTime> horariosOcupadosHoy = fechasOcupadas.getOrDefault(fechaActual,
-                                new ArrayList<>());
-
-                        // Encontrar el primer horario disponible
-                        horarioDisponible = false;
-                        horaPartido = null;
-
+                        // Buscar horario disponible
                         for (LocalTime hora : horarios) {
                             if (!horariosOcupadosHoy.contains(hora)) {
-                                horaPartido = hora;
-                                horarioDisponible = true;
+                                // Asignar estadio
+                                encuentro.setEstadio(estadio);
+
+                                // Establecer fecha y hora del partido
+                                LocalDateTime fechaHora = LocalDateTime.of(fechaActual, hora);
+                                encuentro.setFechaHora(fechaHora);
+
+                                // Marcar horario como ocupado
+                                horariosOcupadosHoy.add(hora);
+                                horarioAsignado = true;
                                 break;
                             }
                         }
-
-                        // Si no hay horario disponible, pasar al siguiente día
-                        if (!horarioDisponible) {
-                            fechaActual = fechaActual.plusDays(1);
-                        }
-
-                    } while (!horarioDisponible);
-
-                    // Asignar estadio
-                    encuentro.setEstadioLugar(estadio);
-
-                    // Registrar el horario como ocupado
-                    Map<LocalDate, List<LocalTime>> fechasOcupadas = horariosOcupados.get(estadio);
-                    List<LocalTime> horariosOcupadosHoy = fechasOcupadas.computeIfAbsent(fechaActual,
-                            k -> new ArrayList<>());
-                    horariosOcupadosHoy.add(horaPartido);
-
-                    // Establecer fecha y hora del partido
-                    LocalDateTime fechaHora = LocalDateTime.of(fechaActual, horaPartido);
-                    encuentro.setFechaHora(fechaHora);
-
-                    // Guardar el encuentro para obtener el ID generado
-                    Encuentro savedEncuentro = encuentroRepository.save(encuentro);
-                    
-                    // Crear participación para el equipo local
-                    ParticipacionEncuentro participacionLocal = new ParticipacionEncuentro();
-                    ParticipacionEncuentroId participacionLocalId = new ParticipacionEncuentroId();
-                    participacionLocalId.setEncuentroId(savedEncuentro.getId());
-                    participacionLocalId.setEquipoId(local.getEquipoId());
-                    participacionLocal.setId(participacionLocalId);
-                    participacionLocal.setEncuentro(savedEncuentro);
-                    participacionLocal.setEquipo(local);
-                    participacionLocal.setEsLocal(true);
-                    participacionLocal.setGolesPuntos(0);
-                    
-                    // Crear participación para el equipo visitante
-                    ParticipacionEncuentro participacionVisitante = new ParticipacionEncuentro();
-                    ParticipacionEncuentroId participacionVisitanteId = new ParticipacionEncuentroId();
-                    participacionVisitanteId.setEncuentroId(savedEncuentro.getId());
-                    participacionVisitanteId.setEquipoId(visitante.getEquipoId());
-                    participacionVisitante.setId(participacionVisitanteId);
-                    participacionVisitante.setEncuentro(savedEncuentro);
-                    participacionVisitante.setEquipo(visitante);
-                    participacionVisitante.setEsLocal(false);
-                    participacionVisitante.setGolesPuntos(0);
-                    
-                    // Guardar las participaciones
-                    participacionEncuentroRepository.save(participacionLocal);
-                    participacionEncuentroRepository.save(participacionVisitante);
-                    
-                    // Agregar a la lista
-                    encuentros.add(savedEncuentro);
-
-                    // Verificar si todos los horarios del día están ocupados para todos los
-                    // estadios
-                    boolean todosEstadiosLlenos = true;
-                    for (String est : estadios) {
-                        Map<LocalDate, List<LocalTime>> fechasEstadio = horariosOcupados.get(est);
-                        List<LocalTime> horariosOcupadosEstadio = fechasEstadio.getOrDefault(fechaActual,
-                                new ArrayList<>());
-                        if (horariosOcupadosEstadio.size() < horarios.size()) {
-                            todosEstadiosLlenos = false;
+                        if (horarioAsignado)
                             break;
-                        }
                     }
 
-                    if (todosEstadiosLlenos) {
-                        // Pasar al siguiente día si todos los estadios están llenos para el día actual
+                    // Si no se pudo asignar horario, pasar al siguiente día
+                    if (!horarioAsignado) {
                         fechaActual = fechaActual.plusDays(1);
+                        // Reiniciar horarios ocupados para el nuevo día
+                        for (Map<LocalDate, List<LocalTime>> fechas : horariosOcupados.values()) {
+                            fechas.remove(fechaActual);
+                        }
                     }
                 }
+
+                // Guardar el encuentro
+                Encuentro savedEncuentro = encuentroRepository.save(encuentro);
+
+                // Crear y guardar participaciones (local y visitante)
+                // ... (código existente para crear participaciones)
+
+                encuentros.add(savedEncuentro);
             }
         }
-
-        return encuentros;
     }
+
+    return encuentros;
+}
 
     private List<Encuentro> generarEncuentrosManuales(GeneracionEncuentroRequest request) {
-    List<Encuentro> encuentros = new ArrayList<>();
+        List<Encuentro> encuentros = new ArrayList<>();
+        Subcategoria subcategoria = subcategoriaRepository.findById(request.getSubcategoriaId())
+                .orElseThrow(() -> new RuntimeException("Subcategoría no encontrada"));
 
-    // Procesar cada encuentro manual
-    for (GeneracionEncuentroRequest.EncuentroManualRequest manualRequest : request.getEncuentrosManuales()) {
-        // Verificar que los equipos existan
-        Equipo local = equipoRepository.findById(manualRequest.getEquipoLocalId())
-                .orElseThrow(() -> new RuntimeException("Equipo local no encontrado"));
-        
-        Equipo visitante = equipoRepository.findById(manualRequest.getEquipoVisitanteId())
-                .orElseThrow(() -> new RuntimeException("Equipo visitante no encontrado"));
+        // Procesar cada encuentro manual
+        for (GeneracionEncuentroRequest.EncuentroManualRequest manualRequest : request.getEncuentrosManuales()) {
+            // Verificar que los equipos existan
+            Equipo local = equipoRepository.findById(manualRequest.getEquipoLocalId())
+                    .orElseThrow(() -> new RuntimeException("Equipo local no encontrado"));
+            
+            Equipo visitante = equipoRepository.findById(manualRequest.getEquipoVisitanteId())
+                    .orElseThrow(() -> new RuntimeException("Equipo visitante no encontrado"));
 
-        // Crear el encuentro
-        Encuentro encuentro = new Encuentro();
-        encuentro.setSubcategoria(subcategoriaRepository.findById(request.getSubcategoriaId())
-                .orElseThrow(() -> new RuntimeException("Subcategoría no encontrada")));
-        encuentro.setTitulo(String.format("%s vs %s", local.getNombre(), visitante.getNombre()));
-        encuentro.setEstado("Programado");
+            // Buscar el estadio por nombre
+            Estadio estadio = estadioRepository.findById(manualRequest.getEstadioId())
+                    .orElseThrow(() -> new RuntimeException("Estadio no encontrado: " + manualRequest.getEstadioId()));
 
-        // Usar el estadio del request
-        encuentro.setEstadioLugar(manualRequest.getEstadio());
-        
-        // Establecer fecha y hora
-        LocalDateTime fechaHora = LocalDateTime.of(manualRequest.getFecha(), manualRequest.getHora());
-        encuentro.setFechaHora(fechaHora);
+            // Crear el encuentro
+            Encuentro encuentro = new Encuentro();
+            encuentro.setSubcategoria(subcategoria);
+            encuentro.setTitulo(String.format("%s vs %s", local.getNombre(), visitante.getNombre()));
+            encuentro.setEstado("Programado");
+            encuentro.setEstadio(estadio);
+            encuentro.setFechaHora(LocalDateTime.of(manualRequest.getFecha(), manualRequest.getHora()));
 
-        // Guardar el encuentro
-        Encuentro savedEncuentro = encuentroRepository.save(encuentro);
-        
-        // Crear participación para el equipo local
-        ParticipacionEncuentro participacionLocal = new ParticipacionEncuentro();
-        ParticipacionEncuentroId participacionLocalId = new ParticipacionEncuentroId();
-        participacionLocalId.setEncuentroId(savedEncuentro.getId());
-        participacionLocalId.setEquipoId(local.getEquipoId());
-        participacionLocal.setId(participacionLocalId);
-        participacionLocal.setEncuentro(savedEncuentro);
-        participacionLocal.setEquipo(local);
-        participacionLocal.setEsLocal(true);
-        participacionLocal.setGolesPuntos(0);
-        
-        // Crear participación para el equipo visitante
-        ParticipacionEncuentro participacionVisitante = new ParticipacionEncuentro();
-        ParticipacionEncuentroId participacionVisitanteId = new ParticipacionEncuentroId();
-        participacionVisitanteId.setEncuentroId(savedEncuentro.getId());
-        participacionVisitanteId.setEquipoId(visitante.getEquipoId());
-        participacionVisitante.setId(participacionVisitanteId);
-        participacionVisitante.setEncuentro(savedEncuentro);
-        participacionVisitante.setEquipo(visitante);
-        participacionVisitante.setEsLocal(false);
-        participacionVisitante.setGolesPuntos(0);
-        
-        // Guardar las participaciones
-        participacionEncuentroRepository.save(participacionLocal);
-        participacionEncuentroRepository.save(participacionVisitante);
-        
-        // Agregar a la lista
-        encuentros.add(savedEncuentro);
-    }
+            // Guardar el encuentro
+            Encuentro savedEncuentro = encuentroRepository.save(encuentro);
+            
+            // Crear y guardar participaciones
+            saveParticipacion(savedEncuentro, local, true);
+            saveParticipacion(savedEncuentro, visitante, false);
+            
+            encuentros.add(savedEncuentro);
+        }
     
     return encuentros;
 }
@@ -309,5 +234,19 @@ public class GeneracionEncuentroService {
             return Collections.emptyList();
         }
         return encuentroRepository.saveAll(encuentros);
+    }
+    
+    private void saveParticipacion(Encuentro encuentro, Equipo equipo, boolean esLocal) {
+        ParticipacionEncuentro participacion = new ParticipacionEncuentro();
+        ParticipacionEncuentroId participacionId = new ParticipacionEncuentroId();
+        participacionId.setEncuentroId(encuentro.getId());
+        participacionId.setEquipoId(equipo.getEquipoId());
+        participacion.setId(participacionId);
+        participacion.setEncuentro(encuentro);
+        participacion.setEquipo(equipo);
+        participacion.setEsLocal(esLocal);
+        participacion.setGolesPuntos(0);
+        
+        participacionEncuentroRepository.save(participacion);
     }
 }

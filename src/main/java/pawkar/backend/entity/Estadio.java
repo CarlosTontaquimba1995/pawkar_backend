@@ -10,8 +10,8 @@ import org.hibernate.annotations.SQLRestriction;
 
 @Entity
 @Table(name = "estadios")
-@SQLDelete(sql = "UPDATE estadios SET activo = false WHERE estadio_id = ?")
-@SQLRestriction("activo = true")
+@SQLDelete(sql = "UPDATE estadios SET estado = false WHERE estadio_id = ?")
+@SQLRestriction("estado = true")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -28,9 +28,6 @@ public class Estadio {
     @Column(columnDefinition = "TEXT")
     private String detalle;
 
-    @Column(length = 50)
-    private String estado = "Disponible";
-
     @Column(nullable = false, columnDefinition = "boolean default true")
-    private boolean activo = true;
+    private boolean estado = true;
 }

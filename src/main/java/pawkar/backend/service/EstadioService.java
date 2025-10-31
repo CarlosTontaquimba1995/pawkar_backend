@@ -48,10 +48,6 @@ public class EstadioService {
         estadio.setNombre(estadioRequest.getNombre());
         estadio.setDetalle(estadioRequest.getDetalle());
 
-        if (estadioRequest.getActivo() != null) {
-            estadio.setActivo(estadioRequest.getActivo());
-        }
-
         Estadio savedEstadio = estadioRepository.save(estadio);
         return convertToResponse(savedEstadio);
     }
@@ -70,10 +66,6 @@ public class EstadioService {
 
         if (estadioRequest.getDetalle() != null) {
             estadio.setDetalle(estadioRequest.getDetalle());
-        }
-
-        if (estadioRequest.getActivo() != null) {
-            estadio.setActivo(estadioRequest.getActivo());
         }
 
         Estadio updatedEstadio = estadioRepository.save(estadio);
@@ -125,9 +117,6 @@ public class EstadioService {
                     Estadio estadio = new Estadio();
                     estadio.setNombre(estadioRequest.getNombre());
                     estadio.setDetalle(estadioRequest.getDetalle());
-                    if (estadioRequest.getActivo() != null) {
-                        estadio.setActivo(estadioRequest.getActivo());
-                    }
                     return estadio;
                 })
                 .toList();
@@ -143,8 +132,7 @@ public class EstadioService {
         response.setId(estadio.getId());
         response.setNombre(estadio.getNombre());
         response.setDetalle(estadio.getDetalle());
-        response.setEstado(estadio.getEstado());
-        response.setActivo(estadio.isActivo());
+        response.setEstado(estadio.isEstado());
         return response;
     }
 }

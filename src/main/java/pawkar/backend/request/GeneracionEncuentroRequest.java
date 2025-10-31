@@ -95,7 +95,7 @@ public class GeneracionEncuentroRequest {
         private Integer equipoVisitanteId;
         private LocalDate fecha;
         private LocalTime hora;
-        private String estadio;
+        private Long estadioId;
 
         // Getters and Setters
         public Integer getEquipoLocalId() {
@@ -130,12 +130,12 @@ public class GeneracionEncuentroRequest {
             this.hora = hora;
         }
 
-        public String getEstadio() {
-            return estadio;
+        public Long getEstadioId() {
+            return estadioId;
         }
 
-        public void setEstadio(String estadio) {
-            this.estadio = estadio;
+        public void setEstadioId(Long estadioId) {
+            this.estadioId = estadioId;
         }
     }
 }

@@ -13,6 +13,5 @@ public class EstadioResponse {
     private Long id;
     private String nombre;
     private String detalle;
-    private String estado;
-    private boolean activo;
+    private boolean estado;
 }

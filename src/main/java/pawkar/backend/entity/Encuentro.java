@@ -29,8 +29,9 @@ public class Encuentro {
     @Column(name = "fecha_hora", nullable = false)
     private LocalDateTime fechaHora;
 
-    @Column(name = "estadio_lugar", nullable = false, length = 150)
-    private String estadioLugar;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "estadio_id", nullable = false)
+    private Estadio estadio;
 
     @Column(length = 50)
     private String estado = "Pendiente";

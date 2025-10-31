@@ -9,7 +9,9 @@ import pawkar.backend.request.EncuentroRequest;
 import pawkar.backend.request.EncuentroResponse;
 import pawkar.backend.request.EncuentroSearchRequest;
 import pawkar.backend.entity.Encuentro;
+import pawkar.backend.entity.Estadio;
 import pawkar.backend.entity.Subcategoria;
+import pawkar.backend.repository.EstadioRepository;
 import pawkar.backend.repository.EncuentroRepository;
 import pawkar.backend.repository.SubcategoriaRepository;
 
@@ -23,11 +25,14 @@ public class EncuentroService {
 
     private final EncuentroRepository encuentroRepository;
     private final SubcategoriaRepository subcategoriaRepository;
+    private final EstadioRepository estadioRepository;
 
     public EncuentroService(EncuentroRepository encuentroRepository, 
-            SubcategoriaRepository subcategoriaRepository) {
+            SubcategoriaRepository subcategoriaRepository,
+            EstadioRepository estadioRepository) {
         this.encuentroRepository = encuentroRepository;
         this.subcategoriaRepository = subcategoriaRepository;
+        this.estadioRepository = estadioRepository;
     }
 
     @Transactional
@@ -35,11 +40,15 @@ public class EncuentroService {
         Subcategoria subcategoria = subcategoriaRepository.findById(request.getSubcategoriaId())
             .orElseThrow(() -> new EntityNotFoundException("Subcategoría no encontrada"));
 
+        Estadio estadio = estadioRepository.findById(request.getEstadioId())
+                .orElseThrow(
+                        () -> new EntityNotFoundException("Estadio no encontrado con ID: " + request.getEstadioId()));
+
         Encuentro encuentro = new Encuentro();
         encuentro.setSubcategoria(subcategoria);
         encuentro.setTitulo(request.getTitulo());
         encuentro.setFechaHora(request.getFechaHora());
-        encuentro.setEstadioLugar(request.getEstadioLugar());
+        encuentro.setEstadio(estadio);
         
         if (request.getEstado() != null && !request.getEstado().isBlank()) {
             encuentro.setEstado(request.getEstado());
@@ -144,12 +153,14 @@ public class EncuentroService {
                 .orElseThrow(() -> new EntityNotFoundException("Subcategoría no encontrada"));
             encuentro.setSubcategoria(subcategoria);
         }
+        if (request.getEstadioId() != null) {
+            Estadio estadio = estadioRepository.findById(request.getEstadioId())
+                    .orElseThrow(() -> new EntityNotFoundException("Estadio no encontrado"));
+            encuentro.setEstadio(estadio);
+        }
 
         if (request.getFechaHora() != null) {
             encuentro.setFechaHora(request.getFechaHora());
-        }
-        if (request.getEstadioLugar() != null) {
-            encuentro.setEstadioLugar(request.getEstadioLugar());
         }
         if (request.getEstado() != null && !request.getEstado().isBlank()) {
             encuentro.setEstado(request.getEstado());
@@ -171,11 +182,15 @@ public class EncuentroService {
         Subcategoria subcategoria = subcategoriaRepository.findById(request.getSubcategoriaId())
                 .orElseThrow(() -> new EntityNotFoundException("Subcategoría no encontrada"));
 
+        Estadio estadio = estadioRepository.findById(request.getEstadioId())
+                .orElseThrow(
+                        () -> new EntityNotFoundException("Estadio no encontrado con ID: " + request.getEstadioId()));
+
         Encuentro encuentro = new Encuentro();
         encuentro.setSubcategoria(subcategoria);
         encuentro.setTitulo(request.getTitulo());
         encuentro.setFechaHora(request.getFechaHora());
-        encuentro.setEstadioLugar(request.getEstadioLugar());
+        encuentro.setEstadio(estadio);
 
         if (request.getEstado() != null && !request.getEstado().isBlank()) {
             encuentro.setEstado(request.getEstado());
@@ -191,7 +206,6 @@ public class EncuentroService {
         response.setSubcategoriaNombre(encuentro.getSubcategoria().getNombre());
         response.setTitulo(encuentro.getTitulo());
         response.setFechaHora(encuentro.getFechaHora());
-        response.setEstadioLugar(encuentro.getEstadioLugar());
         response.setEstado(encuentro.getEstado());
         return response;
     }
