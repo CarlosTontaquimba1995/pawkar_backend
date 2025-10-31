@@ -20,7 +20,7 @@ public class Estadio {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "estadio_id")
-    private Long id;
+    private Integer id;
 
     @Column(nullable = false, unique = true, length = 150)
     private String nombre;

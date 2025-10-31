@@ -209,6 +209,7 @@ public class EncuentroService {
         response.setEstado(encuentro.getEstado());
         response.setEstadioNombre(encuentro.getEstadio().getNombre());
         response.setActivo(encuentro.getActivo());
+        response.setEstadioId(encuentro.getEstadio().getId());
         return response;
     }
 

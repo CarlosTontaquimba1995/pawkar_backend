@@ -99,7 +99,7 @@ public class GeneracionEncuentroService {
 
     // Inicializar el mapa con los estadios
     for (Estadio estadio : estadios) {
-        horariosOcupados.put(estadio.getId(), new HashMap<>());
+        horariosOcupados.put(estadio.getId().longValue(), new HashMap<>());
     }
 
     // Horarios posibles para los partidos
@@ -128,14 +128,15 @@ public class GeneracionEncuentroService {
                 Encuentro encuentro = new Encuentro();
                 encuentro.setSubcategoria(serie.getSubcategoria());
                 encuentro.setTitulo(String.format("%s vs %s", local.getNombre(), visitante.getNombre()));
-                encuentro.setEstado("Programado");
+                encuentro.setEstado("PROGRAMADO");
 
                 // Asignar estadio y horario
                 boolean horarioAsignado = false;
                 while (!horarioAsignado) {
                     // Intentar asignar un estadio
                     for (Estadio estadio : estadios) {
-                        Map<LocalDate, List<LocalTime>> fechasOcupadas = horariosOcupados.get(estadio.getId());
+                        Map<LocalDate, List<LocalTime>> fechasOcupadas = horariosOcupados
+                                .get(estadio.getId().longValue());
                         List<LocalTime> horariosOcupadosHoy = fechasOcupadas.computeIfAbsent(fechaActual,
                                 k -> new ArrayList<>());
 
@@ -205,7 +206,7 @@ public class GeneracionEncuentroService {
             Encuentro encuentro = new Encuentro();
             encuentro.setSubcategoria(subcategoria);
             encuentro.setTitulo(String.format("%s vs %s", local.getNombre(), visitante.getNombre()));
-            encuentro.setEstado("Programado");
+            encuentro.setEstado("PROGRAMADO");
             encuentro.setEstadio(estadio);
             encuentro.setFechaHora(LocalDateTime.of(manualRequest.getFecha(), manualRequest.getHora()));
 

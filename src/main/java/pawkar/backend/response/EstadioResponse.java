@@ -10,7 +10,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class EstadioResponse {
-    private Long id;
+    private Integer id;
     private String nombre;
     private String detalle;
     private boolean estado;

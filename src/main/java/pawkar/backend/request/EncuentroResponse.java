@@ -13,6 +13,7 @@ public class EncuentroResponse {
     private String titulo;
     private LocalDateTime fechaHora;
     private String estadioNombre;
+    private Integer estadioId;
     private String estado;
     private boolean activo;
 }

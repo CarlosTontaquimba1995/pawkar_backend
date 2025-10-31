@@ -19,6 +19,14 @@
   - [Actualizar encuentro](#actualizar-encuentro)
   - [Eliminar encuentro](#eliminar-encuentro)
 
+- [Estadios](#estadios)
+  - [Obtener todos los estadios](#obtener-todos-los-estadios)
+  - [Obtener estadio por ID](#obtener-estadio-por-id)
+  - [Crear estadio](#crear-estadio)
+  - [Actualizar estadio](#actualizar-estadio)
+  - [Eliminar estadio](#eliminar-estadio)
+  - [Crear múltiples estadios](#crear-múltiples-estadios)
+
 - [Generación de Encuentros](#generación-de-encuentros)
   - [Generar encuentros](#generar-encuentros)
 
@@ -463,7 +471,7 @@
         "titulo": "Equipo B vs Equipo C",
         "fechaHora": "2025-10-31T08:00:00",
         "estadioNombre": "PEGUCHE",
-        "estado": "Programado",
+        "estado": "PROGRAMADO",
         "activo": true
       }
     ],
@@ -653,7 +661,7 @@
       "titulo": "Equipo B vs Equipo C",
       "fechaHora": "2025-10-31T08:00:00",
       "estadioLugar": "PEGUCHE",
-      "estado": "Programado",
+      "estado": "PROGRAMADO",
       "subcategoriaId": 5,
       "subcategoriaNombre": "Fútbol"
     }
@@ -2701,4 +2709,196 @@ Obtiene todas las sanciones de un tipo específico.
   "error": "Not Found",
   "path": "/sanciones/tipo/TipoInexistente"
 }
+```
+
+## Estadios
+
+### Obtener todos los estadios
+
+**URL**: `/estadios`  
+**Método**: `GET`  
+**Descripción**: Obtiene una lista de todos los estadios registrados  
+**Autenticación Requerida**: Sí  
+**Roles Permitidos**: USER, MODERATOR, ADMIN
+
+**Respuesta Exitosa (200 OK)**
+```json
+{
+  "success": true,
+  "message": "Estadios obtenidos exitosamente",
+  "data": [
+    {
+      "id": 1,
+      "nombre": "Estadio Olímpico",
+      "detalle": "Estadio principal de la ciudad",
+      "estado": true
+    },
+    ...
+  ]
+}
+```
+
+### Obtener estadio por ID
+
+**URL**: `/estadios/{id}`  
+**Método**: `GET`  
+**Descripción**: Obtiene los detalles de un estadio específico por su ID  
+**Autenticación Requerida**: Sí  
+**Roles Permitidos**: USER, MODERATOR, ADMIN
+
+**Parámetros de Ruta**:
+- `id` (requerido): ID del estadio a obtener
+
+**Respuesta Exitosa (200 OK)**
+```json
+{
+  "success": true,
+  "message": "Estadio obtenido exitosamente",
+  "data": {
+    "id": 1,
+    "nombre": "Estadio Olímpico",
+    "detalle": "Estadio principal de la ciudad",
+    "estado": true
+  }
+}
+```
+
+### Crear estadio
+
+**URL**: `/estadios`  
+**Método**: `POST`  
+**Descripción**: Crea un nuevo estadio  
+**Autenticación Requerida**: Sí  
+**Roles Permitidos**: MODERATOR, ADMIN
+
+**Cuerpo de la Solicitud**:
+```json
+{
+  "nombre": "Nuevo Estadio",
+  "detalle": "Detalles del nuevo estadio",
+  "estado": true
+}
+```
+
+**Respuesta Exitosa (201 Created)**
+```json
+{
+  "success": true,
+  "message": "Estadio creado exitosamente",
+  "data": {
+    "id": 2,
+    "nombre": "Nuevo Estadio",
+    "detalle": "Detalles del nuevo estadio",
+    "estado": true
+  }
+}
+```
+
+### Actualizar estadio
+
+**URL**: `/estadios/{id}`  
+**Método**: `PUT`  
+**Descripción**: Actualiza los datos de un estadio existente  
+**Autenticación Requerida**: Sí  
+**Roles Permitidos**: MODERATOR, ADMIN
+
+**Parámetros de Ruta**:
+- `id` (requerido): ID del estadio a actualizar
+
+**Cuerpo de la Solicitud**:
+```json
+{
+  "nombre": "Estadio Actualizado",
+  "detalle": "Nuevos detalles del estadio",
+  "estado": false
+}
+```
+
+**Respuesta Exitosa (200 OK)**
+```json
+{
+  "success": true,
+  "message": "Estadio actualizado exitosamente",
+  "data": {
+    "id": 1,
+    "nombre": "Estadio Actualizado",
+    "detalle": "Nuevos detalles del estadio",
+    "estado": false
+  }
+}
+```
+
+### Eliminar estadio
+
+**URL**: `/estadios/{id}`  
+**Método**: `DELETE`  
+**Descripción**: Elimina un estadio (eliminación lógica)  
+**Autenticación Requerida**: Sí  
+**Roles Permitidos**: ADMIN
+
+**Parámetros de Ruta**:
+- `id` (requerido): ID del estadio a eliminar
+
+**Respuesta Exitosa (200 OK)**
+```json
+{
+  "success": true,
+  "message": "Estadio eliminado exitosamente",
+  "data": null
+}
+```
+
+### Crear múltiples estadios
+
+**URL**: `/estadios/bulk`  
+**Método**: `POST`  
+**Descripción**: Crea múltiples estadios en una sola operación  
+**Autenticación Requerida**: Sí  
+**Roles Permitidos**: MODERATOR, ADMIN
+
+**Cuerpo de la Solicitud**:
+```json
+{
+  "estadios": [
+    {
+      "nombre": "Estadio 1",
+      "detalle": "Detalle estadio 1",
+      "estado": true
+    },
+    {
+      "nombre": "Estadio 2",
+      "detalle": "Detalle estadio 2",
+      "estado": true
+    }
+  ]
+}
+```
+
+**Respuesta Exitosa (201 Created)**
+```json
+{
+  "success": true,
+  "message": "Estadios creados exitosamente",
+  "data": [
+    {
+      "id": 3,
+      "nombre": "Estadio 1",
+      "detalle": "Detalle estadio 1",
+      "estado": true
+    },
+    {
+      "id": 4,
+      "nombre": "Estadio 2",
+      "detalle": "Detalle estadio 2",
+      "estado": true
+    }
+  ]
+}
+```
+
+### Códigos de Error
+
+- **404 Not Found**: Cuando no se encuentra el estadio con el ID proporcionado
+- **400 Bad Request**: Cuando los datos de la solicitud son inválidos
+- **403 Forbidden**: Cuando el usuario no tiene permisos para realizar la acción
 ```
