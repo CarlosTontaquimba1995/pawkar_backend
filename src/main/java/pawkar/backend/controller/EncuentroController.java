@@ -81,7 +81,7 @@ public class EncuentroController {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fechaFin,
             @RequestParam(required = false) Integer subcategoriaId,
             @RequestParam(required = false) Integer equipoId,
-            @RequestParam(required = false) String estadioLugar,
+            @RequestParam(required = false) Integer estadioId,
             @PageableDefault(size = 10) Pageable pageable) {
 
         EncuentroSearchRequest searchRequest = new EncuentroSearchRequest();
@@ -90,13 +90,13 @@ public class EncuentroController {
         searchRequest.setFechaFin(fechaFin != null ? fechaFin.toLocalDate() : null);
         searchRequest.setSubcategoriaId(subcategoriaId);
         searchRequest.setEquipoId(equipoId);
-        searchRequest.setEstadioLugar(estadioLugar);
+        searchRequest.setEstadioId(estadioId);
 
         Page<EncuentroResponse> page = encuentroService.searchEncuentros(
                 searchRequest.getSubcategoriaId(),
                 searchRequest.getFechaInicio() != null ? searchRequest.getFechaInicio().atStartOfDay() : null,
                 searchRequest.getFechaFin() != null ? searchRequest.getFechaFin().atTime(23, 59, 59) : null,
-                searchRequest.getEstadioLugar(),
+                searchRequest.getEstadioId(),
                 searchRequest.getEstado(),
                 searchRequest.getEquipoId(),
                 pageable);
@@ -129,7 +129,7 @@ public class EncuentroController {
             @RequestParam(required = false) Integer subcategoriaId,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fechaInicio,
                     @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fechaFin,
-            @RequestParam(required = false) String estadioLugar,
+            @RequestParam(required = false) Integer estadioId,
             @RequestParam(required = false) String estado,
             @RequestParam(required = false) Integer equipoId,
             @PageableDefault(size = 10) Pageable pageable) {
@@ -139,7 +139,7 @@ public class EncuentroController {
                     subcategoriaId,
                     fechaInicio,
                     fechaFin,
-                    estadioLugar,
+                    estadioId,
                     estado,
                     equipoId,
                     pageable);
@@ -150,7 +150,7 @@ public class EncuentroController {
                     subcategoriaId,
                     fechaInicio,
                     fechaFin,
-                    estadioLugar,
+                    estadioId,
                     estado,
                     equipoId);
             return ApiResponseStandard.success(new PageImpl<>(response),

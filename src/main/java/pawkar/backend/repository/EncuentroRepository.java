@@ -25,7 +25,7 @@ public interface EncuentroRepository extends JpaRepository<Encuentro, Integer>, 
             WHERE (:subcategoriaId IS NULL OR e.subcategoria_id = :subcategoriaId)
             AND (cast(:fechaInicio as timestamp) IS NULL OR e.fecha_hora >= :fechaInicio)
             AND (cast(:fechaFin as timestamp) IS NULL OR e.fecha_hora <= :fechaFin)
-            AND (COALESCE(:estadioLugar, '') = '' OR e.estadio_lugar ILIKE '%' || :estadioLugar || '%')
+            AND (:estadioId IS NULL OR e.estadio_id = :estadioId)
             AND (COALESCE(:estado, '') = '' OR e.estado = :estado)
             AND (:equipoId IS NULL OR pe.equipo_id = :equipoId)
             ORDER BY e.fecha_hora
@@ -36,7 +36,7 @@ public interface EncuentroRepository extends JpaRepository<Encuentro, Integer>, 
             WHERE (:subcategoriaId IS NULL OR e.subcategoria_id = :subcategoriaId)
             AND (cast(:fechaInicio as timestamp) IS NULL OR e.fecha_hora >= :fechaInicio)
             AND (cast(:fechaFin as timestamp) IS NULL OR e.fecha_hora <= :fechaFin)
-            AND (COALESCE(:estadioLugar, '') = '' OR e.estadio_lugar ILIKE '%' || :estadioLugar || '%')
+            AND (:estadioId IS NULL OR e.estadio_id = :estadioId)
             AND (COALESCE(:estado, '') = '' OR e.estado = :estado)
                             AND (:equipoId IS NULL OR pe.equipo_id = :equipoId)
             """,
@@ -46,7 +46,7 @@ public interface EncuentroRepository extends JpaRepository<Encuentro, Integer>, 
         @Param("subcategoriaId") Integer subcategoriaId,
         @Param("fechaInicio") LocalDateTime fechaInicio,
         @Param("fechaFin") LocalDateTime fechaFin,
-        @Param("estadioLugar") String estadioLugar,
+        @Param("estadioId") Integer estadioId,
         @Param("estado") String estado,
         @Param("equipoId") Integer equipoId,
         Pageable pageable
@@ -58,7 +58,7 @@ public interface EncuentroRepository extends JpaRepository<Encuentro, Integer>, 
             WHERE (:subcategoriaId IS NULL OR e.subcategoria_id = :subcategoriaId)
             AND (cast(:fechaInicio as timestamp) IS NULL OR e.fecha_hora >= :fechaInicio)
             AND (cast(:fechaFin as timestamp) IS NULL OR e.fecha_hora <= :fechaFin)
-            AND (COALESCE(:estadioLugar, '') = '' OR e.estadio_lugar ILIKE '%' || :estadioLugar || '%')
+            AND (:estadioId IS NULL OR e.estadio_id = :estadioId)
             AND (COALESCE(:estado, '') = '' OR e.estado = :estado)
             AND (:equipoId IS NULL OR pe.equipo_id = :equipoId)
             ORDER BY e.fecha_hora
@@ -69,7 +69,7 @@ public interface EncuentroRepository extends JpaRepository<Encuentro, Integer>, 
         @Param("subcategoriaId") Integer subcategoriaId,
         @Param("fechaInicio") LocalDateTime fechaInicio,
         @Param("fechaFin") LocalDateTime fechaFin,
-        @Param("estadioLugar") String estadioLugar,
+        @Param("estadioId") Integer estadioId,
         @Param("estado") String estado,
         @Param("equipoId") Integer equipoId
     );

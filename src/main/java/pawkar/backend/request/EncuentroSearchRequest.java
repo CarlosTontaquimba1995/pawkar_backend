@@ -15,7 +15,7 @@ public class EncuentroSearchRequest {
     private String titulo;
     private LocalDate fechaInicio;
     private LocalDate fechaFin;
-    private String estadioLugar;
+    private Integer estadioId;
     private Integer equipoId;
     private String estado;
     private int page = 0;

@@ -84,7 +84,7 @@ public class EncuentroService {
             Integer subcategoriaId,
             LocalDateTime fechaInicio,
             LocalDateTime fechaFin,
-            String estadioLugar,
+            Integer estadioId,
             String estado,
             Integer equipoId,
             Pageable pageable) {
@@ -93,7 +93,7 @@ public class EncuentroService {
                 subcategoriaId,
                 fechaInicio,
                 fechaFin,
-                estadioLugar,
+                estadioId,
                 estado,
                 equipoId,
                 pageable);
@@ -105,7 +105,7 @@ public class EncuentroService {
             Integer subcategoriaId,
             LocalDateTime fechaInicio,
             LocalDateTime fechaFin,
-            String estadioLugar,
+            Integer estadioId,
             String estado,
             Integer equipoId) {
 
@@ -113,7 +113,7 @@ public class EncuentroService {
                 subcategoriaId,
                 fechaInicio,
                 fechaFin,
-                estadioLugar,
+                estadioId,
                 estado,
                 equipoId);
 
@@ -136,7 +136,7 @@ public class EncuentroService {
             searchRequest.getSubcategoriaId(),
             fechaInicio,
             fechaFin,
-            searchRequest.getEstadioLugar(),
+                searchRequest.getEstadioId(),
             searchRequest.getEstado(),
             searchRequest.getEquipoId(),
             searchRequest.toPageable()
