@@ -457,13 +457,14 @@
   "data": {
     "content": [
       {
-        "id": 1,
-        "fechaHora": "2025-12-31T20:00:00",
-        "estadioLugar": "Estadio Principal",
-        "estado": "PENDIENTE",
-        "subcategoriaId": 1,
-        "equipoLocalId": 1,
-        "equipoVisitanteId": 2
+        "id": 2,
+        "subcategoriaId": 5,
+        "subcategoriaNombre": "Fútbol",
+        "titulo": "Equipo B vs Equipo C",
+        "fechaHora": "2025-10-31T08:00:00",
+        "estadioNombre": "PEGUCHE",
+        "estado": "Programado",
+        "activo": true
       }
     ],
     "pageable": {
@@ -635,7 +636,7 @@
       "equipoVisitanteId": 3,
       "fecha": "2025-10-31",
       "hora": "08:00",
-      "estadio": "Peguche"
+      "estadioId": 1
     }
   ]
 }
@@ -651,7 +652,7 @@
       "id": 1192,
       "titulo": "Equipo B vs Equipo C",
       "fechaHora": "2025-10-31T08:00:00",
-      "estadioLugar": "Peguche",
+      "estadioLugar": "PEGUCHE",
       "estado": "Programado",
       "subcategoriaId": 5,
       "subcategoriaNombre": "Fútbol"

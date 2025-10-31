@@ -12,7 +12,7 @@ public class EncuentroResponse {
     private String subcategoriaNombre;
     private String titulo;
     private LocalDateTime fechaHora;
-    private String estadioLugar;
+    private String estadioNombre;
     private String estado;
     private boolean activo;
 }

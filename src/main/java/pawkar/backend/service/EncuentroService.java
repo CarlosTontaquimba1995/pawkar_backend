@@ -207,6 +207,8 @@ public class EncuentroService {
         response.setTitulo(encuentro.getTitulo());
         response.setFechaHora(encuentro.getFechaHora());
         response.setEstado(encuentro.getEstado());
+        response.setEstadioNombre(encuentro.getEstadio().getNombre());
+        response.setActivo(encuentro.getActivo());
         return response;
     }
 
