@@ -19,6 +19,9 @@
   - [Actualizar encuentro](#actualizar-encuentro)
   - [Eliminar encuentro](#eliminar-encuentro)
 
+- [Generación de Encuentros](#generación-de-encuentros)
+  - [Generar encuentros](#generar-encuentros)
+
 - [Categorías](#categorías)
   - [Obtener todas las categorías](#obtener-todas-las-categorías)
   - [Obtener categoría por ID](#obtener-categoría-por-id)
@@ -611,6 +614,60 @@
   "data": null
 }
 ```
+## Generación de Encuentros
+
+### Generar encuentros
+
+**URL**: `/generacion-encuentros`  
+**Método**: `POST`  
+**Descripción**: Genera encuentros automáticamente según los parámetros proporcionados  
+**Autenticación Requerida**: Sí  
+**Roles**: `ROLE_ADMIN`
+
+**Cuerpo de la Solicitud**:
+```json
+{
+  "subcategoriaId": 5,
+  "tipoGeneracion": "SELECCION_MANUAL",
+  "encuentrosManuales": [
+    {
+      "equipoLocalId": 2,
+      "equipoVisitanteId": 3,
+      "fecha": "2025-10-31",
+      "hora": "08:00",
+      "estadio": "Peguche"
+    }
+  ]
+}
+```
+
+**Respuesta Exitosa (200 OK)**
+```json
+{
+  "success": true,
+  "message": "Encuentros generados exitosamente",
+  "data": [
+    {
+      "id": 1192,
+      "titulo": "Equipo B vs Equipo C",
+      "fechaHora": "2025-10-31T08:00:00",
+      "estadioLugar": "Peguche",
+      "estado": "Programado",
+      "subcategoriaId": 5,
+      "subcategoriaNombre": "Fútbol"
+    }
+  ],
+  "timestamp": "2025-10-31T09:22:45.057755600"
+}
+```
+
+**Códigos de Error**:
+- `400 Bad Request`: Si los parámetros de entrada no son válidos
+- `401 Unauthorized`: Si no se proporciona un token JWT válido
+- `403 Forbidden`: Si el usuario no tiene permisos de administrador
+- `404 Not Found`: Si la subcategoría especificada no existe
+- `500 Internal Server Error`: Si ocurre un error al generar los encuentros
+
 
 ### Códigos de Estado HTTP
 

@@ -34,4 +34,7 @@ public class Encuentro {
 
     @Column(length = 50)
     private String estado = "Pendiente";
+
+    @Column(columnDefinition = "BOOLEAN DEFAULT TRUE")
+    private Boolean activo = true;
 }

@@ -145,9 +145,6 @@ public class EncuentroService {
             encuentro.setSubcategoria(subcategoria);
         }
 
-        if (request.getTitulo() != null) {
-            encuentro.setTitulo(request.getTitulo());
-        }
         if (request.getFechaHora() != null) {
             encuentro.setFechaHora(request.getFechaHora());
         }

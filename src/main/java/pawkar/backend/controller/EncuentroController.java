@@ -6,6 +6,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.validation.annotation.Validated;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -30,8 +31,7 @@ public class EncuentroController {
 
     @PostMapping
     public ApiResponseStandard<EncuentroResponse> createEncuentro(
-            @Valid @RequestBody EncuentroRequest request,
-            HttpServletRequest httpRequest) {
+            @Validated(EncuentroRequest.OnCreate.class) @RequestBody EncuentroRequest request) {
         EncuentroResponse response = encuentroService.createEncuentro(request);
         return ApiResponseStandard.success(response, "Encuentro creado exitosamente");
     }
@@ -44,7 +44,7 @@ public class EncuentroController {
      */
     @PostMapping("/bulk")
     public ApiResponseStandard<List<EncuentroResponse>> createEncuentrosBulk(
-            @Valid @RequestBody List<EncuentroRequest> requests) {
+            @Validated(EncuentroRequest.OnCreate.class) @RequestBody List<EncuentroRequest> requests) {
         List<EncuentroResponse> responses = encuentroService.saveAllEncuentros(requests);
         return ApiResponseStandard.success(responses, "Encuentros creados exitosamente");
     }

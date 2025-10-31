@@ -14,4 +14,5 @@ public class EncuentroResponse {
     private LocalDateTime fechaHora;
     private String estadioLugar;
     private String estado;
+    private boolean activo;
 }
