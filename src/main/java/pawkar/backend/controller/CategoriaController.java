@@ -10,6 +10,7 @@ import pawkar.backend.repository.CategoriaRepository;
 import pawkar.backend.repository.SubcategoriaRepository;
 import pawkar.backend.request.BulkCategoriaRequest;
 import pawkar.backend.request.CategoriaRequest;
+import pawkar.backend.exception.ResourceNotFoundException;
 import pawkar.backend.response.ApiResponseStandard;
 import pawkar.backend.response.CategoriaResponse;
 import pawkar.backend.response.SubcategoriaResponse;
@@ -77,6 +78,28 @@ public class CategoriaController {
                 "Categorías creadas exitosamente");
     }
 
+    @GetMapping("/nemonico/{nemonico}")
+    public ResponseEntity<ApiResponseStandard<CategoriaResponse>> getCategoriaByNemonico(@PathVariable String nemonico) {
+        try {
+            Categoria categoria = categoriaRepository.findByNemonico(nemonico)
+                    .orElseThrow(() -> new ResourceNotFoundException("Categoría no encontrada con nemonico: " + nemonico));
+            
+            CategoriaResponse response = convertToResponse(categoria);
+            return ResponseEntity.ok(ApiResponseStandard.success(response, "Categoría obtenida exitosamente"));
+            
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(ApiResponseStandard.error(e.getMessage(), 
+                            "/api/categorias/nemonico/" + nemonico, 
+                            "Not Found", 404));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(ApiResponseStandard.error("Error al obtener la categoría: " + e.getMessage(), 
+                            "/api/categorias/nemonico/" + nemonico, 
+                            "Internal Server Error", 500));
+        }
+    }
+    
     @GetMapping("/eventos/subcategorias")
     public ResponseEntity<ApiResponseStandard<List<SubcategoriaResponse>>> getSubcategoriasDeEventos() {
         try {
@@ -99,7 +122,7 @@ public class CategoriaController {
                     .map(this::toSubcategoriaResponse)
                     .collect(Collectors.toList());
             
-return ResponseEntity.ok(ApiResponseStandard.<List<SubcategoriaResponse>>success(response, "Subcategorías de eventos obtenidas correctamente"));
+        return ResponseEntity.ok(ApiResponseStandard.<List<SubcategoriaResponse>>success(response, "Subcategorías de eventos obtenidas correctamente"));
             
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -107,6 +130,15 @@ return ResponseEntity.ok(ApiResponseStandard.<List<SubcategoriaResponse>>success
                             "/api/categorias/eventos/subcategorias", 
                             "Internal Server Error", 500));
         }
+    }
+    
+    private CategoriaResponse convertToResponse(Categoria categoria) {
+        CategoriaResponse response = new CategoriaResponse();
+        response.setCategoriaId(categoria.getCategoriaId());
+        response.setNombre(categoria.getNombre());
+        response.setNemonico(categoria.getNemonico());
+        response.setEstado(categoria.isEstado());
+        return response;
     }
     
     private SubcategoriaResponse toSubcategoriaResponse(Subcategoria subcategoria) {
