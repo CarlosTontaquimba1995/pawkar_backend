@@ -43,6 +43,7 @@ public class SubcategoriaService {
         subcategoria.setCategoria(categoria);
         subcategoria.setNombre(request.getNombre());
         subcategoria.setDescripcion(request.getDescripcion());
+        subcategoria.setFechaHora(request.getFechaHora());
 
         return subcategoriaRepository.save(subcategoria);
     }
@@ -119,6 +120,7 @@ public class SubcategoriaService {
                     subcategoria.setCategoria(categoria);
                     subcategoria.setNombre(subcategoriaRequest.getNombre());
                     subcategoria.setDescripcion(subcategoriaRequest.getDescripcion());
+                                subcategoria.setFechaHora(subcategoriaRequest.getFechaHora());
                     return subcategoria;
                 })
                 .toList();

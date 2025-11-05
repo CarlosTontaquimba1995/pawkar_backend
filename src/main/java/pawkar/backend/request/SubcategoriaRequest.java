@@ -2,6 +2,7 @@ package pawkar.backend.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 
 public class SubcategoriaRequest {
     @NotNull(message = "El ID de categoría es obligatorio")
@@ -11,6 +12,10 @@ public class SubcategoriaRequest {
     private String nombre;
     
     private String descripcion;
+    
+    private LocalDateTime fechaHora;
+    
+    private Boolean proximo = true;
 
     // Getters and Setters
     public Long getCategoriaId() {
@@ -35,5 +40,21 @@ public class SubcategoriaRequest {
 
     public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;
+    }
+    
+    public LocalDateTime getFechaHora() {
+        return fechaHora;
+    }
+
+    public void setFechaHora(LocalDateTime fechaHora) {
+        this.fechaHora = fechaHora;
+    }
+
+    public Boolean getProximo() {
+        return proximo;
+    }
+
+    public void setProximo(Boolean proximo) {
+        this.proximo = proximo;
     }
 }

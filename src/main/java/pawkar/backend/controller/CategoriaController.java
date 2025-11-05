@@ -4,13 +4,23 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import pawkar.backend.entity.Categoria;
+import pawkar.backend.entity.Subcategoria;
+import pawkar.backend.repository.CategoriaRepository;
+import pawkar.backend.repository.SubcategoriaRepository;
 import pawkar.backend.request.BulkCategoriaRequest;
 import pawkar.backend.request.CategoriaRequest;
 import pawkar.backend.response.ApiResponseStandard;
 import pawkar.backend.response.CategoriaResponse;
+import pawkar.backend.response.SubcategoriaResponse;
 import pawkar.backend.service.CategoriaService;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -19,7 +29,15 @@ public class CategoriaController {
 
     @Autowired
     private CategoriaService categoriaService;
+    private CategoriaRepository categoriaRepository;
+    private SubcategoriaRepository subcategoriaRepository;
 
+    @Autowired
+    public CategoriaController(CategoriaService categoriaService, CategoriaRepository categoriaRepository, SubcategoriaRepository subcategoriaRepository) {
+        this.categoriaService = categoriaService;
+        this.categoriaRepository = categoriaRepository;
+        this.subcategoriaRepository = subcategoriaRepository;
+    }
 
     @GetMapping
     @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
@@ -57,6 +75,55 @@ public class CategoriaController {
         return ApiResponseStandard.success(
                 categorias,
                 "Categorías creadas exitosamente");
+    }
+
+    @GetMapping("/eventos/subcategorias")
+    public ResponseEntity<ApiResponseStandard<List<SubcategoriaResponse>>> getSubcategoriasDeEventos() {
+        try {
+            // Buscar la categoría de eventos (EVENTOS o EVENTO)
+            Optional<Categoria> categoriaOpt = categoriaRepository.findEventosCategoria();
+            
+            if (categoriaOpt.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(ApiResponseStandard.<List<SubcategoriaResponse>>error("No se encontró la categoría de eventos", 
+                                "/api/categorias/eventos/subcategorias", 
+                                "Not Found", 404));
+            }
+            
+            // Obtener las subcategorías de la categoría encontrada
+            List<Subcategoria> subcategorias = subcategoriaRepository
+                    .findByCategoria_CategoriaId(categoriaOpt.get().getCategoriaId());
+            
+            // Convertir a DTOs
+            List<SubcategoriaResponse> response = subcategorias.stream()
+                    .map(this::toSubcategoriaResponse)
+                    .collect(Collectors.toList());
+            
+return ResponseEntity.ok(ApiResponseStandard.<List<SubcategoriaResponse>>success(response, "Subcategorías de eventos obtenidas correctamente"));
+            
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(ApiResponseStandard.<List<SubcategoriaResponse>>error("Error al obtener subcategorías de eventos: " + e.getMessage(), 
+                            "/api/categorias/eventos/subcategorias", 
+                            "Internal Server Error", 500));
+        }
+    }
+    
+    private SubcategoriaResponse toSubcategoriaResponse(Subcategoria subcategoria) {
+        SubcategoriaResponse response = new SubcategoriaResponse();
+        response.setSubcategoriaId(subcategoria.getSubcategoriaId());
+        response.setNombre(subcategoria.getNombre());
+        response.setDescripcion(subcategoria.getDescripcion());
+        response.setEstado(subcategoria.getEstado());
+        response.setFechaHora(subcategoria.getFechaHora());
+        response.setProximo(subcategoria.getProximo());
+        
+        if (subcategoria.getCategoria() != null) {
+            response.setCategoriaId(subcategoria.getCategoria().getCategoriaId());
+            response.setCategoriaNombre(subcategoria.getCategoria().getNombre());
+        }
+        
+        return response;
     }
 
     @PutMapping("/{id}")

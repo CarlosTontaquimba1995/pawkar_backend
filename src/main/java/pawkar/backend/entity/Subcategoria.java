@@ -30,8 +30,8 @@ public class Subcategoria {
     @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT TRUE")
     private Boolean estado = true;
     
-    @Column(columnDefinition = "BOOLEAN DEFAULT FALSE")
-    private Boolean proximo = false;
+    @Column(columnDefinition = "BOOLEAN DEFAULT TRUE")
+    private Boolean proximo = true;
 
     @OneToMany(mappedBy = "subcategoria", fetch = FetchType.LAZY)
     private List<Encuentro> encuentros = new ArrayList<>();
