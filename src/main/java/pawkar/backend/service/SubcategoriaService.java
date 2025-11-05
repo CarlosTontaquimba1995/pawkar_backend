@@ -8,12 +8,10 @@ import pawkar.backend.entity.Subcategoria;
 import pawkar.backend.exception.BadRequestException;
 import pawkar.backend.exception.ResourceNotFoundException;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import pawkar.backend.repository.CategoriaRepository;
 import pawkar.backend.repository.SubcategoriaRepository;
 import pawkar.backend.request.BulkSubcategoriaRequest;
 import pawkar.backend.request.SubcategoriaRequest;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,14 +19,19 @@ import java.util.stream.Collectors;
 @Service
 public class SubcategoriaService {
 
-    @Autowired
-    private SubcategoriaRepository subcategoriaRepository;
+        private final SubcategoriaRepository subcategoriaRepository;
+        private final CategoriaRepository categoriaRepository;
+        private final EntityManager entityManager;
+        private final CategoriaService categoriaService;
 
     @Autowired
-    private CategoriaRepository categoriaRepository;
-
-    @PersistenceContext
-    private EntityManager entityManager;
+    public SubcategoriaService(SubcategoriaRepository subcategoriaRepository, CategoriaRepository categoriaRepository,
+                    EntityManager entityManager, CategoriaService categoriaService) {
+            this.subcategoriaRepository = subcategoriaRepository;
+            this.categoriaRepository = categoriaRepository;
+            this.entityManager = entityManager;
+            this.categoriaService = categoriaService;
+    }
 
     public Subcategoria crearSubcategoria(SubcategoriaRequest request) {
         // Verificar si ya existe una subcategoría con el mismo nombre (ignorando mayúsculas/minúsculas)
@@ -153,6 +156,25 @@ public class SubcategoriaService {
         subcategoria.setDescripcion(request.getDescripcion());
 
         return subcategoriaRepository.save(subcategoria);
+    }
+
+    @Transactional
+    public List<Subcategoria> findByCategoria_CategoriaIdAndProximo(Integer categoriaId, boolean proximo) {
+            return subcategoriaRepository.findByCategoria_CategoriaIdAndProximo(categoriaId, proximo);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Subcategoria> findProximosEventos() {
+            Categoria categoria = categoriaService.findEventosCategoria()
+                            .orElseThrow(() -> new ResourceNotFoundException("No se encontró la categoría de eventos"));
+            return findByCategoria_CategoriaIdAndProximo(categoria.getCategoriaId(), true);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Subcategoria> findEventosPasados() {
+            Categoria categoria = categoriaService.findEventosCategoria()
+                            .orElseThrow(() -> new ResourceNotFoundException("No se encontró la categoría de eventos"));
+            return findByCategoria_CategoriaIdAndProximo(categoria.getCategoriaId(), false);
     }
 
     @Transactional

@@ -4,14 +4,15 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import pawkar.backend.entity.Subcategoria;
+
 import pawkar.backend.entity.Categoria;
+import pawkar.backend.entity.Subcategoria;
+import pawkar.backend.exception.ResourceNotFoundException;
 import pawkar.backend.request.BulkSubcategoriaRequest;
 import pawkar.backend.request.SubcategoriaRequest;
 import pawkar.backend.response.ApiResponseStandard;
 import pawkar.backend.response.SubcategoriaResponse;
 import pawkar.backend.service.SubcategoriaService;
-
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -119,6 +120,54 @@ public class SubcategoriaController {
         } catch (Exception e) {
             return ApiResponseStandard.error(e.getMessage(), 
                 "/api/subcategorias/" + id, "Bad Request", 400);
+        }
+    }
+
+    @GetMapping("/eventos/proximos")
+    public ApiResponseStandard<List<SubcategoriaResponse>> getProximosEventos() {
+        try {
+            List<Subcategoria> subcategorias = subcategoriaService.findProximosEventos();
+            List<SubcategoriaResponse> response = subcategorias.stream()
+                    .map(this::toSubcategoriaResponse)
+                    .collect(Collectors.toList());
+
+            return ApiResponseStandard.<List<SubcategoriaResponse>>success(response,
+                    "Próximos eventos obtenidos correctamente");
+
+        } catch (ResourceNotFoundException e) {
+            return ApiResponseStandard.<List<SubcategoriaResponse>>error(
+                    e.getMessage(),
+                    "/api/subcategorias/eventos/proximos",
+                    "Not Found", 404);
+        } catch (Exception e) {
+            return ApiResponseStandard.<List<SubcategoriaResponse>>error(
+                    "Error al obtener próximos eventos: " + e.getMessage(),
+                    "/api/subcategorias/eventos/proximos",
+                    "Internal Server Error", 500);
+        }
+    }
+
+    @GetMapping("/eventos/pasados")
+    public ApiResponseStandard<List<SubcategoriaResponse>> getEventosPasados() {
+        try {
+            List<Subcategoria> subcategorias = subcategoriaService.findEventosPasados();
+            List<SubcategoriaResponse> response = subcategorias.stream()
+                    .map(this::toSubcategoriaResponse)
+                    .collect(Collectors.toList());
+
+            return ApiResponseStandard.<List<SubcategoriaResponse>>success(response,
+                    "Eventos pasados obtenidos correctamente");
+
+        } catch (ResourceNotFoundException e) {
+            return ApiResponseStandard.<List<SubcategoriaResponse>>error(
+                    e.getMessage(),
+                    "/api/subcategorias/eventos/pasados",
+                    "Not Found", 404);
+        } catch (Exception e) {
+            return ApiResponseStandard.<List<SubcategoriaResponse>>error(
+                    "Error al obtener eventos pasados: " + e.getMessage(),
+                    "/api/subcategorias/eventos/pasados",
+                    "Internal Server Error", 500);
         }
     }
 

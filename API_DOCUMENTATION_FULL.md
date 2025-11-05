@@ -33,6 +33,7 @@
 - [Categorías](#categorías)
   - [Obtener todas las categorías](#obtener-todas-las-categorías)
   - [Obtener categoría por ID](#obtener-categoría-por-id)
+  - [Obtener categoría por nemonico](#obtener-categoría-por-nemonico)
   - [Crear categoría](#crear-categoría)
   - [Crear múltiples categorías](#crear-múltiples-categorías)
   - [Actualizar categoría](#actualizar-categoría)
@@ -41,6 +42,8 @@
   - [Obtener todas las subcategorías](#obtener-todas-las-subcategorías)
   - [Obtener subcategoría por ID](#obtener-subcategoría-por-id)
   - [Obtener subcategorías por categoría](#obtener-subcategorías-por-categoría)
+  - [Obtener próximos eventos](#obtener-próximos-eventos)
+  - [Obtener eventos pasados](#obtener-eventos-pasados)
   - [Crear subcategoría](#crear-subcategoría)
   - [Crear múltiples subcategorías](#crear-múltiples-subcategorías)
   - [Actualizar subcategoría](#actualizar-subcategoría)
@@ -721,8 +724,8 @@
 **URL**: `/categorias/{id}`  
 **Método**: `GET`  
 **Descripción**: Obtiene los detalles de una categoría específica por su ID  
-**Autenticación Requerida**: Sí  
-**Roles**: `ROLE_USER`, `ROLE_MODERATOR`, `ROLE_ADMIN`
+**Autenticación Requerida**: No  
+**Roles**: No aplica
 
 **Parámetros de Ruta**:
 - `id` (requerido): ID de la categoría a consultar
@@ -734,11 +737,117 @@
   "message": "Categoría obtenida exitosamente",
   "data": {
     "id": 1,
-    "nombre": "Categoría 1"
+    "nombre": "Categoría 1",
+    "nemonico": "CATEGORIA_1",
+    "estado": true
   },
   "timestamp": "2025-10-21T11:30:00.000+00:00"
 }
 ```
+
+### Obtener categoría por nemonico
+
+**URL**: `/categorias/nemonico/{nemonico}`  
+**Método**: `GET`  
+**Descripción**: Obtiene una categoría por su nemonico. Soporta búsqueda flexible de singular/plural (ej: "EVENTO" o "EVENTOS")  
+**Autenticación Requerida**: No  
+**Roles**: No aplica
+
+**Parámetros de Ruta**:
+- `nemonico` (requerido): Nemonico de la categoría (ej: "EVENTO", "EVENTOS", "DEPORTE", "DEPORTES")
+
+**Respuesta Exitosa (200 OK)**
+```json
+{
+  "success": true,
+  "message": "Categoría obtenida exitosamente",
+  "data": {
+    "id": 2,
+    "nombre": "Eventos",
+    "nemonico": "EVENTOS",
+    "estado": true
+  }
+}
+```
+
+**Errores**:
+- `404 Not Found`: No se encontró la categoría con el nemonico especificado
+
+### Obtener próximos eventos
+
+**URL**: `/subcategorias/eventos/proximos`  
+**Método**: `GET`  
+**Descripción**: Obtiene una lista de los próximos eventos (subcategorías con proximo = true) de la categoría de eventos  
+**Autenticación Requerida**: No
+
+**Respuesta Exitosa (200 OK)**
+```json
+{
+  "success": true,
+  "message": "Próximos eventos obtenidos correctamente",
+  "data": [
+    {
+      "id": 1,
+      "nombre": "Torneo de Fútbol 2023",
+      "descripcion": "Torneo anual de fútbol",
+      "fechaHora": "2023-12-15T15:00:00",
+      "proximo": true,
+      "categoriaId": 1
+    },
+    {
+      "id": 2,
+      "nombre": "Torneo de Voleibol 2023",
+      "descripcion": "Torneo de voleibol playa",
+      "fechaHora": "2023-12-20T16:30:00",
+      "proximo": true,
+      "categoriaId": 1
+    }
+  ],
+  "timestamp": "2023-11-05T10:00:00.000+00:00"
+}
+```
+
+**Errores**:
+- `404 Not Found`: No se encontró la categoría de eventos
+- `500 Internal Server Error`: Error al procesar la solicitud
+
+### Obtener eventos pasados
+
+**URL**: `/subcategorias/eventos/pasados`  
+**Método**: `GET`  
+**Descripción**: Obtiene una lista de los eventos pasados (subcategorías con proximo = false) de la categoría de eventos  
+**Autenticación Requerida**: No
+
+**Respuesta Exitosa (200 OK)**
+```json
+{
+  "success": true,
+  "message": "Eventos pasados obtenidos correctamente",
+  "data": [
+    {
+      "id": 3,
+      "nombre": "Torneo de Baloncesto 2022",
+      "descripcion": "Torneo de baloncesto intercolegial",
+      "fechaHora": "2022-11-10T14:00:00",
+      "proximo": false,
+      "categoriaId": 1
+    },
+    {
+      "id": 4,
+      "nombre": "Torneo de Tenis 2022",
+      "descripcion": "Torneo de tenis individual",
+      "fechaHora": "2022-10-05T09:30:00",
+      "proximo": false,
+      "categoriaId": 1
+    }
+  ],
+  "timestamp": "2023-11-05T10:05:00.000+00:00"
+}
+```
+
+**Errores**:
+- `404 Not Found`: No se encontró la categoría de eventos
+- `500 Internal Server Error`: Error al procesar la solicitud
 
 ### Crear categoría
 

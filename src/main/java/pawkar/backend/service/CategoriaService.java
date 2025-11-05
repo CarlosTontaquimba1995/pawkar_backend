@@ -14,6 +14,7 @@ import pawkar.backend.request.CategoriaRequest;
 import pawkar.backend.response.CategoriaResponse;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -154,6 +155,13 @@ public class CategoriaService {
         }
         
         categoriaRepository.delete(categoria);
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<Categoria> findEventosCategoria() {
+        // Buscar por nemonico EVENTOS o EVENTO (singular/plural)
+        return categoriaRepository.findByNemonico("EVENTOS")
+                .or(() -> categoriaRepository.findByNemonico("EVENTO"));
     }
 
     private CategoriaResponse convertToResponse(Categoria categoria) {
