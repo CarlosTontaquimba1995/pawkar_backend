@@ -1,6 +1,7 @@
 package pawkar.backend.entity;
 
 import jakarta.persistence.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -23,8 +24,14 @@ public class Subcategoria {
     @Column(columnDefinition = "TEXT")
     private String descripcion;
     
+    @Column(name = "fecha_hora")
+    private LocalDateTime fechaHora;
+    
     @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT TRUE")
     private Boolean estado = true;
+    
+    @Column(columnDefinition = "BOOLEAN DEFAULT FALSE")
+    private Boolean proximo = false;
 
     @OneToMany(mappedBy = "subcategoria", fetch = FetchType.LAZY)
     private List<Encuentro> encuentros = new ArrayList<>();
@@ -41,6 +48,8 @@ public class Subcategoria {
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.estado = true;
+        this.fechaHora = null;
+        this.proximo = false;
     }
 
     // Getters and Setters
@@ -83,6 +92,14 @@ public class Subcategoria {
     public void setEstado(Boolean estado) {
         this.estado = estado;
     }
+
+    public LocalDateTime getFechaHora() {
+        return fechaHora;
+    }
+
+    public void setFechaHora(LocalDateTime fechaHora) {
+        this.fechaHora = fechaHora;
+    }
     
     public Set<Role> getRoles() {
         return roles;
@@ -90,6 +107,14 @@ public class Subcategoria {
 
     public void setRoles(Set<Role> roles) {
         this.roles = roles;
+    }
+    
+    public Boolean getProximo() {
+        return proximo;
+    }
+    
+    public void setProximo(Boolean proximo) {
+        this.proximo = proximo;
     }
 
     // Helper methods for managing the relationship

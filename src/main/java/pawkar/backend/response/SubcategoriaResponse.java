@@ -1,5 +1,7 @@
 package pawkar.backend.response;
 
+import java.time.LocalDateTime;
+
 public class SubcategoriaResponse {
     private Integer subcategoriaId;
     private Integer categoriaId;
@@ -7,18 +9,22 @@ public class SubcategoriaResponse {
     private String nombre;
     private String descripcion;
     private Boolean estado;
+    private LocalDateTime fechaHora;
+    private Boolean proximo;
 
     public SubcategoriaResponse() {
     }
 
     public SubcategoriaResponse(Integer subcategoriaId, Integer categoriaId, String categoriaNombre, String nombre,
-            String descripcion, Boolean estado) {
+            String descripcion, Boolean estado, java.time.LocalDateTime fechaHora, Boolean proximo) {
         this.subcategoriaId = subcategoriaId;
         this.categoriaId = categoriaId;
         this.categoriaNombre = categoriaNombre;
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.estado = estado;
+        this.fechaHora = fechaHora;
+        this.proximo = proximo;
     }
 
     // Getters and Setters
@@ -68,5 +74,21 @@ public class SubcategoriaResponse {
 
     public void setEstado(Boolean estado) {
         this.estado = estado;
+    }
+
+    public java.time.LocalDateTime getFechaHora() {
+        return fechaHora;
+    }
+
+    public void setFechaHora(java.time.LocalDateTime fechaHora) {
+        this.fechaHora = fechaHora;
+    }
+
+    public Boolean getProximo() {
+        return proximo;
+    }
+
+    public void setProximo(Boolean proximo) {
+        this.proximo = proximo;
     }
 }
