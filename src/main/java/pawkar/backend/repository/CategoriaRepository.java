@@ -12,4 +12,6 @@ public interface CategoriaRepository extends JpaRepository<Categoria, Long> {
     Optional<Categoria> findByNombre(String nombre);
     boolean existsByNombre(String nombre);
     List<Categoria> findByNombreIn(List<String> nombres);
+    
+    boolean existsByNemonico(String nemonico);
 }

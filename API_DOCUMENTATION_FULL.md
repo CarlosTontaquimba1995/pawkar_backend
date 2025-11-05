@@ -881,14 +881,24 @@
       "nombre": "Fútbol",
       "descripcion": "Torneos de fútbol",
       "categoriaId": 1,
-      "categoriaNombre": "Deportes"
+      "categoriaNombre": "Deportes",
+      "fechaHora": ""
     },
     {
       "subcategoriaId": 2,
       "nombre": "Básquet",
       "descripcion": "Torneos de básquet",
       "categoriaId": 1,
-      "categoriaNombre": "Deportes"
+      "categoriaNombre": "Deportes",
+      "fechaHora": ""
+    },
+    {
+      "subcategoriaId": 3,
+      "nombre": "Runakay",
+      "descripcion": "Concierto runakay",
+      "categoriaId": 2,
+      "categoriaNombre": "Eventos",
+      "fechaHora": "2025-12-31T20:00:00"
     }
   ],
   "timestamp": "2025-10-21T11:30:00.000+00:00"
@@ -915,7 +925,8 @@
     "nombre": "Fútbol",
     "descripcion": "Torneos de fútbol",
     "categoriaId": 1,
-    "categoriaNombre": "Deportes"
+    "categoriaNombre": "Deportes",
+    "fechaHora": "2025-12-31T20:00:00"
   },
   "timestamp": "2025-10-21T11:30:00.000+00:00"
 }

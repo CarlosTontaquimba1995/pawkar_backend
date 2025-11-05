@@ -48,8 +48,16 @@ public class CategoriaService {
             throw new BadRequestException("El nombre de la categoría ya está en uso");
         }
 
+        String nombre = categoriaRequest.getNombre();
+        String nemonico = generateNemonico(nombre);
+        
+        if (categoriaRepository.existsByNemonico(nemonico)) {
+            throw new BadRequestException("El nemonico generado ya está en uso");
+        }
+
         Categoria categoria = new Categoria();
-        categoria.setNombre(categoriaRequest.getNombre());
+        categoria.setNombre(nombre);
+        categoria.setNemonico(nemonico);
 
         Categoria savedCategoria = categoriaRepository.save(categoria);
         return convertToResponse(savedCategoria);
@@ -83,8 +91,16 @@ public class CategoriaService {
         // Guardar todas las categorías
         List<Categoria> categorias = bulkRequest.getCategorias().stream()
                 .map(req -> {
+                    String nombre = req.getNombre();
+                    String nemonico = generateNemonico(nombre);
+                    
+                    if (categoriaRepository.existsByNemonico(nemonico)) {
+                        throw new BadRequestException("El nemonico generado para '" + nombre + "' ya está en uso");
+                    }
+                    
                     Categoria cat = new Categoria();
-                    cat.setNombre(req.getNombre());
+                    cat.setNombre(nombre);
+                    cat.setNemonico(nemonico);
                     return cat;
                 })
                 .collect(Collectors.toList());
@@ -93,6 +109,17 @@ public class CategoriaService {
         return savedCategorias.stream()
                 .map(this::convertToResponse)
                 .collect(Collectors.toList());
+    }
+
+    private String generateNemonico(String nombre) {
+        if (nombre == null) {
+            return null;
+        }
+        // Convert to uppercase, replace spaces with underscores, and remove special characters
+        return nombre.trim()
+                .toUpperCase()
+                .replaceAll("\\s+", "_")
+                .replaceAll("[^A-Z0-9_]", "");
     }
 
     @Transactional
@@ -133,6 +160,7 @@ public class CategoriaService {
         CategoriaResponse response = new CategoriaResponse();
         response.setCategoriaId(categoria.getCategoriaId());
         response.setNombre(categoria.getNombre());
+        response.setNemonico(categoria.getNemonico());
         response.setEstado(categoria.isEstado());
         return response;
     }
