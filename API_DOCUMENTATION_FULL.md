@@ -48,6 +48,12 @@
   - [Crear múltiples subcategorías](#crear-múltiples-subcategorías)
   - [Actualizar subcategoría](#actualizar-subcategoría)
   - [Eliminar subcategoría](#eliminar-subcategoría)
+- [Tabla de Posiciones](#tabla-de-posiciones)
+  - [Obtener tabla por subcategoría](#obtener-tabla-por-subcategoría)
+  - [Buscar en tabla de posiciones](#buscar-en-tabla-de-posiciones)
+  - [Crear o actualizar posición](#crear-o-actualizar-posición)
+  - [Eliminar posición](#eliminar-posición)
+  - [Actualizar desde partido](#actualizar-desde-partido)
 - [Gestión de Roles por Subcategoría](#gestión-de-roles-por-subcategoría)
   - [Asignar un Rol a una Subcategoría](#asignar-un-rol-a-una-subcategoría)
   - [Eliminar un Rol de una Subcategoría](#eliminar-un-rol-de-una-subcategoría)
@@ -3021,4 +3027,174 @@ Obtiene todas las sanciones de un tipo específico.
 - **404 Not Found**: Cuando no se encuentra el estadio con el ID proporcionado
 - **400 Bad Request**: Cuando los datos de la solicitud son inválidos
 - **403 Forbidden**: Cuando el usuario no tiene permisos para realizar la acción
+
+## Tabla de Posiciones
+
+### Obtener tabla por subcategoría
+
+**URL**: `/api/tabla-posicion/subcategoria/{subcategoriaId}`  
+**Método**: `GET`  
+**Descripción**: Obtiene la tabla de posiciones para una subcategoría específica  
+**Autenticación Requerida**: No
+
+**Parámetros de Ruta**:
+- `subcategoriaId` (requerido): ID de la subcategoría
+
+**Respuesta Exitosa (200 OK)**
+```json
+{
+  "success": true,
+  "message": "Tabla de posiciones obtenida exitosamente",
+  "data": [
+    {
+      "equipoId": 1,
+      "equipoNombre": "Equipo A",
+      "partidosJugados": 5,
+      "partidosGanados": 3,
+      "partidosEmpatados": 1,
+      "partidosPerdidos": 1,
+      "golesFavor": 10,
+      "golesContra": 5,
+      "diferenciaGoles": 5,
+      "puntos": 10
+    }
+  ]
+}
 ```
+
+### Buscar en tabla de posiciones
+
+**URL**: `/api/tabla-posicion/search`  
+**Método**: `GET`  
+**Descripción**: Busca en la tabla de posiciones con múltiples criterios de búsqueda  
+**Autenticación Requerida**: No
+
+**Parámetros de Consulta**:
+- `subcategoriaId` (opcional): Filtrar por ID de subcategoría
+- `categoriaId` (opcional): Filtrar por ID de categoría
+- `equipoId` (opcional): Filtrar por ID de equipo
+- `serieId` (opcional): Filtrar por ID de serie
+- `nombreEquipo` (opcional): Filtrar por nombre de equipo (búsqueda parcial)
+- `page` (opcional): Número de página (por defecto 0)
+- `size` (opcional): Tamaño de página (por defecto 10)
+- `sort` (opcional): Ordenamiento (por defecto "puntos,desc")
+
+**Respuesta Exitosa (200 OK)**
+```json
+{
+  "success": true,
+  "message": "Búsqueda de tabla de posiciones exitosa",
+  "data": [
+    {
+      "equipoId": 1,
+      "equipoNombre": "Equipo A",
+      "partidosJugados": 5,
+      "partidosGanados": 3,
+      "partidosEmpatados": 1,
+      "partidosPerdidos": 1,
+      "golesFavor": 10,
+      "golesContra": 5,
+      "diferenciaGoles": 5,
+      "puntos": 10
+    }
+  ]
+}
+```
+
+### Crear o actualizar posición
+
+**URL**: `/api/tabla-posicion`  
+**Método**: `POST` o `PUT`  
+**Descripción**: Crea o actualiza una posición en la tabla  
+**Autenticación Requerida**: Sí
+
+**Cuerpo de la Solicitud (JSON)**:
+```json
+{
+  "subcategoriaId": 1,
+  "equipoId": 1,
+  "partidosJugados": 5,
+  "partidosGanados": 3,
+  "partidosEmpatados": 1,
+  "partidosPerdidos": 1,
+  "golesFavor": 10,
+  "golesContra": 5,
+  "diferenciaGoles": 5,
+  "puntos": 10
+}
+```
+
+**Respuesta Exitosa (200 OK)**
+```json
+{
+  "success": true,
+  "message": "Posición actualizada exitosamente",
+  "data": {
+    "id": 1,
+    "subcategoriaId": 1,
+    "equipoId": 1,
+    "partidosJugados": 5,
+    "partidosGanados": 3,
+    "partidosEmpatados": 1,
+    "partidosPerdidos": 1,
+    "golesFavor": 10,
+    "golesContra": 5,
+    "diferenciaGoles": 5,
+    "puntos": 10
+  }
+}
+```
+
+### Eliminar posición
+
+**URL**: `/api/tabla-posicion/subcategoria/{subcategoriaId}/equipo/{equipoId}`  
+**Método**: `DELETE`  
+**Descripción**: Elimina una posición de la tabla de posiciones  
+**Autenticación Requerida**: Sí
+
+**Parámetros de Ruta**:
+- `subcategoriaId` (requerido): ID de la subcategoría
+- `equipoId` (requerido): ID del equipo
+
+**Respuesta Exitosa (200 OK)**
+```json
+{
+  "success": true,
+  "message": "Posición eliminada exitosamente",
+  "data": null
+}
+```
+
+### Actualizar desde partido
+
+**URL**: `/api/tabla-posicion/actualizar-desde-partido`  
+**Método**: `POST`  
+**Descripción**: Actualiza la tabla de posiciones basado en el resultado de un partido  
+**Autenticación Requerida**: Sí
+
+**Cuerpo de la Solicitud (JSON)**:
+```json
+{
+  "subcategoriaId": 1,
+  "equipoLocalId": 1,
+  "equipoVisitanteId": 2,
+  "golesLocal": 2,
+  "golesVisitante": 1,
+  "estadoPartido": "FINALIZADO"
+}
+```
+
+**Respuesta Exitosa (200 OK)**
+```json
+{
+  "success": true,
+  "message": "Tabla de posiciones actualizada exitosamente",
+  "data": null
+}
+```
+
+### Códigos de Error
+
+- **400 Bad Request**: Cuando faltan campos requeridos o los datos son inválidos
+- **404 Not Found**: Cuando no se encuentra la subcategoría o equipo especificado
+- **403 Forbidden**: Cuando el usuario no tiene permisos para realizar la acción

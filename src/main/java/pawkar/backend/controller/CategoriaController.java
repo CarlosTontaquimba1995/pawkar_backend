@@ -4,11 +4,8 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import pawkar.backend.entity.Categoria;
-import pawkar.backend.repository.CategoriaRepository;
 import pawkar.backend.request.BulkCategoriaRequest;
 import pawkar.backend.request.CategoriaRequest;
-import pawkar.backend.exception.ResourceNotFoundException;
 import pawkar.backend.response.ApiResponseStandard;
 import pawkar.backend.response.CategoriaResponse;
 import pawkar.backend.service.CategoriaService;
@@ -22,12 +19,10 @@ public class CategoriaController {
 
     @Autowired
     private CategoriaService categoriaService;
-    private CategoriaRepository categoriaRepository;
 
     @Autowired
-    public CategoriaController(CategoriaService categoriaService, CategoriaRepository categoriaRepository) {
+    public CategoriaController(CategoriaService categoriaService) {
         this.categoriaService = categoriaService;
-        this.categoriaRepository = categoriaRepository;
     }
 
     @GetMapping
@@ -70,27 +65,8 @@ public class CategoriaController {
 
     @GetMapping("/nemonico/{nemonico}")
     public ApiResponseStandard<CategoriaResponse> getCategoriaByNemonico(@PathVariable String nemonico) {
-        try {
-            Categoria categoria = categoriaRepository.findByNemonico(nemonico)
-                    .orElseThrow(() -> new ResourceNotFoundException("Categoría no encontrada con nemonico: " + nemonico));
-
-            CategoriaResponse response = new CategoriaResponse();
-            response.setCategoriaId(categoria.getCategoriaId());
-            response.setNombre(categoria.getNombre());
-            response.setNemonico(categoria.getNemonico());
-            response.setEstado(categoria.isEstado());
-
-            return ApiResponseStandard.success(response, "Categoría obtenida exitosamente");
-
-        } catch (ResourceNotFoundException e) {
-            return ApiResponseStandard.error(e.getMessage(),
-                    "/api/categorias/nemonico/" + nemonico,
-                    "Not Found", 404);
-        } catch (Exception e) {
-            return ApiResponseStandard.error("Error al obtener la categoría: " + e.getMessage(),
-                    "/api/categorias/nemonico/" + nemonico,
-                    "Internal Server Error", 500);
-        }
+        CategoriaResponse response = categoriaService.getCategoriaByNemonico(nemonico);
+        return ApiResponseStandard.success(response, "Categoría obtenida exitosamente");
     }
 
     @PutMapping("/{id}")

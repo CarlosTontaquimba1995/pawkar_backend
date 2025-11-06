@@ -158,6 +158,13 @@ public class CategoriaService {
     }
 
     @Transactional(readOnly = true)
+    public CategoriaResponse getCategoriaByNemonico(String nemonico) {
+        return categoriaRepository.findByNemonico(nemonico.toUpperCase())
+                .map(this::convertToResponse)
+                .orElseThrow(() -> new BadRequestException("Categoría no encontrada con nemonico: " + nemonico));
+    }
+
+    @Transactional(readOnly = true)
     public Optional<Categoria> findEventosCategoria() {
         // Buscar por nemonico EVENTOS o EVENTO (singular/plural)
         return categoriaRepository.findByNemonico("EVENTOS")
