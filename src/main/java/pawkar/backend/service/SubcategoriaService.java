@@ -157,6 +157,7 @@ public class SubcategoriaService {
         subcategoria.setNombre(request.getNombre());
         subcategoria.setDescripcion(request.getDescripcion());
         subcategoria.setUbicacion(request.getUbicacion());
+        subcategoria.setFechaHora(request.getFechaHora());
 
         return subcategoriaRepository.save(subcategoria);
     }
