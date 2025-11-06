@@ -47,6 +47,7 @@ public class SubcategoriaService {
         subcategoria.setNombre(request.getNombre());
         subcategoria.setDescripcion(request.getDescripcion());
         subcategoria.setFechaHora(request.getFechaHora());
+        subcategoria.setUbicacion(request.getUbicacion());
 
         return subcategoriaRepository.save(subcategoria);
     }
@@ -123,7 +124,8 @@ public class SubcategoriaService {
                     subcategoria.setCategoria(categoria);
                     subcategoria.setNombre(subcategoriaRequest.getNombre());
                     subcategoria.setDescripcion(subcategoriaRequest.getDescripcion());
-                                subcategoria.setFechaHora(subcategoriaRequest.getFechaHora());
+                    subcategoria.setFechaHora(subcategoriaRequest.getFechaHora());
+                    subcategoria.setUbicacion(subcategoriaRequest.getUbicacion());
                     return subcategoria;
                 })
                 .toList();
@@ -154,6 +156,7 @@ public class SubcategoriaService {
         subcategoria.setCategoria(categoria);
         subcategoria.setNombre(request.getNombre());
         subcategoria.setDescripcion(request.getDescripcion());
+        subcategoria.setUbicacion(request.getUbicacion());
 
         return subcategoriaRepository.save(subcategoria);
     }

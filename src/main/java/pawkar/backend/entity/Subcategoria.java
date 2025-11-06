@@ -33,6 +33,9 @@ public class Subcategoria {
     @Column(columnDefinition = "BOOLEAN DEFAULT TRUE")
     private Boolean proximo = true;
 
+    @Column(length = 100)
+    private String ubicacion;
+
     @OneToMany(mappedBy = "subcategoria", fetch = FetchType.LAZY)
     private List<Encuentro> encuentros = new ArrayList<>();
 
@@ -115,6 +118,14 @@ public class Subcategoria {
     
     public void setProximo(Boolean proximo) {
         this.proximo = proximo;
+    }
+
+    public String getUbicacion() {
+        return ubicacion;
+    }
+
+    public void setUbicacion(String ubicacion) {
+        this.ubicacion = ubicacion;
     }
 
     // Helper methods for managing the relationship

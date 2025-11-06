@@ -11,12 +11,13 @@ public class SubcategoriaResponse {
     private Boolean estado;
     private LocalDateTime fechaHora;
     private Boolean proximo;
+    private String ubicacion;
 
     public SubcategoriaResponse() {
     }
 
     public SubcategoriaResponse(Integer subcategoriaId, Integer categoriaId, String categoriaNombre, String nombre,
-            String descripcion, Boolean estado, java.time.LocalDateTime fechaHora, Boolean proximo) {
+            String descripcion, Boolean estado, java.time.LocalDateTime fechaHora, Boolean proximo, String ubicacion) {
         this.subcategoriaId = subcategoriaId;
         this.categoriaId = categoriaId;
         this.categoriaNombre = categoriaNombre;
@@ -25,6 +26,7 @@ public class SubcategoriaResponse {
         this.estado = estado;
         this.fechaHora = fechaHora;
         this.proximo = proximo;
+        this.ubicacion = ubicacion;
     }
 
     // Getters and Setters
@@ -90,5 +92,13 @@ public class SubcategoriaResponse {
 
     public void setProximo(Boolean proximo) {
         this.proximo = proximo;
+    }
+
+    public String getUbicacion() {
+        return ubicacion;
+    }
+
+    public void setUbicacion(String ubicacion) {
+        this.ubicacion = ubicacion;
     }
 }

@@ -17,6 +17,8 @@ public class SubcategoriaRequest {
     
     private Boolean proximo = true;
 
+    private String ubicacion;
+
     // Getters and Setters
     public Long getCategoriaId() {
         return categoriaId;
@@ -56,5 +58,13 @@ public class SubcategoriaRequest {
 
     public void setProximo(Boolean proximo) {
         this.proximo = proximo;
+    }
+
+    public String getUbicacion() {
+        return ubicacion;
+    }
+
+    public void setUbicacion(String ubicacion) {
+        this.ubicacion = ubicacion;
     }
 }
