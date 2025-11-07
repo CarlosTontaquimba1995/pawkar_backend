@@ -2560,7 +2560,8 @@ Obtiene una lista de todas las sanciones registradas en el sistema.
 
 **URL**: `/sanciones`  
 **Método**: `GET`  
-**Autenticación Requerida**: No
+**Autenticación Requerida**: No  
+**Roles**: `Ninguno`
 
 **Respuesta Exitosa (200 OK)**
 ```json
@@ -2575,8 +2576,8 @@ Obtiene una lista de todas las sanciones registradas en el sistema.
       "encuentroId": 102,
       "encuentroTitulo": "Equipo A vs Equipo C",
       "tipoSancion": "TARJETA_ROJA",
-      "motivo": "Motivo",
-      "detalleSancion": "3 días",
+      "motivo": "Falta grave",
+      "detalleSancion": "3 días de suspensión",
       "fechaRegistro": "2025-10-19"
     }
   ]
@@ -2589,10 +2590,11 @@ Obtiene los detalles de una sanción específica por su ID.
 
 **URL**: `/sanciones/{id}`  
 **Método**: `GET`  
-**Autenticación Requerida**: No
+**Autenticación Requerida**: No  
+**Roles**: `Ninguno`
 
 **Parámetros de Ruta**:
-- `id` (requerido): ID de la sanción a consultar
+- `id` (requerido): ID numérico de la sanción
 
 **Respuesta Exitosa (200 OK)**
 ```json
@@ -2605,10 +2607,10 @@ Obtiene los detalles de una sanción específica por su ID.
     "jugadorNombre": "Juan Pérez",
     "encuentroId": 1,
     "encuentroTitulo": "Partido 1",
-    "tipoSancion": "Tarjeta Amarilla",
+    "tipoSancion": "TARJETA_AMARILLA",
     "motivo": "Falta técnica",
     "detalleSancion": "Jugador amonestado por conducta antideportiva",
-    "fechaRegistro": "2023-10-24"
+    "fechaRegistro": "2025-10-24"
   }
 }
 ```
@@ -2627,10 +2629,10 @@ Crea una nueva sanción en el sistema.
 {
   "jugadorId": 1,
   "encuentroId": 1,
-  "tipoSancion": "Tarjeta Roja",
+  "tipoSancion": "TARJETA_ROJA",
   "motivo": "Juego brusco grave",
   "detalleSancion": "Entrada violenta sobre el jugador contrario",
-  "fechaRegistro": "2023-10-24"
+  "fechaRegistro": "2025-10-24"
 }
 ```
 
@@ -2645,10 +2647,10 @@ Crea una nueva sanción en el sistema.
     "jugadorNombre": "Juan Pérez",
     "encuentroId": 1,
     "encuentroTitulo": "Partido 1",
-    "tipoSancion": "Tarjeta Roja",
+    "tipoSancion": "TARJETA_ROJA",
     "motivo": "Juego brusco grave",
     "detalleSancion": "Entrada violenta sobre el jugador contrario",
-    "fechaRegistro": "2023-10-24"
+    "fechaRegistro": "2025-10-24"
   }
 }
 ```
@@ -2663,17 +2665,17 @@ Actualiza una sanción existente.
 **Roles**: `ROLE_ADMIN`, `ROLE_MODERATOR`
 
 **Parámetros de Ruta**:
-- `id` (requerido): ID de la sanción a actualizar
+- `id` (requerido): ID numérico de la sanción a actualizar
 
 **Cuerpo de la Solicitud (JSON)**:
 ```json
 {
   "jugadorId": 1,
   "encuentroId": 1,
-  "tipoSancion": "Tarjeta Roja",
+  "tipoSancion": "TARJETA_ROJA",
   "motivo": "Juego brusco grave",
-  "detalleSancion": "Entrada violenta sobre el jugador contrario - Sanción confirmada por el árbitro",
-  "fechaRegistro": "2023-10-24"
+  "detalleSancion": "Entrada violenta - Sanción confirmada por el árbitro",
+  "fechaRegistro": "2025-10-24"
 }
 ```
 
@@ -2688,15 +2690,173 @@ Actualiza una sanción existente.
     "jugadorNombre": "Juan Pérez",
     "encuentroId": 1,
     "encuentroTitulo": "Partido 1",
-    "tipoSancion": "Tarjeta Roja",
+    "tipoSancion": "TARJETA_ROJA",
     "motivo": "Juego brusco grave",
-    "detalleSancion": "Entrada violenta sobre el jugador contrario - Sanción confirmada por el árbitro",
-    "fechaRegistro": "2023-10-24"
+    "detalleSancion": "Entrada violenta - Sanción confirmada por el árbitro",
+    "fechaRegistro": "2025-10-24"
   }
 }
 ```
 
 ### Eliminar sanción
+
+Elimina una sanción del sistema.
+
+**URL**: `/sanciones/{id}`  
+**Método**: `DELETE`  
+**Autenticación Requerida**: Sí  
+**Roles**: `ROLE_ADMIN`, `ROLE_MODERATOR`
+
+**Parámetros de Ruta**:
+- `id` (requerido): ID numérico de la sanción a eliminar
+
+**Respuesta Exitosa (200 OK)**
+```json
+{
+  "success": true,
+  "message": "Sanción eliminada exitosamente"
+}
+```
+
+### Obtener sanciones por jugador
+
+Obtiene todas las sanciones asociadas a un jugador específico.
+
+**URL**: `/sanciones/jugador/{jugadorId}`  
+**Método**: `GET`  
+**Autenticación Requerida**: No  
+**Roles**: `Ninguno`
+
+**Parámetros de Ruta**:
+- `jugadorId` (requerido): ID numérico del jugador
+
+**Respuesta Exitosa (200 OK)**
+```json
+{
+  "success": true,
+  "message": "Sanciones por jugador obtenidas exitosamente",
+  "data": [
+    {
+      "id": 1,
+      "jugadorId": 1,
+      "jugadorNombre": "Juan Pérez",
+      "encuentroId": 1,
+      "encuentroTitulo": "Partido 1",
+      "tipoSancion": "TARJETA_AMARILLA",
+      "motivo": "Falta técnica",
+      "detalleSancion": "Juego antideportivo",
+      "fechaRegistro": "2025-10-20"
+    },
+    {
+      "id": 2,
+      "jugadorId": 1,
+      "jugadorNombre": "Juan Pérez",
+      "encuentroId": 3,
+      "encuentroTitulo": "Partido 3",
+      "tipoSancion": "TARJETA_ROJA",
+      "motivo": "Doble amarilla",
+      "detalleSancion": "Segunda amonestación en el partido",
+      "fechaRegistro": "2025-10-22"
+    }
+  ]
+}
+```
+
+### Obtener sanciones por encuentro
+
+Obtiene todas las sanciones registradas en un encuentro específico.
+
+**URL**: `/sanciones/encuentro/{encuentroId}`  
+**Método**: `GET`  
+**Autenticación Requerida**: No  
+**Roles**: `Ninguno`
+
+**Parámetros de Ruta**:
+- `encuentroId` (requerido): ID numérico del encuentro
+
+**Respuesta Exitosa (200 OK)**
+```json
+{
+  "success": true,
+  "message": "Sanciones por encuentro obtenidas exitosamente",
+  "data": [
+    {
+      "id": 1,
+      "jugadorId": 1,
+      "jugadorNombre": "Juan Pérez",
+      "encuentroId": 1,
+      "encuentroTitulo": "Partido 1",
+      "tipoSancion": "TARJETA_AMARILLA",
+      "motivo": "Falta técnica",
+      "detalleSancion": "Juego antideportivo",
+      "fechaRegistro": "2025-10-20"
+    },
+    {
+      "id": 3,
+      "jugadorId": 2,
+      "jugadorNombre": "Carlos López",
+      "encuentroId": 1,
+      "encuentroTitulo": "Partido 1",
+      "tipoSancion": "TARJETA_AMARILLA",
+      "motivo": "Falta",
+      "detalleSancion": "Entrada fuerte",
+      "fechaRegistro": "2025-10-20"
+    }
+  ]
+}
+```
+
+### Obtener sanciones por tipo
+
+Obtiene todas las sanciones de un tipo específico.
+
+**URL**: `/sanciones/tipo/{tipoSancion}`  
+**Método**: `GET`  
+**Autenticación Requerida**: No  
+**Roles**: `Ninguno`
+
+**Parámetros de Ruta**:
+- `tipoSancion` (requerido): Tipo de sanción (ej: TARJETA_AMARILLA, TARJETA_ROJA, etc.)
+
+**Respuesta Exitosa (200 OK)**
+```json
+{
+  "success": true,
+  "message": "Sanciones por tipo obtenidas exitosamente",
+  "data": [
+    {
+      "id": 1,
+      "jugadorId": 1,
+      "jugadorNombre": "Juan Pérez",
+      "encuentroId": 1,
+      "encuentroTitulo": "Partido 1",
+      "tipoSancion": "TARJETA_AMARILLA",
+      "motivo": "Falta técnica",
+      "detalleSancion": "Juego antideportivo",
+      "fechaRegistro": "2025-10-20"
+    },
+    {
+      "id": 3,
+      "jugadorId": 2,
+      "jugadorNombre": "Carlos López",
+      "encuentroId": 1,
+      "encuentroTitulo": "Partido 1",
+      "tipoSancion": "TARJETA_AMARILLA",
+      "motivo": "Falta",
+      "detalleSancion": "Entrada fuerte",
+      "fechaRegistro": "2025-10-20"
+    }
+  ]
+}
+```
+
+### Códigos de Error
+
+- **400 Bad Request**: Datos de entrada inválidos o faltantes
+- **401 Unauthorized**: No autorizado (token no proporcionado o inválido)
+- **403 Forbidden**: No tiene permisos para realizar esta acción
+- **404 Not Found**: Recurso no encontrado (sanción, jugador o encuentro no existe)
+- **500 Internal Server Error**: Error interno del servidor
 
 Elimina una sanción del sistema.
 

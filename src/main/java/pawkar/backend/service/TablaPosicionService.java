@@ -108,55 +108,70 @@ public class TablaPosicionService {
     @Transactional(readOnly = true)
     public List<TablaPosicionResponse> searchTablaPosicion(TablaPosicionSearchRequest searchRequest) {
         // Obtener todas las posiciones que coincidan con los filtros
-        List<TablaPosicion> posiciones = tablaPosicionRepository.findAll((root, query, criteriaBuilder) -> {
-            List<Predicate> predicates = new ArrayList<>();
+        List<TablaPosicion> posiciones;
+        
+        // Verificar si hay algún filtro activo
+        boolean hasFilters = searchRequest.getSubcategoriaId() != null ||
+                           searchRequest.getCategoriaId() != null ||
+                           searchRequest.getEquipoId() != null ||
+                           searchRequest.getSerieId() != null ||
+                           (searchRequest.getNombreEquipo() != null && !searchRequest.getNombreEquipo().isEmpty());
+        
+        if (!hasFilters) {
+            // Si no hay filtros, obtener todos los registros
+            posiciones = tablaPosicionRepository.findAll();
+        } else {
+            // Si hay filtros, aplicarlos
+            posiciones = tablaPosicionRepository.findAll((root, query, criteriaBuilder) -> {
+                List<Predicate> predicates = new ArrayList<>();
 
-            // Filtrar por subcategoría si está presente
-            if (searchRequest.getSubcategoriaId() != null) {
-                predicates.add(criteriaBuilder.equal(
-                        root.get("subcategoria").get("subcategoriaId"),
-                        searchRequest.getSubcategoriaId()));
-            }
+                // Filtrar por subcategoría si está presente
+                if (searchRequest.getSubcategoriaId() != null) {
+                    predicates.add(criteriaBuilder.equal(
+                            root.get("subcategoria").get("subcategoriaId"),
+                            searchRequest.getSubcategoriaId()));
+                }
 
-            // Filtrar por categoría si está presente
-            if (searchRequest.getCategoriaId() != null) {
-                predicates.add(criteriaBuilder.equal(
-                        root.get("subcategoria").get("categoria").get("categoriaId"),
-                        searchRequest.getCategoriaId()));
-            }
+                // Filtrar por categoría si está presente
+                if (searchRequest.getCategoriaId() != null) {
+                    predicates.add(criteriaBuilder.equal(
+                            root.get("subcategoria").get("categoria").get("categoriaId"),
+                            searchRequest.getCategoriaId()));
+                }
 
-            // Filtrar por equipo si está presente
-            if (searchRequest.getEquipoId() != null) {
-                predicates.add(criteriaBuilder.equal(
-                        root.get("equipo").get("equipoId"),
-                        searchRequest.getEquipoId()));
-            }
+                // Filtrar por equipo si está presente
+                if (searchRequest.getEquipoId() != null) {
+                    predicates.add(criteriaBuilder.equal(
+                            root.get("equipo").get("equipoId"),
+                            searchRequest.getEquipoId()));
+                }
 
-            // Filtrar por nombre de equipo (búsqueda por coincidencia parcial)
-            if (searchRequest.getNombreEquipo() != null && !searchRequest.getNombreEquipo().isEmpty()) {
-                predicates.add(criteriaBuilder.like(
-                        criteriaBuilder.lower(root.get("equipo").get("nombre")),
-                        "%" + searchRequest.getNombreEquipo().toLowerCase() + "%"));
-            }
+                // Filtrar por nombre de equipo (búsqueda por coincidencia parcial)
+                if (searchRequest.getNombreEquipo() != null && !searchRequest.getNombreEquipo().isEmpty()) {
+                    predicates.add(criteriaBuilder.like(
+                            criteriaBuilder.lower(root.get("equipo").get("nombre")),
+                            "%" + searchRequest.getNombreEquipo().toLowerCase() + "%"));
+                }
 
-            // Filtrar por serie si está presente
-            if (searchRequest.getSerieId() != null) {
-                // Asumiendo que hay una relación entre Equipo y Serie
-                predicates.add(criteriaBuilder.equal(
-                        root.get("equipo").get("serie").get("serieId"),
-                        searchRequest.getSerieId()));
-            }
+                // Filtrar por serie si está presente
+                if (searchRequest.getSerieId() != null) {
+                    // Asumiendo que hay una relación entre Equipo y Serie
+                    predicates.add(criteriaBuilder.equal(
+                            root.get("equipo").get("serie").get("serieId"),
+                            searchRequest.getSerieId()));
+                }
 
-            // Ordenar por puntos (descendente) y diferencia de goles (descendente)
-            query.orderBy(
-                    criteriaBuilder.desc(root.get("puntos")),
-                    criteriaBuilder.desc(root.get("diferenciaGoles")),
-                    criteriaBuilder.desc(root.get("golesAFavor")),
-                    criteriaBuilder.asc(root.get("equipo").get("nombre")));
+                // Ordenar por puntos (descendente) y diferencia de goles (descendente)
+                query.orderBy(
+                        criteriaBuilder.desc(root.get("puntos")),
+                        criteriaBuilder.desc(root.get("diferenciaGoles")),
+                        criteriaBuilder.desc(root.get("golesAFavor")),
+                        criteriaBuilder.asc(root.get("equipo").get("nombre")));
 
-            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
-        });
-
+                return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+            });
+        }
+        
         // Convertir a DTOs de respuesta con posición
         AtomicInteger posicion = new AtomicInteger(1);
         return posiciones.stream()
