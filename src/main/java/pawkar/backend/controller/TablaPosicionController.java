@@ -29,6 +29,14 @@ public class TablaPosicionController {
         List<TablaPosicionResponse> posiciones = tablaPosicionService.getTablaPosicionBySubcategoria(subcategoriaId);
         return ApiResponseStandard.success(posiciones, "Tabla de posiciones obtenida exitosamente");
     }
+    
+    @GetMapping("/subcategoria/{subcategoriaId}/equipo/{equipoId}")
+    public ApiResponseStandard<TablaPosicionResponse> getTablaPosicion(
+            @PathVariable Integer subcategoriaId,
+            @PathVariable Integer equipoId) {
+        TablaPosicionResponse posicion = tablaPosicionService.getTablaPosicion(subcategoriaId, equipoId);
+        return ApiResponseStandard.success(posicion, "Posición obtenida exitosamente");
+    }
 
     @GetMapping("/search")
     public ApiResponseStandard<List<TablaPosicionResponse>> searchTablaPosicion(

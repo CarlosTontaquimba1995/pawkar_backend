@@ -49,6 +49,7 @@
   - [Actualizar subcategoría](#actualizar-subcategoría)
   - [Eliminar subcategoría](#eliminar-subcategoría)
 - [Tabla de Posiciones](#tabla-de-posiciones)
+  - [Obtener posición específica de equipo](#obtener-posición-específica-de-equipo)
   - [Obtener tabla por subcategoría](#obtener-tabla-por-subcategoría)
   - [Buscar en tabla de posiciones](#buscar-en-tabla-de-posiciones)
   - [Crear o actualizar posición](#crear-o-actualizar-posición)
@@ -3196,6 +3197,44 @@ Obtiene todas las sanciones de un tipo específico.
 - **403 Forbidden**: Cuando el usuario no tiene permisos para realizar la acción
 
 ## Tabla de Posiciones
+
+### Obtener posición específica de equipo
+
+**URL**: `/tabla-posicion/subcategoria/{subcategoriaId}/equipo/{equipoId}`  
+**Método**: `GET`  
+**Descripción**: Obtiene la posición específica de un equipo en la tabla de posiciones de una subcategoría  
+**Autenticación Requerida**: No
+
+**Parámetros de Ruta**:
+- `subcategoriaId` (requerido): ID numérico de la subcategoría
+- `equipoId` (requerido): ID numérico del equipo
+
+**Respuesta Exitosa (200 OK)**
+```json
+{
+  "success": true,
+  "message": "Posición obtenida exitosamente",
+  "data": {
+    "tablaPosicionId": 1,
+    "subcategoriaId": 1,
+    "equipoId": 5,
+    "nombreEquipo": "Equipo Ejemplo",
+    "partidosJugados": 10,
+    "victorias": 7,
+    "derrotas": 2,
+    "empates": 1,
+    "golesAFavor": 20,
+    "golesEnContra": 8,
+    "diferenciaGoles": 12,
+    "puntos": 22,
+    "posicion": 2
+  }
+}
+```
+
+**Posibles Errores**:
+- `404 Not Found`: Si no se encuentra la subcategoría, el equipo o la posición
+- `400 Bad Request`: Si los parámetros son inválidos
 
 ### Obtener tabla por subcategoría
 

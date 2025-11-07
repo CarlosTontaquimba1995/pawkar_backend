@@ -19,7 +19,7 @@ public interface TablaPosicionRepository
     // Find all positions by subcategoria ID, ordered by points (descending)
     List<TablaPosicion> findBySubcategoriaSubcategoriaIdOrderByPuntosDesc(Integer subcategoriaId);
 
-    // Find position by subcategoria and equipo
+    // Find a specific position by subcategoria ID and equipo ID
     Optional<TablaPosicion> findBySubcategoriaSubcategoriaIdAndEquipoEquipoId(Integer subcategoriaId, Integer equipoId);
     
     // Check if position exists by subcategoria and equipo

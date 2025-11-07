@@ -40,6 +40,45 @@ public class TablaPosicionService {
     }
 
     @Transactional(readOnly = true)
+    public TablaPosicionResponse getTablaPosicion(Integer subcategoriaId, Integer equipoId) {
+        // Get the position for the specific team and category
+        TablaPosicion posicion = tablaPosicionRepository
+                .findBySubcategoriaSubcategoriaIdAndEquipoEquipoId(subcategoriaId, equipoId)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "No se encontró la posición para la subcategoría ID: " + subcategoriaId + 
+                        " y equipo ID: " + equipoId));
+        
+        // Get all positions for the subcategory to calculate ranking
+        List<TablaPosicion> posiciones = tablaPosicionRepository
+                .findBySubcategoriaSubcategoriaIdOrderByPuntosDesc(subcategoriaId);
+        
+        // Find the team's position in the ranking
+        int posicionEnTabla = 1;
+        for (TablaPosicion p : posiciones) {
+            if (p.getEquipo().getEquipoId().equals(equipoId)) {
+                break;
+            }
+            posicionEnTabla++;
+        }
+        
+        // Create and return the response DTO
+        return new TablaPosicionResponse(
+                posicion.getSubcategoria().getSubcategoriaId(),
+                posicion.getEquipo().getEquipoId(),
+                posicion.getEquipo().getNombre(),
+                posicion.getPartidosJugados(),
+                posicion.getVictorias(),
+                posicion.getDerrotas(),
+                posicion.getEmpates(),
+                posicion.getGolesAFavor(),
+                posicion.getGolesEnContra(),
+                posicion.getGolesAFavor() - posicion.getGolesEnContra(),
+                posicion.getPuntos(),
+                posicionEnTabla
+        );
+    }
+
+    @Transactional(readOnly = true)
     public List<TablaPosicionResponse> getTablaPosicionBySubcategoria(Integer subcategoriaId) {
         // Get all positions for the subcategoria
         List<TablaPosicion> posiciones = tablaPosicionRepository
