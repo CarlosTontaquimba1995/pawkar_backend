@@ -1,6 +1,5 @@
 package pawkar.backend.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -8,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pawkar.backend.request.BulkEquipoRequest;
 import pawkar.backend.request.EquipoRequest;
+import pawkar.backend.request.TablaPosicionRequest;
 import pawkar.backend.response.EquipoResponse;
 import pawkar.backend.entity.Equipo;
 import pawkar.backend.entity.Serie;
@@ -26,17 +26,23 @@ import java.util.stream.Collectors;
 @Service
 public class EquipoService {
 
-    @Autowired
-    private EquipoRepository equipoRepository;
-    
-    @Autowired
-    private SubcategoriaRepository subcategoriaRepository;
-    
-    @Autowired
-    private SerieRepository serieRepository;
-    
-    @Autowired
-    private PlantillaRepository plantillaRepository;
+    private final EquipoRepository equipoRepository;
+    private final SubcategoriaRepository subcategoriaRepository;
+    private final TablaPosicionService tablaPosicionService;
+    private final SerieRepository serieRepository;
+    private final PlantillaRepository plantillaRepository;
+
+    public EquipoService(EquipoRepository equipoRepository,
+            SubcategoriaRepository subcategoriaRepository,
+            TablaPosicionService tablaPosicionService,
+            SerieRepository serieRepository,
+            PlantillaRepository plantillaRepository) {
+        this.equipoRepository = equipoRepository;
+        this.subcategoriaRepository = subcategoriaRepository;
+        this.tablaPosicionService = tablaPosicionService;
+        this.serieRepository = serieRepository;
+        this.plantillaRepository = plantillaRepository;
+    }
 
     @Transactional(readOnly = true)
     public Page<EquipoResponse> obtenerTodosLosEquipos(Pageable pageable) {
@@ -149,8 +155,27 @@ public class EquipoService {
         equipo.setNombre(request.getNombre());
         equipo.setFundacion(request.getFundacion());
         
+        // Guardar el equipo
         Equipo equipoGuardado = equipoRepository.save(equipo);
+
+        // Crear registro inicial en la tabla de posiciones
+        crearRegistroInicialTablaPosiciones(equipoGuardado, subcategoria);
+
+        // Mapear a DTO de respuesta
         return mapToResponse(equipoGuardado);
+    }
+
+    private void crearRegistroInicialTablaPosiciones(Equipo equipo, Subcategoria subcategoria) {
+        TablaPosicionRequest tablaPosicionRequest = new TablaPosicionRequest();
+        tablaPosicionRequest.setEquipoId(equipo.getEquipoId());
+        tablaPosicionRequest.setSubcategoriaId(subcategoria.getSubcategoriaId());
+        tablaPosicionRequest.setPartidosJugados(0);
+        tablaPosicionRequest.setVictorias(0);
+        tablaPosicionRequest.setEmpates(0);
+        tablaPosicionRequest.setDerrotas(0);
+        tablaPosicionRequest.setPuntos(0);
+
+        tablaPosicionService.createOrUpdateTablaPosicion(tablaPosicionRequest);
     }
 
     @Transactional
