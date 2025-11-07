@@ -98,6 +98,13 @@
   - [Contar jugadores activos](#contar-jugadores-activos)
   - [Obtener jugador por ID](#obtener-jugador-por-id)
   - [Crear jugador](#crear-jugador)
+- [Plantillas](#plantillas)
+  - [Crear múltiples plantillas](#crear-múltiples-plantillas)
+  - [Crear plantilla](#crear-plantilla)
+  - [Obtener todas las plantillas](#obtener-todas-las-plantillas)
+  - [Obtener plantilla específica](#obtener-plantilla-específica)
+  - [Obtener plantillas por equipo](#obtener-plantillas-por-equipo)
+  - [Eliminar plantilla](#eliminar-plantilla)
   - [Actualizar jugador](#actualizar-jugador)
   - [Eliminar jugador](#eliminar-jugador)
   - [Crear múltiples jugadores](#crear-múltiples-jugadores)
@@ -3198,3 +3205,234 @@ Obtiene todas las sanciones de un tipo específico.
 - **400 Bad Request**: Cuando faltan campos requeridos o los datos son inválidos
 - **404 Not Found**: Cuando no se encuentra la subcategoría o equipo especificado
 - **403 Forbidden**: Cuando el usuario no tiene permisos para realizar la acción
+
+## Plantillas
+
+### Crear múltiples plantillas
+
+**URL**: `/plantillas/bulk`  
+**Método**: `POST`  
+**Descripción**: Crea múltiples registros de plantilla en una sola operación  
+**Autenticación Requerida**: Sí  
+**Roles**: `ROLE_ADMIN`, `ROLE_MODERATOR`
+
+**Cuerpo de la Solicitud (JSON)**:
+```json
+{
+  "jugadores": [
+    {
+      "equipoId": 1,
+      "jugadorId": 1,
+      "numeroCamiseta": 10,
+      "rolId": 1
+    },
+    {
+      "equipoId": 1,
+      "jugadorId": 2,
+      "numeroCamiseta": 7,
+      "rolId": 2
+    }
+  ]
+}
+```
+
+**Respuesta Exitosa (201 Created)**:
+```json
+{
+  "success": true,
+  "message": "Plantillas creadas exitosamente",
+  "data": [
+    {
+      "equipoId": 1,
+      "equipoNombre": "Equipo Ejemplo",
+      "jugadorId": 1,
+      "jugadorNombreCompleto": "Juan Perez",
+      "numeroCamiseta": 10,
+      "rolId": 1,
+      "rolNombre": "Jugador",
+      "tieneSancion": false,
+      "sanciones": []
+    }
+  ]
+}
+```
+
+### Crear plantilla
+
+**URL**: `/plantillas`  
+**Método**: `POST`  
+**Descripción**: Crea un nuevo registro de plantilla  
+**Autenticación Requerida**: Sí  
+**Roles**: `ROLE_ADMIN`, `ROLE_MODERATOR`
+
+**Cuerpo de la Solicitud (JSON)**:
+```json
+{
+  "equipoId": 1,
+  "jugadorId": 1,
+  "numeroCamiseta": 10,
+  "rolId": 1
+}
+```
+
+**Respuesta Exitosa (201 Created)**:
+```json
+{
+  "success": true,
+  "message": "Plantilla creada exitosamente",
+  "data": {
+    "equipoId": 1,
+    "equipoNombre": "Equipo Ejemplo",
+    "jugadorId": 1,
+    "jugadorNombreCompleto": "Juan Perez",
+    "numeroCamiseta": 10,
+    "rolId": 1,
+    "rolNombre": "Jugador",
+    "tieneSancion": false,
+    "sanciones": []
+  }
+}
+```
+
+### Obtener todas las plantillas
+
+**URL**: `/plantillas`  
+**Método**: `GET`  
+**Descripción**: Obtiene todas las plantillas registradas  
+**Autenticación Requerida**: No
+
+**Respuesta Exitosa (200 OK)**:
+```json
+{
+  "success": true,
+  "message": "Plantillas obtenidas exitosamente",
+  "data": [
+    {
+      "equipoId": 1,
+      "equipoNombre": "Equipo Ejemplo",
+      "jugadorId": 1,
+      "jugadorNombreCompleto": "Juan Perez",
+      "numeroCamiseta": 10,
+      "rolId": 1,
+      "rolNombre": "Jugador",
+      "tieneSancion": false,
+      "sanciones": []
+    }
+  ]
+}
+```
+
+### Obtener plantilla específica
+
+**URL**: `/plantillas/{equipoId}/{jugadorId}`  
+**Método**: `GET`  
+**Descripción**: Obtiene una plantilla específica por ID de equipo y jugador  
+**Autenticación Requerida**: No
+
+**Parámetros de Ruta**:
+- `equipoId` (requerido): ID del equipo
+- `jugadorId` (requerido): ID del jugador
+
+**Respuesta Exitosa (200 OK)**:
+```json
+{
+  "success": true,
+  "message": "Plantilla obtenida exitosamente",
+  "data": {
+    "equipoId": 1,
+    "equipoNombre": "Equipo Ejemplo",
+    "jugadorId": 1,
+    "jugadorNombreCompleto": "Juan Perez",
+    "numeroCamiseta": 10,
+    "rolId": 1,
+    "rolNombre": "Jugador",
+    "tieneSancion": true,
+    "sanciones": [
+      {
+        "sancionId": 1,
+        "tipoSancion": "AMARILLA",
+        "motivo": "Falta técnica",
+        "detalleSancion": "Falta sobre el jugador rival",
+        "fechaRegistro": "2025-10-01"
+      }
+    ]
+  }
+}
+```
+
+### Obtener plantillas por equipo
+
+**URL**: `/plantillas/equipo/{equipoId}`  
+**Método**: `GET`  
+**Descripción**: Obtiene todas las plantillas de un equipo específico  
+**Autenticación Requerida**: No
+
+**Parámetros de Ruta**:
+- `equipoId` (requerido): ID del equipo
+
+**Respuesta Exitosa (200 OK)**:
+```json
+{
+  "success": true,
+  "message": "Plantilla del equipo obtenida exitosamente",
+  "data": [
+    {
+      "equipoId": 1,
+      "equipoNombre": "Equipo Ejemplo",
+      "jugadorId": 1,
+      "jugadorNombreCompleto": "Juan Perez",
+      "numeroCamiseta": 10,
+      "rolId": 1,
+      "rolNombre": "Jugador",
+      "tieneSancion": false,
+      "sanciones": []
+    },
+    {
+      "equipoId": 1,
+      "equipoNombre": "Equipo Ejemplo",
+      "jugadorId": 2,
+      "jugadorNombreCompleto": "Carlos Lopez",
+      "numeroCamiseta": 7,
+      "rolId": 1,
+      "rolNombre": "Jugador",
+      "tieneSancion": true,
+      "sanciones": [
+        {
+          "sancionId": 2,
+          "tipoSancion": "ROJA",
+          "motivo": "Doble amarilla",
+          "detalleSancion": "Segunda tarjeta amarilla en el partido",
+          "fechaRegistro": "2025-10-05"
+        }
+      ]
+    }
+  ]
+}
+```
+
+### Eliminar plantilla
+
+**URL**: `/plantillas/{equipoId}/{jugadorId}`  
+**Método**: `DELETE`  
+**Descripción**: Elimina una plantilla específica  
+**Autenticación Requerida**: Sí  
+**Roles**: `ROLE_ADMIN`, `ROLE_MODERATOR`
+
+**Parámetros de Ruta**:
+- `equipoId` (requerido): ID del equipo
+- `jugadorId` (requerido): ID del jugador
+
+**Respuesta Exitosa (204 No Content)**: Sin contenido
+
+### Códigos de Error para Plantillas
+
+- **400 Bad Request**:
+  - Datos de entrada inválidos o faltantes
+  - Número de camiseta duplicado en el mismo equipo
+  - El jugador ya está registrado en el equipo
+- **404 Not Found**:
+  - Equipo no encontrado
+  - Jugador no encontrado
+  - Rol no encontrado
+  - Plantilla no encontrada al intentar eliminar
+- **403 Forbidden**: Usuario no autorizado para realizar la acción

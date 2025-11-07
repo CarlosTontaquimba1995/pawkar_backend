@@ -154,7 +154,7 @@ public class PlantillaService {
 
     private PlantillaResponse mapToPlantillaResponse(Plantilla plantilla) {
         // Obtener sanciones activas del jugador
-        List<pawkar.backend.entity.Sancion> sanciones = sancionRepository
+        List<Sancion> sanciones = sancionRepository
                 .findByJugadorId(plantilla.getJugador().getId().longValue());
 
         // Mapear las sanciones a SancionInfo
