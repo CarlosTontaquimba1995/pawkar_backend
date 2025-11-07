@@ -27,6 +27,9 @@ public interface TablaPosicionRepository
     
     // Delete position by subcategoria and equipo
     void deleteBySubcategoriaSubcategoriaIdAndEquipoEquipoId(Integer subcategoriaId, Integer equipoId);
+    
+    // Find all positions by equipo ID
+    List<TablaPosicion> findByEquipo_EquipoId(Integer equipoId);
 
     // Search with specifications and pagination
     Page<TablaPosicion> findAll(Specification<TablaPosicion> spec, Pageable pageable);

@@ -18,6 +18,8 @@ import pawkar.backend.repository.EquipoRepository;
 import pawkar.backend.repository.PlantillaRepository;
 import pawkar.backend.repository.SerieRepository;
 import pawkar.backend.repository.SubcategoriaRepository;
+import pawkar.backend.repository.TablaPosicionRepository;
+import pawkar.backend.entity.TablaPosicion;
 import pawkar.backend.response.EquipoCountResponse;
 
 import java.util.List;
@@ -29,17 +31,20 @@ public class EquipoService {
     private final EquipoRepository equipoRepository;
     private final SubcategoriaRepository subcategoriaRepository;
     private final TablaPosicionService tablaPosicionService;
+    private final TablaPosicionRepository tablaPosicionRepository;
     private final SerieRepository serieRepository;
     private final PlantillaRepository plantillaRepository;
 
     public EquipoService(EquipoRepository equipoRepository,
             SubcategoriaRepository subcategoriaRepository,
             TablaPosicionService tablaPosicionService,
+            TablaPosicionRepository tablaPosicionRepository,
             SerieRepository serieRepository,
             PlantillaRepository plantillaRepository) {
         this.equipoRepository = equipoRepository;
         this.subcategoriaRepository = subcategoriaRepository;
         this.tablaPosicionService = tablaPosicionService;
+        this.tablaPosicionRepository = tablaPosicionRepository;
         this.serieRepository = serieRepository;
         this.plantillaRepository = plantillaRepository;
     }
@@ -252,6 +257,14 @@ public class EquipoService {
         if (!equipoRepository.existsById(id)) {
             throw new ResourceNotFoundException("Equipo no encontrado con ID: " + id);
         }
+        
+        // Eliminar las entradas de la tabla de posiciones para este equipo
+        List<TablaPosicion> posiciones = tablaPosicionRepository.findByEquipo_EquipoId(id);
+        if (posiciones != null && !posiciones.isEmpty()) {
+            tablaPosicionRepository.deleteAll(posiciones);
+        }
+        
+        // Eliminar el equipo
         equipoRepository.deleteById(id);
     }
     
