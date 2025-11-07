@@ -63,6 +63,12 @@ public class JugadorService {
     }
     
     @Transactional(readOnly = true)
+    public Page<JugadorResponse> buscarJugadoresPorNombreOApellidoODocumento(String busqueda, Pageable pageable) {
+        return jugadorRepository.buscarPorNombreOApellidoODocumentoYEstado(busqueda, true, pageable)
+                .map(this::mapToResponse);
+    }
+    
+    @Transactional(readOnly = true)
     public boolean existsByDocumentoIdentidad(String documentoIdentidad) {
         return jugadorRepository.existsByDocumentoIdentidadAndEstadoTrue(documentoIdentidad);
     }

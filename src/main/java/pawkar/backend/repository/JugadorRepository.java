@@ -26,6 +26,10 @@ public interface JugadorRepository extends JpaRepository<Jugador, Integer> {
     @Query("SELECT j FROM Jugador j WHERE j.estado = :estado")
     Page<Jugador> findByEstado(@Param("estado") boolean estado, Pageable pageable);
 
+    @Query("SELECT j FROM Jugador j WHERE (LOWER(j.nombre) LIKE LOWER(concat('%', :busqueda, '%')) OR LOWER(j.apellido) LIKE LOWER(concat('%', :busqueda, '%')) OR j.documentoIdentidad LIKE %:busqueda%) AND j.estado = :estado")
+    Page<Jugador> buscarPorNombreOApellidoODocumentoYEstado(@Param("busqueda") String busqueda, @Param("estado") boolean estado,
+            Pageable pageable);
+            
     @Query("SELECT j FROM Jugador j WHERE (LOWER(j.nombre) LIKE LOWER(concat('%', :busqueda, '%')) OR LOWER(j.apellido) LIKE LOWER(concat('%', :busqueda, '%'))) AND j.estado = :estado")
     Page<Jugador> buscarPorNombreOApellidoYEstado(@Param("busqueda") String busqueda, @Param("estado") boolean estado,
             Pageable pageable);

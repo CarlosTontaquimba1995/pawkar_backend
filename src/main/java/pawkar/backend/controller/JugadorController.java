@@ -76,11 +76,11 @@ public class JugadorController {
 
         Page<JugadorResponse> jugadores;
 
-        // If search parameter is provided, use it for filtering by name or last name
+        // If search parameter is provided, use it for filtering by name, last name, or document number
         if (search != null && !search.trim().isEmpty()) {
-            jugadores = jugadorService.buscarJugadoresPorNombreOApellido(search, pageable);
+            jugadores = jugadorService.buscarJugadoresPorNombreOApellidoODocumento(search, pageable);
             return ApiResponseStandard.success(jugadores,
-                    String.format("Se encontraron %d jugador(es) con nombre o apellido que contiene: %s",
+                    String.format("Se encontraron %d jugador(es) que coinciden con: %s",
                             jugadores.getTotalElements(), search));
         }
         // If no search parameters, return all players with pagination
