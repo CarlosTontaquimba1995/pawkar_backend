@@ -210,8 +210,20 @@ public class EncuentroService {
         response.setEstadioNombre(encuentro.getEstadio().getNombre());
         response.setActivo(encuentro.getActivo());
         response.setEstadioId(encuentro.getEstadio().getId());
-        return response;
+
+    // Add team information
+    if (encuentro.getEquipoLocal() != null) {
+        response.setEquipoLocalId(encuentro.getEquipoLocal().getEquipoId());
+        response.setEquipoLocalNombre(encuentro.getEquipoLocal().getNombre());
     }
+
+    if (encuentro.getEquipoVisitante() != null) {
+        response.setEquipoVisitanteId(encuentro.getEquipoVisitante().getEquipoId());
+        response.setEquipoVisitanteNombre(encuentro.getEquipoVisitante().getNombre());
+    }
+
+    return response;
+}
 
     /**
      * Saves multiple Encuentro entities in a batch operation

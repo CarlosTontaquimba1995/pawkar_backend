@@ -16,4 +16,8 @@ public class EncuentroResponse {
     private Integer estadioId;
     private String estado;
     private boolean activo;
+    private Integer equipoLocalId;
+    private String equipoLocalNombre;
+    private Integer equipoVisitanteId;
+    private String equipoVisitanteNombre;
 }
