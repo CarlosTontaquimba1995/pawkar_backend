@@ -67,6 +67,7 @@ public class GeneracionEncuentroService {
         List<Encuentro> savedEncuentros = encuentroRepository.saveAll(encuentros);
 
         // Convertir a respuestas
+        // In the generarEncuentros method, update the mapping part:
         return savedEncuentros.stream()
                 .map(encuentro -> {
                     EncuentroResponse response = new EncuentroResponse();
@@ -75,13 +76,25 @@ public class GeneracionEncuentroService {
                     response.setFechaHora(encuentro.getFechaHora());
                     response.setEstadioLugar(encuentro.getEstadio().getNombre());
                     response.setEstado(encuentro.getEstado());
-                    if (encuentro.getSubcategoria() != null) {
-                        response.setSubcategoriaId(encuentro.getSubcategoria().getSubcategoriaId().longValue());
-                        response.setSubcategoriaNombre(encuentro.getSubcategoria().getNombre());
-                    }
-                    return response;
-                })
-                .collect(Collectors.toList());
+
+            // Add team information to response
+            if (encuentro.getEquipoLocal() != null) {
+                response.setEquipoLocalId(encuentro.getEquipoLocal().getEquipoId());
+                response.setEquipoLocalNombre(encuentro.getEquipoLocal().getNombre());
+            }
+
+            if (encuentro.getEquipoVisitante() != null) {
+                response.setEquipoVisitanteId(encuentro.getEquipoVisitante().getEquipoId());
+                response.setEquipoVisitanteNombre(encuentro.getEquipoVisitante().getNombre());
+            }
+
+            if (encuentro.getSubcategoria() != null) {
+                response.setSubcategoriaId(encuentro.getSubcategoria().getSubcategoriaId().longValue());
+                response.setSubcategoriaNombre(encuentro.getSubcategoria().getNombre());
+            }
+            return response;
+        })
+        .collect(Collectors.toList());
     }
 
     private List<Encuentro> generarTodosContraTodos(List<Serie> series, GeneracionEncuentroRequest request) {

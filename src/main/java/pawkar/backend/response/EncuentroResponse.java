@@ -10,6 +10,10 @@ public class EncuentroResponse {
     private String estado;
     private Long subcategoriaId;
     private String subcategoriaNombre;
+    private Integer equipoLocalId;
+    private String equipoLocalNombre;
+    private Integer equipoVisitanteId;
+    private String equipoVisitanteNombre;
 
     // Getters and Setters
     public Long getId() {
@@ -66,5 +70,37 @@ public class EncuentroResponse {
 
     public void setSubcategoriaNombre(String subcategoriaNombre) {
         this.subcategoriaNombre = subcategoriaNombre;
+    }
+
+    public Integer getEquipoLocalId() {
+        return equipoLocalId;
+    }
+
+    public void setEquipoLocalId(Integer equipoLocalId) {
+        this.equipoLocalId = equipoLocalId;
+    }
+
+    public String getEquipoLocalNombre() {
+        return equipoLocalNombre;
+    }
+
+    public void setEquipoLocalNombre(String equipoLocalNombre) {
+        this.equipoLocalNombre = equipoLocalNombre;
+    }
+
+    public Integer getEquipoVisitanteId() {
+        return equipoVisitanteId;
+    }
+
+    public void setEquipoVisitanteId(Integer equipoVisitanteId) {
+        this.equipoVisitanteId = equipoVisitanteId;
+    }
+
+    public String getEquipoVisitanteNombre() {
+        return equipoVisitanteNombre;
+    }
+
+    public void setEquipoVisitanteNombre(String equipoVisitanteNombre) {
+        this.equipoVisitanteNombre = equipoVisitanteNombre;
     }
 }
