@@ -15,8 +15,6 @@ import pawkar.backend.repository.PlantillaRepository;
 import pawkar.backend.repository.RoleRepository;
 import pawkar.backend.repository.SancionRepository;
 import pawkar.backend.exception.DuplicatePlantillaException;
-import java.util.Comparator;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -31,39 +29,46 @@ public class PlantillaService {
     @Transactional
     public List<PlantillaResponse> crearPlantillasBulk(BulkPlantillaRequest request) {
         List<PlantillaResponse> respuestas = new ArrayList<>();
-        
-        // Verificar duplicados de número de camiseta dentro de la misma solicitud
-        Map<Integer, List<String>> equipoJerseyMap = new HashMap<>();
+        List<String> errores = new ArrayList<>();
+        Map<Integer, Set<Integer>> equipoJerseyMap = new HashMap<>();
 
         // Primera pasada: validar duplicados en la solicitud
         for (PlantillaRequest plantillaRequest : request.getJugadores()) {
             if (plantillaRequest.getNumeroCamiseta() != null) {
-                equipoJerseyMap
-                        .computeIfAbsent(plantillaRequest.getEquipoId(), k -> new ArrayList<>())
-                        .add(plantillaRequest.getJugadorId() + "|" + plantillaRequest.getNumeroCamiseta());
+                int equipoId = plantillaRequest.getEquipoId();
+                int numeroCamiseta = plantillaRequest.getNumeroCamiseta();
+
+                // Verificar duplicados en la misma solicitud
+                if (equipoJerseyMap.containsKey(equipoId) &&
+                        equipoJerseyMap.get(equipoId).contains(numeroCamiseta)) {
+                    errores.add("Error en jugador ID " + plantillaRequest.getJugadorId() +
+                            ": El número de camiseta " + numeroCamiseta +
+                            " está duplicado en la solicitud para el equipo con ID: " + equipoId);
+                    continue;
+                }
+
+                // Verificar si el número ya existe en la base de datos para este equipo
+                try {
+                    if (existsByEquipoIdAndNumeroCamiseta(equipoId, numeroCamiseta)) {
+                        errores.add("Error en jugador ID " + plantillaRequest.getJugadorId() +
+                                ": El número de camiseta " + numeroCamiseta +
+                                " ya está en uso en el equipo con ID: " + equipoId);
+                        continue;
+                    }
+                } catch (Exception e) {
+                    errores.add("Error validando jugador ID " + plantillaRequest.getJugadorId() +
+                            ": " + e.getMessage());
+                    continue;
+                }
+
+                // Si llegamos aquí, la validación fue exitosa
+                equipoJerseyMap.computeIfAbsent(equipoId, k -> new HashSet<>()).add(numeroCamiseta);
             }
         }
 
-        // Verificar si hay números de camiseta duplicados en la misma solicitud
-        for (Map.Entry<Integer, List<String>> entry : equipoJerseyMap.entrySet()) {
-            List<String> jugadorJerseyList = entry.getValue();
-            Set<String> uniqueJerseys = new HashSet<>();
-
-            for (String jugadorJersey : jugadorJerseyList) {
-                String[] parts = jugadorJersey.split("\\|");
-                String jerseyNumber = parts[1];
-
-                if (!uniqueJerseys.add(jerseyNumber)) {
-                    throw new IllegalStateException("El número de camiseta " + jerseyNumber +
-                            " está duplicado en la solicitud para el equipo con ID: " + entry.getKey());
-                }
-
-                // Verificar si el número ya existe en la base de datos
-                if (existsByEquipoIdAndNumeroCamiseta(entry.getKey(), Integer.parseInt(jerseyNumber))) {
-                    throw new IllegalStateException("El número de camiseta " + jerseyNumber +
-                            " ya está en uso en el equipo con ID: " + entry.getKey());
-                }
-            }
+        // Si hay errores de validación, lanzar excepción con todos los errores
+        if (!errores.isEmpty()) {
+            throw new IllegalStateException("Errores de validación: " + String.join("; ", errores));
         }
 
         // Segunda pasada: crear las plantillas
@@ -72,12 +77,18 @@ public class PlantillaService {
                 PlantillaResponse response = crearPlantilla(plantillaRequest);
                 respuestas.add(response);
             } catch (Exception e) {
-                // Si hay un error con algún jugador, continuamos con los demás
-                // Podrías también implementar lógica de rollback si lo prefieres
-                e.printStackTrace();
+                // Si hay un error, agregar a la lista de errores pero continuar con los demás
+                errores.add("Error al crear plantilla para jugador ID " +
+                        plantillaRequest.getJugadorId() + ": " + e.getMessage());
             }
         }
-        
+
+        // Si hubo errores en la creación, lanzar excepción con los errores
+        if (!errores.isEmpty()) {
+            throw new IllegalStateException("Algunas plantillas no pudieron ser creadas: " +
+                    String.join("; ", errores));
+        }
+
         return respuestas;
     }
 
@@ -110,6 +121,12 @@ public class PlantillaService {
         Jugador jugador = jugadorRepository.findById(request.getJugadorId())
                 .orElseThrow(
                         () -> new ResourceNotFoundException("Jugador no encontrado con ID: " + request.getJugadorId()));
+
+        // Verificar si el jugador está activo
+        if (!jugador.isEstado()) {
+            throw new IllegalStateException(
+                    "No se puede agregar al jugador con ID: " + request.getJugadorId() + " porque está inactivo");
+        }
 
         Role rol = roleRepository.findById(request.getRolId())
                 .orElseThrow(() -> new ResourceNotFoundException("Rol no encontrado con ID: " + request.getRolId()));
