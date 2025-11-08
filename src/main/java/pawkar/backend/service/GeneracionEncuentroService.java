@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pawkar.backend.entity.*;
 import pawkar.backend.repository.*;
-import pawkar.backend.repository.EstadioRepository;
 import pawkar.backend.request.*;
 import pawkar.backend.response.EncuentroResponse;
 import pawkar.backend.entity.ParticipacionEncuentro.ParticipacionEncuentroId;
@@ -209,6 +208,10 @@ public class GeneracionEncuentroService {
             encuentro.setEstado("PROGRAMADO");
             encuentro.setEstadio(estadio);
             encuentro.setFechaHora(LocalDateTime.of(manualRequest.getFecha(), manualRequest.getHora()));
+
+            // Set the new fields
+            encuentro.setEquipoLocal(local);
+            encuentro.setEquipoVisitante(visitante);
 
             // Guardar el encuentro
             Encuentro savedEncuentro = encuentroRepository.save(encuentro);
