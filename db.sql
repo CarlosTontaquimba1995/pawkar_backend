@@ -1,4 +1,7 @@
--- Create tables for the application
+-- TABLAS DE USUARIOS Y ROLES
+----------------------------------------------------------------------------------------------------
+
+-- Tabla de Usuarios
 CREATE TABLE IF NOT EXISTS users (
     id BIGSERIAL PRIMARY KEY,
     username VARCHAR(50) NOT NULL UNIQUE,
@@ -9,18 +12,16 @@ CREATE TABLE IF NOT EXISTS users (
     enabled BOOLEAN DEFAULT true
 );
 
--- Add more tables as needed for your application
--- Example:
+
+-- Tabla de Roles
 CREATE TABLE IF NOT EXISTS roles (
      id BIGSERIAL PRIMARY KEY,
-     name VARCHAR(50) NOT NULL unique,
-     detail VARCHAR(100) NOT NULL UNIQUE
+     name VARCHAR(50) NOT NULL UNIQUE,
+     detail VARCHAR(100) NOT NULL unique,
+     estado BOOLEAN default true, 
  );
 
-INSERT INTO roles (name, detail) VALUES 
-('ROLE_USER','Rol usuario'), ('ROLE_ADMIN','Rol administrador');
-
-
+-- Tabla de Unión Usuario-Roles
 CREATE TABLE IF NOT EXISTS user_roles (
      user_id BIGINT NOT NULL,
      role_id BIGINT NOT NULL,
@@ -29,104 +30,146 @@ CREATE TABLE IF NOT EXISTS user_roles (
      FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE CASCADE
 );
 
-
+----------------------------------------------------------------------------------------------------
+-- TABLAS DE CATEGORÍAS Y ORGANIZACIÓN DE COMPETENCIAS
+----------------------------------------------------------------------------------------------------
 
 -- 1. Categorias Padre
-CREATE TABLE categorias (
-    categoria_id SERIAL PRIMARY KEY,
-    nombre VARCHAR(100) NOT NULL UNIQUE
+CREATE TABLE public.categorias (
+    categoria_id BIGSERIAL PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL unique,
+    nemonico VARCHAR(100) NOT NULL UNIQUE
 );
 
 -- 2. Subcategorias (Deportes, Sub-eventos, Tipos de comida)
-CREATE TABLE subcategorias (
-    subcategoria_id SERIAL PRIMARY KEY,
+CREATE TABLE public.subcategorias (
+    subcategoria_id BIGSERIAL PRIMARY KEY,
     categoria_id INT NOT NULL,
     nombre VARCHAR(100) NOT NULL,
+    ubicacion VARCHAR(100),
     descripcion TEXT,
+    fecha_hora TIMESTAMP WITHOUT TIME ZONE,
+    proximo BOOLEAN default true, -- CAMPO AÑADIDO: Para indicar si el equipo está activo
+    estado BOOLEAN default true, -- CAMPO AÑADIDO: Para indicar si el equipo está activo
     FOREIGN KEY (categoria_id) REFERENCES categorias (categoria_id) ON DELETE CASCADE
 );
 
--- DDL para la nueva tabla de mapeo de roles por subcategoría
-CREATE TABLE subcategoria_roles (
+-- Tabla de Unión Subcategoría-Roles (Define qué roles de jugador aplican a cada subcategoría)
+CREATE TABLE public.subcategoria_roles (
     subcategoria_id INT NOT NULL,
     rol_id BIGINT NOT NULL,
-    
     PRIMARY KEY (subcategoria_id, rol_id),
-    
-    FOREIGN KEY (subcategoria_id) 
-        REFERENCES subcategorias (subcategoria_id) 
-        ON DELETE CASCADE,
-        
-    FOREIGN KEY (rol_id) 
-        REFERENCES roles (id) 
-        ON DELETE RESTRICT
+    FOREIGN KEY (subcategoria_id) REFERENCES subcategorias (subcategoria_id) ON DELETE CASCADE,
+    FOREIGN KEY (rol_id) REFERENCES roles (id) ON DELETE RESTRICT
 );
 
-
--- 3. Equipos (Asociados a un deporte/subcategoría)
-CREATE TABLE equipos (
-    equipo_id SERIAL PRIMARY KEY,
+-- Tabla de Series (Grupos dentro de una subcategoría, ej: Serie A, Serie B de Fútbol)
+CREATE TABLE public.series (
+    serie_id BIGSERIAL PRIMARY KEY,
     subcategoria_id INT NOT NULL,
-    nombre VARCHAR(100) NOT NULL,
-    fundacion DATE,
+    nombre_serie VARCHAR(100) NOT NULL,
+    estado BOOLEAN default true,
+    UNIQUE (subcategoria_id, nombre_serie),
     FOREIGN KEY (subcategoria_id) REFERENCES subcategorias (subcategoria_id) ON DELETE CASCADE
 );
 
+
+-- Creación de la nueva tabla de estadios
+CREATE TABLE public.estadios (
+    estadio_id BIGSERIAL PRIMARY KEY, -- Clave primaria para identificar el estadio
+    nombre VARCHAR(150) NOT NULL UNIQUE, -- Nombre del estadio
+    detalle TEXT, -- Campo para agregar más información/detalle (opcionalmente VARCHAR)
+    estado BOOLEAN default true
+);
+
+-- 3. Equipos (Asociados a un deporte/subcategoría)
+CREATE TABLE public.equipos (
+    equipo_id BIGSERIAL PRIMARY KEY,
+    subcategoria_id INT NOT NULL,
+    serie_id INT NOT NULL, -- CAMPO AÑADIDO: Para clasificar el equipo en una serie/grupo
+    nombre VARCHAR(100) NOT NULL,
+    fundacion DATE,
+    estado BOOLEAN default true, -- CAMPO AÑADIDO: Para indicar si el equipo está activo
+    FOREIGN KEY (subcategoria_id) REFERENCES subcategorias (subcategoria_id) ON DELETE CASCADE,
+    FOREIGN KEY (serie_id) REFERENCES series (serie_id) ON DELETE RESTRICT
+);
+
+----------------------------------------------------------------------------------------------------
+-- TABLAS DE PERSONAS, ROLES Y PLANTILLA
+----------------------------------------------------------------------------------------------------
+
 -- 4. Jugadores (Registro maestro de personas)
-CREATE TABLE jugadores (
-    jugador_id SERIAL PRIMARY KEY,
+CREATE TABLE public.jugadores (
+    jugador_id BIGSERIAL PRIMARY KEY,
     nombre VARCHAR(50) NOT NULL,
     apellido VARCHAR(50) NOT NULL,
     fecha_nacimiento DATE,
+    estado boolean default true, -- CAMPO AÑADIDO: Para indicar si el jugador está activo
     documento_identidad VARCHAR(20) UNIQUE
 );
 
--- 5. Plantilla (Jugadores por equipo con rol ID)
-CREATE TABLE plantilla (
+-- 5. Plantilla (Jugadores por equipo)
+CREATE TABLE public.plantilla (
     equipo_id INT NOT NULL,
     jugador_id INT NOT NULL,
     numero_camiseta INT,
-    rol_id BIGINT NOT NULL, -- Ahora usamos el ID del rol
-    
+    rol_id BIGINT NOT NULL, -- CAMPO CORREGIDO: Referencia el ID (BIGINT) de la tabla 'roles', no el 'name'
     PRIMARY KEY (equipo_id, jugador_id),
-    
-    FOREIGN KEY (equipo_id) 
-        REFERENCES equipos (equipo_id) 
-        ON DELETE CASCADE,
-        
-    FOREIGN KEY (jugador_id) 
-        REFERENCES jugadores (jugador_id) 
-        ON DELETE RESTRICT,
-        
-    FOREIGN KEY (rol_id) 
-        REFERENCES roles (id) 
-        ON DELETE RESTRICT -- FK al ID del rol
+    FOREIGN KEY (equipo_id) REFERENCES equipos (equipo_id) ON DELETE CASCADE,
+    FOREIGN KEY (jugador_id) REFERENCES jugadores (jugador_id) ON DELETE RESTRICT,
+    FOREIGN KEY (rol_id) REFERENCES roles (id) ON DELETE RESTRICT -- REFERENCIA CORREGIDA
 );
+
+----------------------------------------------------------------------------------------------------
+-- TABLAS DE ENCUENTROS Y RESULTADOS
+----------------------------------------------------------------------------------------------------
 
 -- 6. Encuentros (Partidos, Horarios, Degustaciones, Presentaciones)
-CREATE TABLE encuentros (
-    encuentro_id SERIAL PRIMARY KEY,
+
+CREATE TABLE public.encuentros (
+    encuentro_id BIGSERIAL PRIMARY KEY,
     subcategoria_id INT NOT NULL,
+    estadio_id BIGINT NOT NULL, 
+    
+    -- NUEVOS CAMPOS DE RELACIÓN CON EQUIPOS
+    equipo_local_id BIGINT NOT NULL,       -- ID del equipo que juega como local
+    equipo_visitante_id BIGINT NOT NULL,   -- ID del equipo que juega como visitante
+    
     titulo VARCHAR(150) NOT NULL,
-    fecha_hora TIMESTAMP NOT NULL,
-    estadio_lugar VARCHAR(150) NOT NULL,
-    estado VARCHAR(50) DEFAULT 'Pendiente', -- Ej: Pendiente, Finalizado, Cancelado
-    FOREIGN KEY (subcategoria_id) REFERENCES subcategorias (subcategoria_id) ON DELETE RESTRICT
+    fecha_hora TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+    estado VARCHAR(50) DEFAULT 'Pendiente',
+    activo boolean default true,
+
+    -- RELACIÓN 1: SUB-CATEGORÍAS
+    FOREIGN KEY (subcategoria_id) REFERENCES public.subcategorias (subcategoria_id) ON DELETE RESTRICT,
+    
+    -- RELACIÓN 2: ESTADIOS
+    FOREIGN KEY (estadio_id) REFERENCES public.estadios (estadio_id) ON DELETE RESTRICT,
+    
+    -- RELACIÓN 3: EQUIPO LOCAL
+    CONSTRAINT fk_equipo_local
+        FOREIGN KEY (equipo_local_id)
+        REFERENCES public.equipos (equipo_id) ON DELETE RESTRICT,
+        
+    -- RELACIÓN 4: EQUIPO VISITANTE
+    CONSTRAINT fk_equipo_visitante
+        FOREIGN KEY (equipo_visitante_id)
+        REFERENCES public.equipos (equipo_id) ON DELETE RESTRICT
 );
 
--- 7. Participacion_Encuentro (Quién juega contra quién, solo para deportes)
-CREATE TABLE participacion_encuentro (
+-- 7. Participacion_Encuentro (Quién juega contra quién, resultados del partido)
+CREATE TABLE public.participacion_encuentro (
     encuentro_id INT NOT NULL,
     equipo_id INT NOT NULL,
     es_local BOOLEAN DEFAULT FALSE,
     goles_puntos INT DEFAULT 0,
     PRIMARY KEY (encuentro_id, equipo_id),
-    FOREIGN KEY (encuentro_id) REFERENCES Encuentros (encuentro_id) ON DELETE CASCADE,
-    FOREIGN KEY (equipo_id) REFERENCES Equipos (equipo_id) ON DELETE RESTRICT
+    FOREIGN KEY (encuentro_id) REFERENCES encuentros (encuentro_id) ON DELETE CASCADE,
+    FOREIGN KEY (equipo_id) REFERENCES equipos (equipo_id) ON DELETE RESTRICT
 );
 
 -- 8. Tabla_Posiciones (Resultados acumulados por subcategoría/deporte)
-CREATE TABLE tabla_posiciones (
+CREATE TABLE public.tabla_posiciones (
     subcategoria_id INT NOT NULL,
     equipo_id INT NOT NULL,
     partidos_jugados INT DEFAULT 0,
@@ -134,19 +177,22 @@ CREATE TABLE tabla_posiciones (
     derrotas INT DEFAULT 0,
     empates INT DEFAULT 0,
     puntos INT DEFAULT 0,
+    goles_a_favor INT DEFAULT 0,     -- CAMPO AÑADIDO: Goles/puntos anotados
+    goles_en_contra INT DEFAULT 0,   -- CAMPO AÑADIDO: Goles/puntos recibidos
+    diferencia_goles INT DEFAULT 0,  -- CAMPO AÑADIDO: Diferencia de goles/puntos
     PRIMARY KEY (subcategoria_id, equipo_id),
     FOREIGN KEY (subcategoria_id) REFERENCES subcategorias (subcategoria_id) ON DELETE CASCADE,
     FOREIGN KEY (equipo_id) REFERENCES equipos (equipo_id) ON DELETE CASCADE
 );
 
 -- 9. Sanciones (Tarjetas, penalizaciones)
-CREATE TABLE sanciones (
-    sancion_id SERIAL PRIMARY KEY,
+CREATE TABLE public.sanciones (
+    sancion_id BIGSERIAL PRIMARY KEY,
     jugador_id INT NOT NULL,
-    encuentro_id INT, -- Opcional, si la sanción es general (ej: multa), puede ser NULL
-    tipo_sancion VARCHAR(50) NOT NULL, -- Ej: Tarjeta Amarilla, Roja, Multa
+    encuentro_id INT,
+    tipo_sancion VARCHAR(50) NOT NULL,
     motivo TEXT,
-    detalle_sancion TEXT, -- El detalle de la sancion , suspendido por 3 partidos
+    detalle_sancion TEXT,
     fecha_registro DATE DEFAULT CURRENT_DATE,
     FOREIGN KEY (jugador_id) REFERENCES jugadores (jugador_id) ON DELETE RESTRICT,
     FOREIGN KEY (encuentro_id) REFERENCES encuentros (encuentro_id) ON DELETE SET NULL
