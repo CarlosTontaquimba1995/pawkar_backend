@@ -1,3 +1,7 @@
+--CREATE DATABASE
+
+CREATE DATABASE pawkar_raymi WITH TEMPLATE = template0 ENCODING = 'UTF8' LOCALE_PROVIDER = libc LOCALE = 'Spanish_Ecuador.1252';
+
 -- TABLAS DE USUARIOS Y ROLES
 ----------------------------------------------------------------------------------------------------
 
