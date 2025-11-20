@@ -133,7 +133,13 @@ public class CategoriaService {
             throw new BadRequestException("El nombre de la categoría ya está en uso");
         }
 
+        // Update the name
         categoria.setNombre(categoriaRequest.getNombre());
+
+        // Generate and update nemonico based on the new name
+        String nemonico = generateNemonico(categoriaRequest.getNombre());
+        categoria.setNemonico(nemonico);
+
         Categoria updatedCategoria = categoriaRepository.save(categoria);
         return convertToResponse(updatedCategoria);
     }

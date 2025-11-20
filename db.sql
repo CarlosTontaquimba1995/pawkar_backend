@@ -24,7 +24,7 @@ CREATE TABLE IF NOT EXISTS roles (
      detail VARCHAR(100) NOT NULL unique,
      estado BOOLEAN default true,
      created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
  );
 
 -- Tabla de Unión Usuario-Roles
@@ -49,7 +49,7 @@ CREATE TABLE public.categorias (
     nemonico VARCHAR(100) NOT NULL unique,
     estado boolean default true,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
 -- 2. Subcategorias (Deportes, Sub-eventos, Tipos de comida)
