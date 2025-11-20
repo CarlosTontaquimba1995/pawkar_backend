@@ -15,11 +15,9 @@ public class SubcategoriaRequest {
     
     private LocalDateTime fechaHora;
     
-    private Boolean proximo = true;
+    private Boolean proximo;
 
     private String ubicacion;
-
-    private Boolean estado = true;
 
     // Getters and Setters
     public Long getCategoriaId() {
@@ -68,13 +66,5 @@ public class SubcategoriaRequest {
 
     public void setUbicacion(String ubicacion) {
         this.ubicacion = ubicacion;
-    }
-
-    public Boolean getEstado() {
-        return estado;
-    }
-
-    public void setEstado(Boolean estado) {
-        this.estado = estado;
     }
 }

@@ -159,9 +159,9 @@ public class SubcategoriaService {
         subcategoria.setUbicacion(request.getUbicacion());
         subcategoria.setFechaHora(request.getFechaHora());
 
-        // Actualizar el estado solo si se proporciona en la solicitud
-        if (request.getEstado() != null) {
-                subcategoria.setEstado(request.getEstado());
+        // Actualizar el campo proximo solo si se proporciona en la solicitud
+        if (request.getProximo() != null) {
+                subcategoria.setProximo(request.getProximo());
         }
 
         return subcategoriaRepository.save(subcategoria);
