@@ -159,6 +159,11 @@ public class SubcategoriaService {
         subcategoria.setUbicacion(request.getUbicacion());
         subcategoria.setFechaHora(request.getFechaHora());
 
+        // Actualizar el estado solo si se proporciona en la solicitud
+        if (request.getEstado() != null) {
+                subcategoria.setEstado(request.getEstado());
+        }
+
         return subcategoriaRepository.save(subcategoria);
     }
 
