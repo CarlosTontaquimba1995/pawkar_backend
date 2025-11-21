@@ -15,6 +15,9 @@ import java.util.Optional;
 public interface PlantillaRepository extends JpaRepository<Plantilla, PlantillaId> {
     boolean existsByEquipo_EquipoIdAndJugador_Id(Integer equipoId, Integer jugadorId);
     
+    @Query("SELECT p FROM Plantilla p JOIN p.equipo e WHERE e.subcategoria.subcategoriaId = :subcategoriaId")
+    List<Plantilla> findBySubcategoriaId(@Param("subcategoriaId") Integer subcategoriaId);
+    
     @Query("SELECT COUNT(p) > 0 FROM Plantilla p WHERE p.equipo.equipoId = :equipoId AND p.numeroCamiseta = :numeroCamiseta")
     boolean existsByEquipo_EquipoIdAndNumeroCamiseta(@Param("equipoId") Integer equipoId, 
                                                    @Param("numeroCamiseta") Integer numeroCamiseta);

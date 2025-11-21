@@ -55,7 +55,14 @@ public class PlantillaController {
     public ApiResponseStandard<List<PlantillaResponse>> obtenerPlantillaPorEquipo(
             @PathVariable Integer equipoId) {
         List<PlantillaResponse> plantillas = plantillaService.obtenerPlantillaPorEquipo(equipoId);
-        return ApiResponseStandard.success(plantillas, "Plantilla del equipo obtenida exitosamente");
+        return ApiResponseStandard.success(plantillas, "Plantillas obtenidas exitosamente");
+    }
+    
+    @GetMapping("/subcategoria/{subcategoriaId}")
+    public ApiResponseStandard<List<PlantillaResponse>> obtenerPlantillasPorSubcategoria(
+            @PathVariable Integer subcategoriaId) {
+        List<PlantillaResponse> plantillas = plantillaService.obtenerPlantillasPorSubcategoria(subcategoriaId);
+        return ApiResponseStandard.success(plantillas, "Plantillas obtenidas exitosamente para la subcategoría");
     }
 
     @DeleteMapping("/{equipoId}/{jugadorId}")

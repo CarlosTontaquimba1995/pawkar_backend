@@ -205,4 +205,21 @@ public class PlantillaService {
                 .map(this::mapToPlantillaResponse)
                 .collect(java.util.stream.Collectors.toList());
     }
+    
+    @Transactional(readOnly = true)
+    public List<PlantillaResponse> obtenerPlantillasPorSubcategoria(Integer subcategoriaId) {
+        List<Plantilla> plantillas = plantillaRepository.findBySubcategoriaId(subcategoriaId);
+        if (plantillas.isEmpty()) {
+            throw new ResourceNotFoundException("No se encontraron plantillas para la subcategoría con ID: " + subcategoriaId);
+        }
+        
+        // Ordenar por nombre de equipo y luego por número de camiseta
+        return plantillas.stream()
+                .sorted(Comparator
+                    .comparing((Plantilla p) -> p.getEquipo().getNombre())
+                    .thenComparing(Plantilla::getNumeroCamiseta, Comparator.nullsLast(Comparator.naturalOrder()))
+                )
+                .map(this::mapToPlantillaResponse)
+                .collect(java.util.stream.Collectors.toList());
+    }
 }
