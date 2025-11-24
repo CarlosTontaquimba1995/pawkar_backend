@@ -98,7 +98,7 @@ CREATE TABLE public.estadios (
     detalle TEXT, -- Campo para agregar más información/detalle (opcionalmente VARCHAR)
     estado BOOLEAN default true,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
 -- 3. Equipos (Asociados a un deporte/subcategoría)
@@ -128,7 +128,7 @@ CREATE TABLE public.jugadores (
     estado boolean default true, -- CAMPO AÑADIDO: Para indicar si el jugador está activo
     documento_identidad VARCHAR(20) unique,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
 -- 5. Plantilla (Jugadores por equipo)

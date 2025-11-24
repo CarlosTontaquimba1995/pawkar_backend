@@ -2,6 +2,11 @@
 
 ## Tabla de Contenidos
 
+- [Usuarios](#usuarios)
+  - [Obtener todos los usuarios](#obtener-todos-los-usuarios)
+  - [Obtener usuario por ID](#obtener-usuario-por-id)
+  - [Obtener usuario por nombre de usuario](#obtener-usuario-por-nombre-de-usuario)
+
 - [Autenticación](#autenticación)
   - [Iniciar sesión](#iniciar-sesión)
   - [Registrar usuario](#registrar-usuario)
@@ -111,6 +116,105 @@
   - [Crear múltiples jugadores](#crear-múltiples-jugadores)
 - [Verificación](#verificación)
   - [Verificar existencia de registros](#verificar-existencia-de-registros)
+
+## Usuarios
+
+### Obtener todos los usuarios
+
+**URL**: `/usuarios`  
+**Método**: `GET`  
+**Autenticación Requerida**: Sí  
+**Roles**: `ROLE_ADMIN`
+
+**Respuesta Exitosa (200 OK)**
+```json
+{
+  "success": true,
+  "message": "Usuarios obtenidos exitosamente",
+  "data": [
+    {
+      "id": 1,
+      "username": "admin",
+      "email": "admin@example.com",
+      "roles": [
+        {
+          "id": 1,
+          "name": "ROLE_ADMIN"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "username": "user1",
+      "email": "user1@example.com",
+      "roles": [
+        {
+          "id": 2,
+          "name": "ROLE_USER"
+        }
+      ]
+    }
+  ]
+}
+```
+
+### Obtener usuario por ID
+
+**URL**: `/usuarios/{id}`  
+**Método**: `GET`  
+**Autenticación Requerida**: Sí  
+**Roles**: `ROLE_ADMIN`
+
+**Parámetros de Ruta**:
+- `id` (requerido): ID del usuario a buscar
+
+**Respuesta Exitosa (200 OK)**
+```json
+{
+  "success": true,
+  "message": "Usuario obtenido exitosamente",
+  "data": {
+    "id": 1,
+    "username": "admin",
+    "email": "admin@example.com",
+    "roles": [
+      {
+        "id": 1,
+        "name": "ROLE_ADMIN"
+      }
+    ]
+  }
+}
+```
+
+### Obtener usuario por nombre de usuario
+
+**URL**: `/usuarios/username/{username}`  
+**Método**: `GET`  
+**Autenticación Requerida**: Sí  
+**Roles**: `ROLE_ADMIN`
+
+**Parámetros de Ruta**:
+- `username` (requerido): Nombre de usuario a buscar
+
+**Respuesta Exitosa (200 OK)**
+```json
+{
+  "success": true,
+  "message": "Usuario obtenido exitosamente",
+  "data": {
+    "id": 1,
+    "username": "admin",
+    "email": "admin@example.com",
+    "roles": [
+      {
+        "id": 1,
+        "name": "ROLE_ADMIN"
+      }
+    ]
+  }
+}
+```
 
 ## Autenticación
 
