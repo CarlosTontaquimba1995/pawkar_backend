@@ -35,6 +35,10 @@
 - [Generación de Encuentros](#generación-de-encuentros)
   - [Generar encuentros](#generar-encuentros)
 
+- [Configuración](#configuración)
+  - [Obtener configuración](#obtener-configuración)
+  - [Actualizar configuración](#actualizar-configuración)
+
 - [Categorías](#categorías)
   - [Obtener todas las categorías](#obtener-todas-las-categorías)
   - [Obtener categoría por ID](#obtener-categoría-por-id)
@@ -2337,10 +2341,11 @@ Obtiene todos los roles asignados a una subcategoría específica por su nombre.
 
 ### Asignar Múltiples Roles a una Subcategoría (Bulk)
 
-Asigna múltiples roles a una subcategoría en una sola operación.
+Asigna múltiples roles a una subcategoría en una sola### Generar encuentros
 
-**URL**: `/api/subcategoria-roles/bulk`
-**Método**: `POST`
+**URL**: `/encuentros/generar`  
+**Método**: `POST`  
+**Descripción**: Genera encuentros automáticamente basados en los equipos disponibles  
 **Autenticación Requerida**: Sí  
 **Roles**: `ROLE_ADMIN`
 
@@ -2348,7 +2353,9 @@ Asigna múltiples roles a una subcategoría en una sola operación.
 ```json
 {
   "subcategoriaId": 1,
-  "rolesIds": [1, 2, 3]
+  "fechaInicio": "2023-12-01",
+  "horaInicio": "09:00:00",
+  "intervaloMinutos": 30
 }
 ```
 
@@ -2356,28 +2363,85 @@ Asigna múltiples roles a una subcategoría en una sola operación.
 ```json
 {
   "success": true,
-  "message": "Roles asignados correctamente a la subcategoría",
-  "data": {
-    "subcategoriaId": 1,
-    "rolesAsignados": [
-      {
+  "message": "Se generaron 15 encuentros exitosamente",
+  "data": [
+    {
+      "id": 1,
+      "fechaHoraInicio": "2023-12-01T09:00:00",
+      "equipoLocal": {
         "id": 1,
-        "nombre": "ROLE_USER"
+        "nombre": "Equipo A"
       },
-      {
+      "equipoVisitante": {
         "id": 2,
-        "nombre": "ROLE_MODERATOR"
+        "nombre": "Equipo B"
       },
-      {
-        "id": 3,
-        "nombre": "ROLE_ADMIN"
+      "estadio": {
+        "id": 1,
+        "nombre": "Estadio Principal"
       }
-    ]
+    }
+    // ... más encuentros generados
+  ]
+}
+```
+
+## Configuración
+
+### Obtener configuración
+
+**URL**: `/configuracion`  
+**Método**: `GET`  
+**Descripción**: Obtiene la configuración actual del sistema  
+**Autenticación Requerida**: No
+
+**Respuesta Exitosa (200 OK)**
+```json
+{
+  "success": true,
+  "message": "Configuración obtenida exitosamente",
+  "data": {
+    "configuracionId": 1,
+    "primario": "#1a237e",
+    "secundario": "#0d47a1",
+    "acento1": "#2962ff",
+    "acento2": "#448aff"
   }
 }
 ```
 
-## Gestión de Roles
+### Actualizar configuración
+
+**URL**: `/configuracion`  
+**Método**: `PUT`  
+**Descripción**: Actualiza la configuración del sistema  
+**Autenticación Requerida**: Sí  
+**Roles**: `ROLE_ADMIN`
+
+**Cuerpo de la Solicitud (JSON)**:
+```json
+{
+  "primario": "#1a237e",
+  "secundario": "#0d47a1",
+  "acento1": "#2962ff",
+  "acento2": "#448aff"
+}
+```
+
+**Respuesta Exitosa (200 OK)**
+```json
+{
+  "success": true,
+  "message": "Configuración actualizada exitosamente",
+  "data": {
+    "configuracionId": 1,
+    "primario": "#1a237e",
+    "secundario": "#0d47a1",
+    "acento1": "#2962ff",
+    "acento2": "#448aff"
+  }
+}
+```
 
 ### Crear o Actualizar un Rol
 

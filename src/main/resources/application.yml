@@ -5,11 +5,14 @@ server:
     context-path: /api # Base path for all API endpoints
 
 spring:
+  # Database configuration
   datasource:
     url: jdbc:postgresql://localhost:5432/pawkar_raymi
     username: postgres
     password: root
     driver-class-name: org.postgresql.Driver
+  
+  # JPA/Hibernate configuration
   jpa:
     hibernate:
       ddl-auto: validate  # This will update the schema without dropping data
@@ -19,6 +22,19 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
         default_schema: public
+  
+  # Redis configuration
+  redis:
+    host: localhost
+    port: 6379
+    timeout: 5000
+  
+  # Cache configuration
+  cache:
+    type: redis
+    redis:
+      time-to-live: 86400000 # 24 hours in milliseconds
+      cache-null-values: false
 
 # JWT configuration
 app:
@@ -33,4 +49,6 @@ logging:
       springframework:
         security: DEBUG
         web: DEBUG
+        cache: INFO
+      springframework.data.redis: INFO
     pawkar: DEBUG

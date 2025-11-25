@@ -1,14 +1,11 @@
 package pawkar.backend.controller;
 
 import org.springframework.web.bind.annotation.*;
-import pawkar.backend.entity.User;
 import pawkar.backend.response.ApiResponseStandard;
-import pawkar.backend.response.SerieResponse;
 import pawkar.backend.response.UserResponse;
 import pawkar.backend.service.UserService;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/usuarios")
