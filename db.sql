@@ -5,7 +5,7 @@ CREATE DATABASE pawkar_raymi WITH TEMPLATE = template0 ENCODING = 'UTF8' LOCALE_
 -- TABLAS DE USUARIOS Y ROLES
 ----------------------------------------------------------------------------------------------------
 
--- Tabla de Usuarios
+-- 1. Tabla de Usuarios
 CREATE TABLE IF NOT EXISTS users (
     id BIGSERIAL PRIMARY KEY,
     username VARCHAR(50) NOT NULL UNIQUE,
@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS users (
 );
 
 
--- Tabla de Roles
+-- 2. Tabla de Roles
 CREATE TABLE IF NOT EXISTS roles (
      id BIGSERIAL PRIMARY KEY,
      name VARCHAR(50) NOT NULL UNIQUE,
@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS roles (
      updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
  );
 
--- Tabla de Unión Usuario-Roles
+-- 3. Tabla de Unión Usuario-Roles
 CREATE TABLE IF NOT EXISTS user_roles (
      user_id BIGINT NOT NULL,
      role_id BIGINT NOT NULL,
@@ -42,7 +42,7 @@ CREATE TABLE IF NOT EXISTS user_roles (
 -- TABLAS DE CATEGORÍAS Y ORGANIZACIÓN DE COMPETENCIAS
 ----------------------------------------------------------------------------------------------------
 
--- 1. Categorias Padre
+-- 4. Categorias Padre
 CREATE TABLE public.categorias (
     categoria_id BIGSERIAL PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL unique,
@@ -52,7 +52,7 @@ CREATE TABLE public.categorias (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- 2. Subcategorias (Deportes, Sub-eventos, Tipos de comida)
+-- 5. Subcategorias (Deportes, Sub-eventos, Tipos de comida)
 CREATE TABLE public.subcategorias (
     subcategoria_id BIGSERIAL PRIMARY KEY,
     categoria_id INT NOT NULL,
@@ -67,7 +67,7 @@ CREATE TABLE public.subcategorias (
     FOREIGN KEY (categoria_id) REFERENCES categorias (categoria_id) ON DELETE CASCADE
 );
 
--- Tabla de Unión Subcategoría-Roles (Define qué roles de jugador aplican a cada subcategoría)
+-- 6. Tabla de Unión Subcategoría-Roles (Define qué roles de jugador aplican a cada subcategoría)
 CREATE TABLE public.subcategoria_roles (
     subcategoria_id INT NOT NULL,
     rol_id BIGINT NOT NULL,
@@ -78,7 +78,7 @@ CREATE TABLE public.subcategoria_roles (
     FOREIGN KEY (rol_id) REFERENCES roles (id) ON DELETE RESTRICT
 );
 
--- Tabla de Series (Grupos dentro de una subcategoría, ej: Serie A, Serie B de Fútbol)
+-- 7. Tabla de Series (Grupos dentro de una subcategoría, ej: Serie A, Serie B de Fútbol)
 CREATE TABLE public.series (
     serie_id BIGSERIAL PRIMARY KEY,
     subcategoria_id INT NOT NULL,
@@ -91,7 +91,7 @@ CREATE TABLE public.series (
 );
 
 
--- Creación de la nueva tabla de estadios
+-- 8. Creación de la nueva tabla de estadios
 CREATE TABLE public.estadios (
     estadio_id BIGSERIAL PRIMARY KEY, -- Clave primaria para identificar el estadio
     nombre VARCHAR(150) NOT NULL UNIQUE, -- Nombre del estadio
@@ -101,7 +101,7 @@ CREATE TABLE public.estadios (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- 3. Equipos (Asociados a un deporte/subcategoría)
+-- 9. Equipos (Asociados a un deporte/subcategoría)
 CREATE TABLE public.equipos (
     equipo_id BIGSERIAL PRIMARY KEY,
     subcategoria_id INT NOT NULL,
@@ -119,7 +119,7 @@ CREATE TABLE public.equipos (
 -- TABLAS DE PERSONAS, ROLES Y PLANTILLA
 ----------------------------------------------------------------------------------------------------
 
--- 4. Jugadores (Registro maestro de personas)
+-- 10. Jugadores (Registro maestro de personas)
 CREATE TABLE public.jugadores (
     jugador_id BIGSERIAL PRIMARY KEY,
     nombre VARCHAR(50) NOT NULL,
@@ -131,7 +131,7 @@ CREATE TABLE public.jugadores (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- 5. Plantilla (Jugadores por equipo)
+-- 11. Plantilla (Jugadores por equipo)
 CREATE TABLE public.plantilla (
     equipo_id INT NOT NULL,
     jugador_id INT NOT NULL,
@@ -149,7 +149,7 @@ CREATE TABLE public.plantilla (
 -- TABLAS DE ENCUENTROS Y RESULTADOS
 ----------------------------------------------------------------------------------------------------
 
--- 6. Encuentros (Partidos, Horarios, Degustaciones, Presentaciones)
+-- 12. Encuentros (Partidos, Horarios, Degustaciones, Presentaciones)
 
 CREATE TABLE public.encuentros (
     encuentro_id BIGSERIAL PRIMARY KEY,
@@ -184,7 +184,7 @@ CREATE TABLE public.encuentros (
         REFERENCES public.equipos (equipo_id) ON DELETE RESTRICT
 );
 
--- 7. Participacion_Encuentro (Quién juega contra quién, resultados del partido)
+-- 13. Participacion_Encuentro (Quién juega contra quién, resultados del partido)
 CREATE TABLE public.participacion_encuentro (
     encuentro_id INT NOT NULL,
     equipo_id INT NOT NULL,
@@ -197,7 +197,7 @@ CREATE TABLE public.participacion_encuentro (
     FOREIGN KEY (equipo_id) REFERENCES equipos (equipo_id) ON DELETE RESTRICT
 );
 
--- 8. Tabla_Posiciones (Resultados acumulados por subcategoría/deporte)
+-- 14. Tabla_Posiciones (Resultados acumulados por subcategoría/deporte)
 CREATE TABLE public.tabla_posiciones (
     subcategoria_id INT NOT NULL,
     equipo_id INT NOT NULL,
@@ -216,7 +216,7 @@ CREATE TABLE public.tabla_posiciones (
     FOREIGN KEY (equipo_id) REFERENCES equipos (equipo_id) ON DELETE CASCADE
 );
 
--- 9. Sanciones (Tarjetas, penalizaciones)
+-- 15. Sanciones (Tarjetas, penalizaciones)
 CREATE TABLE public.sanciones (
     sancion_id BIGSERIAL PRIMARY KEY,
     jugador_id INT NOT NULL,
@@ -229,4 +229,15 @@ CREATE TABLE public.sanciones (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (jugador_id) REFERENCES jugadores (jugador_id) ON DELETE RESTRICT,
     FOREIGN KEY (encuentro_id) REFERENCES encuentros (encuentro_id) ON DELETE SET NULL
+);
+
+-- 16. Configuraciones
+CREATE TABLE public.configuraciones (
+    configuracion_id BIGSERIAL PRIMARY KEY,
+    primario VARCHAR(20) NOT NULL,
+    secundario VARCHAR(20) NOT NULL,
+    acento_1 VARCHAR(20) NOT NULL,
+    acento_2 VARCHAR(20) NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
