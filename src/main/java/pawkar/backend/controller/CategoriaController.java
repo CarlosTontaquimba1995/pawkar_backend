@@ -26,7 +26,6 @@ public class CategoriaController {
     }
 
     @GetMapping
-    @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
     public ApiResponseStandard<List<CategoriaResponse>> getAllCategorias() {
         List<CategoriaResponse> categorias = categoriaService.getAllCategorias();
         return ApiResponseStandard.success(
@@ -35,7 +34,6 @@ public class CategoriaController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
     public ApiResponseStandard<CategoriaResponse> getCategoriaById(@PathVariable Long id) {
         CategoriaResponse categoria = categoriaService.getCategoriaById(id);
         return ApiResponseStandard.success(

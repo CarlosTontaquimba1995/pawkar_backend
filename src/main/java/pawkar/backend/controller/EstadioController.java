@@ -21,7 +21,6 @@ public class EstadioController {
     private EstadioService estadioService;
 
     @GetMapping
-    @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
     public ApiResponseStandard<List<EstadioResponse>> getAllEstadios() {
         List<EstadioResponse> estadios = estadioService.getAllEstadios();
         return ApiResponseStandard.success(
@@ -30,7 +29,6 @@ public class EstadioController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
     public ApiResponseStandard<EstadioResponse> getEstadioById(@PathVariable Long id) {
         EstadioResponse estadio = estadioService.getEstadioById(id);
         return ApiResponseStandard.success(

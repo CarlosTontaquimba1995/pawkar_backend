@@ -99,7 +99,7 @@ public class WebSecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/tabla-posicion/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/verificacion/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/estadios/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.GET, "/configuracion/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/configuracion/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/roles/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/categorias/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/subcategorias/**").permitAll()
