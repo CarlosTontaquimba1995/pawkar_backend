@@ -111,6 +111,7 @@ public class WebSecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/tabla-posicion/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/estadios/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/configuracion/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/encuentros/**").permitAll()
                     .anyRequest().authenticated()
             )
             .authenticationProvider(authenticationProvider());
