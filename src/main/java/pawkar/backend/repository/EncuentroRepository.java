@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import pawkar.backend.entity.Encuentro;
+import pawkar.backend.entity.Equipo;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -19,6 +20,11 @@ public interface EncuentroRepository extends JpaRepository<Encuentro, Integer>, 
     
     List<Encuentro> findByEstado(String estado);
     
+    @Query("SELECT e FROM Encuentro e WHERE (e.equipoLocal = :equipo OR e.equipoVisitante = :equipo) AND e.fechaHora = :fechaHora")
+    List<Encuentro> findByEquipoAndFechaHora(
+            @Param("equipo") Equipo equipo,
+            @Param("fechaHora") LocalDateTime fechaHora);
+
     @Query(value = """
             SELECT DISTINCT e.* FROM encuentros e
             LEFT JOIN participacion_encuentro pe ON e.encuentro_id = pe.encuentro_id
@@ -31,14 +37,14 @@ public interface EncuentroRepository extends JpaRepository<Encuentro, Integer>, 
             ORDER BY e.fecha_hora
             """,
         countQuery = """
-                            SELECT COUNT(DISTINCT e.encuentro_id) FROM encuentros e
-                            LEFT JOIN participacion_encuentro pe ON e.encuentro_id = pe.encuentro_id
+                    SELECT COUNT(DISTINCT e.encuentro_id) FROM encuentros e
+                    LEFT JOIN participacion_encuentro pe ON e.encuentro_id = pe.encuentro_id
             WHERE (:subcategoriaId IS NULL OR e.subcategoria_id = :subcategoriaId)
             AND (cast(:fechaInicio as timestamp) IS NULL OR e.fecha_hora >= :fechaInicio)
             AND (cast(:fechaFin as timestamp) IS NULL OR e.fecha_hora <= :fechaFin)
             AND (:estadioId IS NULL OR e.estadio_id = :estadioId)
             AND (COALESCE(:estado, '') = '' OR e.estado = :estado)
-                            AND (:equipoId IS NULL OR pe.equipo_id = :equipoId)
+                    AND (:equipoId IS NULL OR pe.equipo_id = :equipoId)
             """,
         nativeQuery = true
     )

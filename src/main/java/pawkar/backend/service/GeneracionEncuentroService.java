@@ -196,6 +196,23 @@ public class GeneracionEncuentroService {
     return encuentros;
 }
 
+private boolean tieneConflictoHorario(Equipo equipo, LocalDateTime fechaHora, Integer encuentroId) {
+    // Buscar si el equipo ya tiene un encuentro programado en el mismo horario
+    List<Encuentro> encuentrosExistentes = encuentroRepository.findByEquipoAndFechaHora(equipo, fechaHora);
+
+    // Si hay encuentros programados, verificar si es el mismo encuentro (para
+    // actualizaciones)
+    if (!encuentrosExistentes.isEmpty()) {
+        if (encuentroId != null) {
+            // Si estamos actualizando, ignorar el encuentro actual
+            return encuentrosExistentes.stream()
+                    .anyMatch(e -> !e.getId().equals(encuentroId));
+        }
+        return true;
+    }
+    return false;
+}
+
     private List<Encuentro> generarEncuentrosManuales(GeneracionEncuentroRequest request) {
         List<Encuentro> encuentros = new ArrayList<>();
         Subcategoria subcategoria = subcategoriaRepository.findById(request.getSubcategoriaId())
@@ -210,9 +227,34 @@ public class GeneracionEncuentroService {
             Equipo visitante = equipoRepository.findById(manualRequest.getEquipoVisitanteId())
                     .orElseThrow(() -> new RuntimeException("Equipo visitante no encontrado"));
 
+            // Verificar que no sean el mismo equipo
+            if (local.getEquipoId().equals(visitante.getEquipoId())) {
+                throw new RuntimeException(
+                        "El equipo local no puede ser el mismo que el visitante: " + local.getNombre());
+            }
+
             // Buscar el estadio por nombre
             Estadio estadio = estadioRepository.findById(manualRequest.getEstadioId())
                     .orElseThrow(() -> new RuntimeException("Estadio no encontrado: " + manualRequest.getEstadioId()));
+
+            LocalDateTime fechaHora = LocalDateTime.of(manualRequest.getFecha(), manualRequest.getHora());
+
+            // Verificar conflictos de horario para ambos equipos
+            if (tieneConflictoHorario(local, fechaHora, null)) {
+                throw new RuntimeException(String.format(
+                        "El equipo %s ya tiene un partido programado para %s a las %s",
+                        local.getNombre(),
+                        fechaHora.toLocalDate(),
+                        fechaHora.toLocalTime()));
+            }
+
+            if (tieneConflictoHorario(visitante, fechaHora, null)) {
+                throw new RuntimeException(String.format(
+                        "El equipo %s ya tiene un partido programado para %s a las %s",
+                        visitante.getNombre(),
+                        fechaHora.toLocalDate(),
+                        fechaHora.toLocalTime()));
+            }
 
             // Crear el encuentro
             Encuentro encuentro = new Encuentro();
@@ -220,9 +262,7 @@ public class GeneracionEncuentroService {
             encuentro.setTitulo(String.format("%s vs %s", local.getNombre(), visitante.getNombre()));
             encuentro.setEstado("PROGRAMADO");
             encuentro.setEstadio(estadio);
-            encuentro.setFechaHora(LocalDateTime.of(manualRequest.getFecha(), manualRequest.getHora()));
-
-            // Set the new fields
+            encuentro.setFechaHora(fechaHora);
             encuentro.setEquipoLocal(local);
             encuentro.setEquipoVisitante(visitante);
 
@@ -236,7 +276,7 @@ public class GeneracionEncuentroService {
             encuentros.add(savedEncuentro);
         }
     
-    return encuentros;
+        return encuentros;
 }
     
     /**
