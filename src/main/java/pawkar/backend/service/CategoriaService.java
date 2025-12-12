@@ -116,9 +116,13 @@ public class CategoriaService {
         if (nombre == null) {
             return null;
         }
+        // Normalize the string to convert accented characters to their non-accented
+        // equivalents
+        String normalized = java.text.Normalizer.normalize(nombre.trim(), java.text.Normalizer.Form.NFD)
+                .replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
+
         // Convert to uppercase, replace spaces with underscores, and remove special characters
-        return nombre.trim()
-                .toUpperCase()
+        return normalized.toUpperCase()
                 .replaceAll("\\s+", "_")
                 .replaceAll("[^A-Z0-9_]", "");
     }
