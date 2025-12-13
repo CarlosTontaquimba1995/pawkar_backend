@@ -15,6 +15,8 @@ import java.time.LocalTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import pawkar.backend.exception.BadRequestException;
+
 @Service
 public class GeneracionEncuentroService {
 
@@ -241,15 +243,15 @@ private boolean tieneConflictoHorario(Equipo equipo, LocalDateTime fechaHora, In
 
             // Verificar conflictos de horario para ambos equipos
             if (tieneConflictoHorario(local, fechaHora, null)) {
-                throw new RuntimeException(String.format(
+                throw new BadRequestException(String.format(
                         "El equipo %s ya tiene un partido programado para %s a las %s",
                         local.getNombre(),
                         fechaHora.toLocalDate(),
                         fechaHora.toLocalTime()));
             }
 
-            if (tieneConflictoHorario(visitante, fechaHora, null)) {
-                throw new RuntimeException(String.format(
+if (tieneConflictoHorario(visitante, fechaHora, null)) {
+                throw new BadRequestException(String.format(
                         "El equipo %s ya tiene un partido programado para %s a las %s",
                         visitante.getNombre(),
                         fechaHora.toLocalDate(),
