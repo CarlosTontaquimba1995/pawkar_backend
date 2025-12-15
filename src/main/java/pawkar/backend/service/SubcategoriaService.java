@@ -120,17 +120,37 @@ public class SubcategoriaService {
                             .findFirst()
                             .orElseThrow();
 
+                                // Generate nemonico from name
+                                String nemonico = generateNemonico(subcategoriaRequest.getNombre());
+
                     Subcategoria subcategoria = new Subcategoria();
                     subcategoria.setCategoria(categoria);
                     subcategoria.setNombre(subcategoriaRequest.getNombre());
                     subcategoria.setDescripcion(subcategoriaRequest.getDescripcion());
                     subcategoria.setFechaHora(subcategoriaRequest.getFechaHora());
                     subcategoria.setUbicacion(subcategoriaRequest.getUbicacion());
+                                subcategoria.setNemonico(nemonico);
                     return subcategoria;
                 })
                 .toList();
 
         return subcategoriaRepository.saveAll(subcategorias);
+    }
+
+    private String generateNemonico(String nombre) {
+            if (nombre == null) {
+                    return null;
+            }
+            // Normalize to NFD to separate base characters from diacritics
+            String normalized = java.text.Normalizer.normalize(nombre.trim(), java.text.Normalizer.Form.NFD)
+                            .replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
+
+            // Convert to uppercase and replace spaces and special characters with
+            // underscores
+            return normalized.toUpperCase()
+                            .replaceAll("[^A-Z0-9]", "_")
+                            .replaceAll("_+", "_")
+                            .replaceAll("^_|_$", "");
     }
 
     public List<Subcategoria> listarSubcategorias() {
@@ -139,6 +159,12 @@ public class SubcategoriaService {
 
     public List<Subcategoria> listarSubcategoriasPorCategoria(Integer categoriaId) {
         return subcategoriaRepository.findByCategoria_CategoriaId(categoriaId);
+    }
+
+    public Subcategoria obtenerSubcategoriaPorNemonico(String nemonico) {
+            return subcategoriaRepository.findByNemonico(nemonico)
+                            .orElseThrow(() -> new ResourceNotFoundException(
+                                            "Subcategoría no encontrada con nemonico: " + nemonico));
     }
 
     public Subcategoria obtenerSubcategoriaPorId(Integer id) {

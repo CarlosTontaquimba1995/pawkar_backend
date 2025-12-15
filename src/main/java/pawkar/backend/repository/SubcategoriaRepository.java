@@ -6,6 +6,7 @@ import pawkar.backend.entity.Subcategoria;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface SubcategoriaRepository extends JpaRepository<Subcategoria, Integer> {
@@ -13,6 +14,8 @@ public interface SubcategoriaRepository extends JpaRepository<Subcategoria, Inte
     
     boolean existsByNombreIgnoreCase(String nombre);
     
+    Optional<Subcategoria> findByNemonico(String nemonico);
+
     boolean existsByCategoriaCategoriaIdAndNombreIgnoreCase(Integer categoriaId, String nombre);
     
     List<Subcategoria> findByProximoTrueAndFechaHoraBefore(LocalDateTime fechaHora);

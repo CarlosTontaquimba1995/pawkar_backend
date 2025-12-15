@@ -85,16 +85,19 @@ public class SubcategoriaController {
     @GetMapping("/categoria/{categoriaId}")
     public ApiResponseStandard<List<SubcategoriaResponse>> listarSubcategoriasPorCategoria(
             @PathVariable Integer categoriaId) {
-        try {
-            List<Subcategoria> subcategorias = subcategoriaService.listarSubcategoriasPorCategoria(categoriaId);
-            List<SubcategoriaResponse> response = subcategorias.stream()
+        List<SubcategoriaResponse> subcategorias = subcategoriaService
+                .listarSubcategoriasPorCategoria(categoriaId)
+                .stream()
                 .map(this::toSubcategoriaResponse)
                 .collect(Collectors.toList());
-            return ApiResponseStandard.success(response, "Subcategorías por categoría obtenidas exitosamente");
-        } catch (Exception e) {
-            return ApiResponseStandard.error(e.getMessage(), 
-                "/api/subcategorias/categoria/" + categoriaId, "Bad Request", 400);
-        }
+        return ApiResponseStandard.success(subcategorias, "Subcategorías obtenidas exitosamente");
+    }
+
+    @GetMapping("/nemonico/{nemonico}")
+    public ApiResponseStandard<SubcategoriaResponse> obtenerSubcategoriaPorNemonico(
+            @PathVariable String nemonico) {
+        Subcategoria subcategoria = subcategoriaService.obtenerSubcategoriaPorNemonico(nemonico);
+        return ApiResponseStandard.success(toSubcategoriaResponse(subcategoria), "Subcategoría obtenida exitosamente");
     }
 
     @GetMapping("/{id}")

@@ -60,6 +60,7 @@ CREATE TABLE public.subcategorias (
     ubicacion VARCHAR(100),
     descripcion TEXT,
     fecha_hora TIMESTAMP WITHOUT TIME ZONE,
+    nemonico VARCHAR(100) NOT NULL unique,
     proximo BOOLEAN default true, -- CAMPO AÑADIDO: Para indicar si el equipo está activo
     estado BOOLEAN default true, -- CAMPO AÑADIDO: Para indicar si el equipo está activo
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,

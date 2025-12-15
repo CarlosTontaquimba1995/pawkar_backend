@@ -36,6 +36,9 @@ public class Subcategoria {
     @Column(length = 100)
     private String ubicacion;
 
+    @Column(nullable = false, length = 100, unique = true)
+    private String nemonico;
+
     @OneToMany(mappedBy = "subcategoria", fetch = FetchType.LAZY)
     private List<Encuentro> encuentros = new ArrayList<>();
 
@@ -46,13 +49,15 @@ public class Subcategoria {
     public Subcategoria() {
     }
 
-    public Subcategoria(Categoria categoria, String nombre, String descripcion) {
-        this.categoria = categoria;
+    public Subcategoria(String nombre, String descripcion, LocalDateTime fechaHora, Boolean estado, Boolean proximo,
+            String ubicacion, String nemonico) {
         this.nombre = nombre;
         this.descripcion = descripcion;
-        this.estado = true;
-        this.fechaHora = null;
-        this.proximo = false;
+        this.fechaHora = fechaHora;
+        this.estado = estado;
+        this.proximo = proximo;
+        this.ubicacion = ubicacion;
+        this.nemonico = nemonico;
     }
 
     // Getters and Setters
@@ -126,6 +131,14 @@ public class Subcategoria {
 
     public void setUbicacion(String ubicacion) {
         this.ubicacion = ubicacion;
+    }
+
+    public String getNemonico() {
+        return nemonico;
+    }
+
+    public void setNemonico(String nemonico) {
+        this.nemonico = nemonico;
     }
 
     // Helper methods for managing the relationship
