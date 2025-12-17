@@ -12,12 +12,15 @@ public class SubcategoriaResponse {
     private LocalDateTime fechaHora;
     private Boolean proximo;
     private String ubicacion;
+    private java.math.BigDecimal latitud;
+    private java.math.BigDecimal longitud;
 
     public SubcategoriaResponse() {
     }
 
     public SubcategoriaResponse(Integer subcategoriaId, Integer categoriaId, String categoriaNombre, String nombre,
-            String descripcion, Boolean estado, java.time.LocalDateTime fechaHora, Boolean proximo, String ubicacion) {
+            String descripcion, Boolean estado, java.time.LocalDateTime fechaHora, Boolean proximo, String ubicacion,
+            java.math.BigDecimal latitud, java.math.BigDecimal longitud) {
         this.subcategoriaId = subcategoriaId;
         this.categoriaId = categoriaId;
         this.categoriaNombre = categoriaNombre;
@@ -100,5 +103,21 @@ public class SubcategoriaResponse {
 
     public void setUbicacion(String ubicacion) {
         this.ubicacion = ubicacion;
+    }
+
+    public java.math.BigDecimal getLatitud() {
+        return latitud;
+    }
+
+    public void setLatitud(java.math.BigDecimal latitud) {
+        this.latitud = latitud;
+    }
+
+    public java.math.BigDecimal getLongitud() {
+        return longitud;
+    }
+
+    public void setLongitud(java.math.BigDecimal longitud) {
+        this.longitud = longitud;
     }
 }

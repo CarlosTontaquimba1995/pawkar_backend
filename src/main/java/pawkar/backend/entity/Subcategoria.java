@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.math.BigDecimal;
 
 @Entity
 @Table(name = "subcategorias")
@@ -36,6 +37,12 @@ public class Subcategoria {
     @Column(length = 100)
     private String ubicacion;
 
+    @Column(precision = 9, scale = 6)
+    private BigDecimal latitud;
+
+    @Column(precision = 10, scale = 6)
+    private BigDecimal longitud;
+
     @Column(nullable = false, length = 100, unique = true)
     private String nemonico;
 
@@ -50,7 +57,7 @@ public class Subcategoria {
     }
 
     public Subcategoria(String nombre, String descripcion, LocalDateTime fechaHora, Boolean estado, Boolean proximo,
-            String ubicacion, String nemonico) {
+            String ubicacion, String nemonico, BigDecimal latitud, BigDecimal longitud) {
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.fechaHora = fechaHora;
@@ -58,6 +65,8 @@ public class Subcategoria {
         this.proximo = proximo;
         this.ubicacion = ubicacion;
         this.nemonico = nemonico;
+        this.latitud = latitud;
+        this.longitud = longitud;
     }
 
     // Getters and Setters
@@ -139,6 +148,22 @@ public class Subcategoria {
 
     public void setNemonico(String nemonico) {
         this.nemonico = nemonico;
+    }
+
+    public BigDecimal getLatitud() {
+        return latitud;
+    }
+
+    public void setLatitud(BigDecimal latitud) {
+        this.latitud = latitud;
+    }
+
+    public BigDecimal getLongitud() {
+        return longitud;
+    }
+
+    public void setLongitud(BigDecimal longitud) {
+        this.longitud = longitud;
     }
 
     // Helper methods for managing the relationship

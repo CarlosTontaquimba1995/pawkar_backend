@@ -72,6 +72,8 @@ public class SubcategoriaController {
         response.setFechaHora(subcategoria.getFechaHora());
         response.setProximo(subcategoria.getProximo());
         response.setUbicacion(subcategoria.getUbicacion());
+        response.setLatitud(subcategoria.getLatitud());
+        response.setLongitud(subcategoria.getLongitud());
         
         if (subcategoria.getCategoria() != null) {
             Categoria categoria = subcategoria.getCategoria();

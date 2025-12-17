@@ -63,6 +63,8 @@ CREATE TABLE public.subcategorias (
     nemonico VARCHAR(100) NOT NULL unique,
     proximo BOOLEAN default true, -- CAMPO AÑADIDO: Para indicar si el equipo está activo
     estado BOOLEAN default true, -- CAMPO AÑADIDO: Para indicar si el equipo está activo
+    latitud DECIMAL(9,6),
+    longitud DECIMAL(10,6),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (categoria_id) REFERENCES categorias (categoria_id) ON DELETE CASCADE

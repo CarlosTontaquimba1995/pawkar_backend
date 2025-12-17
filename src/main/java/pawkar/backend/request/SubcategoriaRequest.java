@@ -19,6 +19,10 @@ public class SubcategoriaRequest {
 
     private String ubicacion;
 
+    private java.math.BigDecimal latitud;
+
+    private java.math.BigDecimal longitud;
+
     // Getters and Setters
     public Long getCategoriaId() {
         return categoriaId;
@@ -66,5 +70,21 @@ public class SubcategoriaRequest {
 
     public void setUbicacion(String ubicacion) {
         this.ubicacion = ubicacion;
+    }
+
+    public java.math.BigDecimal getLatitud() {
+        return latitud;
+    }
+
+    public void setLatitud(java.math.BigDecimal latitud) {
+        this.latitud = latitud;
+    }
+
+    public java.math.BigDecimal getLongitud() {
+        return longitud;
+    }
+
+    public void setLongitud(java.math.BigDecimal longitud) {
+        this.longitud = longitud;
     }
 }
