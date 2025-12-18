@@ -58,9 +58,16 @@
   - [Actualizar subcategoría](#actualizar-subcategoría)
   - [Eliminar subcategoría](#eliminar-subcategoría)
 - [Tabla de Posiciones](#tabla-de-posiciones)
-  - [Obtener posición específica de equipo](#obtener-posición-específica-de-equipo)
-  - [Obtener tabla por subcategoría](#obtener-tabla-por-subcategoría)
-  - [Buscar en tabla de posiciones](#buscar-en-tabla-de-posiciones)
+  - [Obtener tabla de posiciones por subcategoría](#obtener-tabla-de-posiciones-por-subcategoría)
+  - [Obtener posición específica de un equipo](#obtener-posición-específica-de-un-equipo)
+  - [Actualizar tabla de posiciones](#actualizar-tabla-de-posiciones)
+
+- [Ubicaciones](#ubicaciones)
+  - [Obtener todas las ubicaciones](#obtener-todas-las-ubicaciones)
+  - [Obtener ubicación por ID](#obtener-ubicación-por-id)
+  - [Obtener ubicación por nemonico](#obtener-ubicación-por-nemonico)
+  - [Crear una ubicación](#crear-una-ubicación)
+  - [Crear múltiples ubicaciones](#crear-múltiples-ubicaciones-bulk)
   - [Crear o actualizar posición](#crear-o-actualizar-posición)
   - [Eliminar posición](#eliminar-posición)
   - [Actualizar desde partido](#actualizar-desde-partido)
@@ -3572,6 +3579,213 @@ Obtiene todas las sanciones de un tipo específico.
 - **400 Bad Request**: Cuando faltan campos requeridos o los datos son inválidos
 - **404 Not Found**: Cuando no se encuentra la subcategoría o equipo especificado
 - **403 Forbidden**: Cuando el usuario no tiene permisos para realizar la acción
+
+## Ubicaciones
+
+### Obtener todas las ubicaciones
+
+**URL**: `/ubicaciones`  
+**Método**: `GET`  
+**Descripción**: Obtiene una lista de todas las ubicaciones registradas  
+**Autenticación Requerida**: No  
+
+**Respuesta Exitosa (200 OK)**
+```json
+{
+  "success": true,
+  "message": "Lista de ubicaciones obtenida exitosamente",
+  "data": [
+    {
+      "id": 1,
+      "descripcion": "Parque Central",
+      "nemonico": "PARQUE_CENTRAL",
+      "estado": true,
+      "latitud": -0.22985,
+      "longitud": -78.52495,
+      "createdAt": "2023-01-01T10:00:00Z",
+      "updatedAt": "2023-01-01T10:00:00Z"
+    }
+  ]
+}
+```
+
+### Obtener ubicación por ID
+
+**URL**: `/ubicaciones/{id}`  
+**Método**: `GET`  
+**Descripción**: Obtiene los detalles de una ubicación específica por su ID  
+**Autenticación Requerida**: No  
+
+**Parámetros de Ruta**:
+- `id` (requerido): ID de la ubicación a consultar
+
+**Respuesta Exitosa (200 OK)**
+```json
+{
+  "success": true,
+  "message": "Ubicación obtenida exitosamente",
+  "data": {
+    "id": 1,
+    "descripcion": "Parque Central",
+    "nemonico": "PARQUE_CENTRAL",
+    "estado": true,
+    "latitud": -0.22985,
+    "longitud": -78.52495,
+    "createdAt": "2023-01-01T10:00:00Z",
+    "updatedAt": "2023-01-01T10:00:00Z"
+  }
+}
+```
+
+### Obtener ubicación por nemonico
+
+**URL**: `/ubicaciones/nemonico/{nemonico}`  
+**Método**: `GET`  
+**Descripción**: Obtiene los detalles de una ubicación específica por su nemonico  
+**Autenticación Requerida**: No  
+
+**Parámetros de Ruta**:
+- `nemonico` (requerido): Nemonico de la ubicación a consultar
+
+**Respuesta Exitosa (200 OK)**
+```json
+{
+  "success": true,
+  "message": "Ubicación obtenida exitosamente",
+  "data": {
+    "id": 1,
+    "descripcion": "Parque Central",
+    "nemonico": "PARQUE_CENTRAL",
+    "estado": true,
+    "latitud": -0.22985,
+    "longitud": -78.52495,
+    "createdAt": "2023-01-01T10:00:00Z",
+    "updatedAt": "2023-01-01T10:00:00Z"
+  }
+}
+```
+
+### Crear una ubicación
+
+**URL**: `/ubicaciones`  
+**Método**: `POST`  
+**Descripción**: Crea una nueva ubicación  
+**Autenticación Requerida**: Sí  
+**Roles**: `ROLE_ADMIN`  
+
+**Cuerpo de la Solicitud (JSON)**:
+```json
+{
+  "descripcion": "Nuevo Estadio",
+  "nemonico": "NUEVO_ESTADIO",
+  "latitud": -0.22985,
+  "longitud": -78.52495,
+  "estado": true
+}
+```
+
+**Campos del Cuerpo**:
+- `descripcion` (requerido): Descripción de la ubicación
+- `nemonico` (opcional): Código nemotécnico de la ubicación
+- `latitud` (opcional): Latitud geográfica
+- `longitud` (opcional): Longitud geográfica
+- `estado` (opcional, default: true): Estado de la ubicación (activo/inactivo)
+
+**Respuesta Exitosa (201 Created)**
+```json
+{
+  "success": true,
+  "message": "Ubicación creada exitosamente",
+  "data": {
+    "id": 2,
+    "descripcion": "Nuevo Estadio",
+    "nemonico": "NUEVO_ESTADIO",
+    "estado": true,
+    "latitud": -0.22985,
+    "longitud": -78.52495,
+    "createdAt": "2023-01-02T10:00:00Z",
+    "updatedAt": "2023-01-02T10:00:00Z"
+  }
+}
+```
+
+### Crear múltiples ubicaciones (Bulk)
+
+**URL**: `/ubicaciones/bulk`  
+**Método**: `POST`  
+**Descripción**: Crea múltiples ubicaciones en una sola petición  
+**Autenticación Requerida**: Sí  
+**Roles**: `ROLE_ADMIN`  
+
+**Cuerpo de la Solicitud (JSON)**:
+```json
+{
+  "ubicaciones": [
+    {
+      "descripcion": "Estadio 1",
+      "nemonico": "ESTADIO_1",
+      "latitud": -0.22985,
+      "longitud": -78.52495
+    },
+    {
+      "descripcion": "Estadio 2",
+      "nemonico": "ESTADIO_2",
+      "latitud": -0.23000,
+      "longitud": -78.52500,
+      "estado": true
+    }
+  ]
+}
+```
+
+**Campos del Cuerpo**:
+- `ubicaciones` (requerido): Arreglo de objetos de ubicación con los mismos campos que la creación individual
+
+**Respuesta Exitosa (201 Created)**
+```json
+{
+  "success": true,
+  "message": "Ubicaciones creadas exitosamente",
+  "data": [
+    {
+      "id": 3,
+      "descripcion": "Estadio 1",
+      "nemonico": "ESTADIO_1",
+      "estado": true,
+      "latitud": -0.22985,
+      "longitud": -78.52495,
+      "createdAt": "2023-01-03T10:00:00Z",
+      "updatedAt": "2023-01-03T10:00:00Z"
+    },
+    {
+      "id": 4,
+      "descripcion": "Estadio 2",
+      "nemonico": "ESTADIO_2",
+      "estado": true,
+      "latitud": -0.23000,
+      "longitud": -78.52500,
+      "createdAt": "2023-01-03T10:00:00Z",
+      "updatedAt": "2023-01-03T10:00:00Z"
+    }
+  ]
+}
+```
+
+### Códigos de Error Comunes
+
+- **400 Bad Request**:
+  - Datos de entrada inválidos o faltantes
+  - Nemonico duplicado
+  - Formato de coordenadas inválido
+
+- **401 Unauthorized**:
+  - Token no proporcionado o inválido
+
+- **403 Forbidden**:
+  - Usuario no tiene permisos para realizar la acción
+
+- **404 Not Found**:
+  - Ubicación no encontrada
 
 ## Plantillas
 
