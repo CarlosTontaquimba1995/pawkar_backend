@@ -244,3 +244,31 @@ CREATE TABLE public.configuraciones (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
+
+-- 5. Ubicacion
+CREATE TABLE public.ubicacion (
+    id BIGSERIAL PRIMARY KEY,
+    descripcion VARCHAR(100) NOT NULL,
+    nemonico VARCHAR(100),
+    estado BOOLEAN default true,
+    latitud DECIMAL(9,6),
+    longitud DECIMAL(10,6),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+INSERT INTO public.ubicacion (descripcion, nemonico, latitud, longitud
+) VALUES (
+    'Lanera de peguche', 
+    'PEGUCHE', 
+    0.241500, 
+    -78.248600
+);
+
+INSERT INTO public.ubicacion (descripcion, nemonico, latitud, longitud
+) VALUES (
+    'Complejo cultural', 
+    'PEGUCHE', 
+    0.251295, 
+    -78.241748
+);
