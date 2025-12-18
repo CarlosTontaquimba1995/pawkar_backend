@@ -129,6 +129,8 @@ public class SubcategoriaService {
                     subcategoria.setDescripcion(subcategoriaRequest.getDescripcion());
                     subcategoria.setFechaHora(subcategoriaRequest.getFechaHora());
                     subcategoria.setUbicacion(subcategoriaRequest.getUbicacion());
+                                subcategoria.setLatitud(subcategoriaRequest.getLatitud());
+                                subcategoria.setLongitud(subcategoriaRequest.getLongitud());
                                 subcategoria.setNemonico(nemonico);
                     return subcategoria;
                 })
