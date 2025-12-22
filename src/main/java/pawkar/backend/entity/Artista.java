@@ -2,6 +2,7 @@ package pawkar.backend.entity;
 
 import jakarta.persistence.*;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -33,4 +34,20 @@ public class Artista {
     public void setGenero(String genero) { this.genero = genero; }
     public Set<Subcategoria> getSubcategorias() { return subcategorias; }
     public void setSubcategorias(Set<Subcategoria> subcategorias) { this.subcategorias = subcategorias; }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+        Artista artista = (Artista) o;
+        return Objects.equals(artistaId, artista.artistaId) &&
+                Objects.equals(nombre, artista.nombre);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(artistaId, nombre);
+    }
 }

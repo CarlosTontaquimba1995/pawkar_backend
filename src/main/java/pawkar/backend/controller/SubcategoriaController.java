@@ -11,9 +11,11 @@ import pawkar.backend.exception.ResourceNotFoundException;
 import pawkar.backend.request.BulkSubcategoriaRequest;
 import pawkar.backend.request.SubcategoriaRequest;
 import pawkar.backend.response.ApiResponseStandard;
+import pawkar.backend.response.ArtistaResponse;
 import pawkar.backend.response.SubcategoriaResponse;
 import pawkar.backend.service.SubcategoriaService;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -74,15 +76,26 @@ public class SubcategoriaController {
         response.setUbicacion(subcategoria.getUbicacion());
         response.setLatitud(subcategoria.getLatitud());
         response.setLongitud(subcategoria.getLongitud());
-        
+
         if (subcategoria.getCategoria() != null) {
             Categoria categoria = subcategoria.getCategoria();
             response.setCategoriaId(categoria.getCategoriaId());
             response.setCategoriaNombre(categoria.getNombre());
         }
-        
-        return response;
+
+    // Add artistas to the response
+    if (subcategoria.getArtistas() != null && !subcategoria.getArtistas().isEmpty()) {
+        Set<ArtistaResponse> artistasResponse = subcategoria.getArtistas().stream()
+                .map(artista -> new ArtistaResponse(
+                        artista.getArtistaId(),
+                        artista.getNombre(),
+                        artista.getGenero()))
+                .collect(Collectors.toSet());
+        response.setArtistas(artistasResponse);
     }
+
+    return response;
+}
 
     @GetMapping("/categoria/{categoriaId}")
     public ApiResponseStandard<List<SubcategoriaResponse>> listarSubcategoriasPorCategoria(

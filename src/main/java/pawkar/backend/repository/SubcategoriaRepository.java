@@ -18,6 +18,9 @@ public interface SubcategoriaRepository extends JpaRepository<Subcategoria, Inte
 
     boolean existsByCategoriaCategoriaIdAndNombreIgnoreCase(Integer categoriaId, String nombre);
     
+    boolean existsByCategoriaCategoriaIdAndNombreIgnoreCaseAndSubcategoriaIdNot(Integer categoriaId, String nombre,
+            Integer subcategoriaId);
+
     List<Subcategoria> findByProximoTrueAndFechaHoraBefore(LocalDateTime fechaHora);
     
     List<Subcategoria> findByCategoria_CategoriaIdAndProximo(Integer categoriaId, boolean proximo);

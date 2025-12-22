@@ -3,8 +3,8 @@ package pawkar.backend.request;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SubcategoriaRequest {
     @NotNull(message = "El ID de categoría es obligatorio")
@@ -25,7 +25,7 @@ public class SubcategoriaRequest {
 
     private java.math.BigDecimal longitud;
 
-    private Set<Long> artistasIds = new HashSet<>();
+    private List<ArtistaRequest> artistas = new ArrayList<>();
 
     // Getters and Setters
     public Long getCategoriaId() {
@@ -92,11 +92,11 @@ public class SubcategoriaRequest {
         this.longitud = longitud;
     }
 
-    public Set<Long> getArtistasIds() {
-        return artistasIds;
+    public List<ArtistaRequest> getArtistas() {
+        return artistas;
     }
 
-    public void setArtistasIds(Set<Long> artistasIds) {
-        this.artistasIds = artistasIds != null ? artistasIds : new HashSet<>();
+    public void setArtistas(List<ArtistaRequest> artistas) {
+        this.artistas = artistas != null ? artistas : new ArrayList<>();
     }
 }

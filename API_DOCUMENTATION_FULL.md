@@ -1105,7 +1105,7 @@
 
 **URL**: `/subcategorias`  
 **Método**: `GET`  
-**Descripción**: Obtiene una lista de todas las subcategorías disponibles  
+**Descripción**: Obtiene una lista de todas las subcategorías disponibles con sus respectivos artistas y detalles de eventos  
 **Autenticación Requerida**: No
 
 **Respuesta Exitosa (200 OK)**
@@ -1116,27 +1116,28 @@
   "data": [
     {
       "subcategoriaId": 1,
-      "nombre": "Fútbol",
-      "descripcion": "Torneos de fútbol",
       "categoriaId": 1,
-      "categoriaNombre": "Deportes",
-      "fechaHora": ""
-    },
-    {
-      "subcategoriaId": 2,
-      "nombre": "Básquet",
-      "descripcion": "Torneos de básquet",
-      "categoriaId": 1,
-      "categoriaNombre": "Deportes",
-      "fechaHora": ""
-    },
-    {
-      "subcategoriaId": 3,
-      "nombre": "Runakay",
-      "descripcion": "Concierto runakay",
-      "categoriaId": 2,
-      "categoriaNombre": "Eventos",
-      "fechaHora": "2025-12-31T20:00:00"
+      "categoriaNombre": "Música",
+      "nombre": "Concierto de Rock",
+      "descripcion": "Concierto de rock al aire libre",
+      "estado": true,
+      "fechaHora": "2025-12-31T20:00:00",
+      "proximo": true,
+      "ubicacion": "Estadio Nacional",
+      "latitud": -12.0464,
+      "longitud": -77.0428,
+      "artistas": [
+        {
+          "artistaId": 1,
+          "nombre": "Banda de Rock",
+          "genero": "Rock"
+        },
+        {
+          "artistaId": 2,
+          "nombre": "Artista Invitado",
+          "genero": "Pop Rock"
+        }
+      ]
     }
   ],
   "timestamp": "2025-10-21T11:30:00.000+00:00"
@@ -1160,13 +1161,24 @@
   "message": "Subcategoría encontrada exitosamente",
   "data": {
     "subcategoriaId": 1,
-    "nombre": "Fútbol",
-    "descripcion": "Torneos de fútbol",
     "categoriaId": 1,
-    "categoriaNombre": "Deportes",
-    "fechaHora": "2025-12-31T20:00:00"
-  },
-  "timestamp": "2025-10-21T11:30:00.000+00:00"
+    "categoriaNombre": "Música",
+    "nombre": "Concierto de Rock",
+    "descripcion": "Concierto de rock al aire libre",
+    "estado": true,
+    "fechaHora": "2025-12-31T20:00:00",
+    "proximo": true,
+    "ubicacion": "Estadio Nacional",
+    "latitud": -12.0464,
+    "longitud": -77.0428,
+    "artistas": [
+      {
+        "artistaId": 1,
+        "nombre": "Banda de Rock",
+        "genero": "Rock"
+      }
+    ]
+  }
 }
 ```
 
@@ -1209,20 +1221,47 @@
 
 **URL**: `/subcategorias`  
 **Método**: `POST`  
-**Descripción**: Crea una nueva subcategoría  
+**Descripción**: Crea una nueva subcategoría con artistas y detalles de evento  
 **Autenticación Requerida**: Sí  
 **Roles**: `ROLE_ADMIN`
 
 **Cuerpo de la Solicitud**:
 ```json
 {
-  "nombre": "Nueva Subcategoría",
-  "descripcion": "Descripción de la subcategoría",
-  "categoriaId": 1
+  "categoriaId": 1,
+  "nombre": "Concierto de Rock",
+  "descripcion": "Concierto de rock al aire libre",
+  "fechaHora": "2025-12-31T20:00:00",
+  "proximo": true,
+  "ubicacion": "Estadio Nacional",
+  "latitud": -12.0464,
+  "longitud": -77.0428,
+  "artistas": [
+    {
+      "nombre": "Banda de Rock",
+      "genero": "Rock"
+    }
+  ]
 }
 ```
 
-**Respuesta Exitosa (200 OK)**
+**Cuerpo de la Solicitud**:
+```json
+{
+  "nombre": "Nueva Subcategoría",
+  "descripcion": "Descripción de la subcategoría",
+  "categoriaId": 1,
+  "artistasIds": [1, 2, 3]
+}
+```
+
+**Campos del Cuerpo**:
+- `categoriaId` (requerido): ID de la categoría a la que pertenece la subcategoría
+- `nombre` (requerido): Nombre de la subcategoría
+- `descripcion` (opcional): Descripción detallada
+- `artistasIds` (opcional): Array de IDs de artistas asociados al evento
+
+**Respuesta Exitosa (201 Created)**
 ```json
 {
   "success": true,
@@ -1232,9 +1271,25 @@
     "nombre": "Nueva Subcategoría",
     "descripcion": "Descripción de la subcategoría",
     "categoriaId": 1,
-    "categoriaNombre": "Deportes"
-  },
-  "timestamp": "2025-10-21T11:30:00.000+00:00"
+    "categoriaNombre": "Deportes",
+    "artistas": [
+      {
+        "artistaId": 1,
+        "nombre": "Banda de Rock",
+        "genero": "Rock"
+      },
+      {
+        "artistaId": 2,
+        "nombre": "Artista Invitado",
+        "genero": "Pop Rock"
+      },
+      {
+        "artistaId": 3,
+        "nombre": "Apertura Especial",
+        "genero": "Rock Alternativo"
+      }
+    ]
+  }
 }
 ```
 
@@ -1242,7 +1297,7 @@
 
 **URL**: `/subcategorias/bulk`  
 **Método**: `POST`  
-**Descripción**: Crea varias subcategorías en una sola petición  
+**Descripción**: Crea múltiples subcategorías con sus respectivos artistas en una sola operación  
 **Autenticación Requerida**: Sí  
 **Roles**: `ROLE_ADMIN`
 
@@ -1251,14 +1306,44 @@
 {
   "subcategorias": [
     {
-      "nombre": "Fútbol",
-      "descripcion": "Torneos de fútbol",
-      "categoriaId": 1
+      "categoriaId": 1,
+      "nombre": "Concierto de Rock",
+      "descripcion": "Concierto de rock al aire libre",
+      "fechaHora": "2025-12-31T20:00:00",
+      "proximo": true,
+      "ubicacion": "Estadio Nacional",
+      "latitud": -12.0464,
+      "longitud": -77.0428,
+      "artistas": [
+        {
+          "nombre": "Banda de Rock",
+          "genero": "Rock"
+        },
+        {
+          "nombre": "Artista Invitado",
+          "genero": "Pop Rock"
+        }
+      ]
     },
     {
-      "nombre": "Básquet",
-      "descripcion": "Torneos de básquet",
-      "categoriaId": 1
+      "categoriaId": 2,
+      "nombre": "Festival de Jazz",
+      "descripcion": "Festival de jazz internacional",
+      "fechaHora": "2025-11-15T19:30:00",
+      "proximo": true,
+      "ubicacion": "Parque de la Exposición",
+      "latitud": -12.0564,
+      "longitud": -77.0375,
+      "artistas": [
+        {
+          "nombre": "Trío de Jazz",
+          "genero": "Jazz"
+        },
+        {
+          "nombre": "Cuarteto de Jazz",
+          "genero": "Jazz Contemporáneo"
+        }
+      ]
     }
   ]
 }
@@ -1275,17 +1360,45 @@
       "nombre": "Fútbol",
       "descripcion": "Torneos de fútbol",
       "categoriaId": 1,
-      "categoriaNombre": "Deportes"
+      "categoriaNombre": "Deportes",
+      "artistas": [
+        {
+          "artistaId": 1,
+          "nombre": "Banda de Rock",
+          "genero": "Rock"
+        },
+        {
+          "artistaId": 2,
+          "nombre": "Artista Invitado",
+          "genero": "Pop Rock"
+        },
+        {
+          "artistaId": 3,
+          "nombre": "Apertura Especial",
+          "genero": "Rock Alternativo"
+        }
+      ]
     },
     {
       "subcategoriaId": 2,
       "nombre": "Básquet",
       "descripcion": "Torneos de básquet",
       "categoriaId": 1,
-      "categoriaNombre": "Deportes"
+      "categoriaNombre": "Deportes",
+      "artistas": [
+        {
+          "artistaId": 4,
+          "nombre": "Artista de Jazz",
+          "genero": "Jazz"
+        },
+        {
+          "artistaId": 5,
+          "nombre": "Cuarteto de Jazz",
+          "genero": "Jazz Contemporáneo"
+        }
+      ]
     }
-  ],
-  "timestamp": "2025-10-21T11:30:00.000+00:00"
+  ]
 }
 ```
 
