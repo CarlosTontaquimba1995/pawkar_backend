@@ -1,6 +1,8 @@
 package pawkar.backend.response;
 
 import java.time.LocalDateTime;
+import java.util.Set;
+import java.util.HashSet;
 
 public class SubcategoriaResponse {
     private Integer subcategoriaId;
@@ -14,6 +16,7 @@ public class SubcategoriaResponse {
     private String ubicacion;
     private java.math.BigDecimal latitud;
     private java.math.BigDecimal longitud;
+    private Set<ArtistaResponse> artistas = new HashSet<>();
 
     public SubcategoriaResponse() {
     }
@@ -119,5 +122,13 @@ public class SubcategoriaResponse {
 
     public void setLongitud(java.math.BigDecimal longitud) {
         this.longitud = longitud;
+    }
+
+    public Set<ArtistaResponse> getArtistas() {
+        return artistas;
+    }
+
+    public void setArtistas(Set<ArtistaResponse> artistas) {
+        this.artistas = artistas != null ? artistas : new HashSet<>();
     }
 }

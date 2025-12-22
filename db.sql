@@ -70,6 +70,26 @@ CREATE TABLE public.subcategorias (
     FOREIGN KEY (categoria_id) REFERENCES categorias (categoria_id) ON DELETE CASCADE
 );
 
+-- 6. Registro de artistas para un evento
+CREATE TABLE public.artistas (
+    artista_id BIGSERIAL PRIMARY KEY,
+    nombre VARCHAR(150) NOT NULL,
+    genero VARCHAR(100),
+    estado BOOLEAN DEFAULT true,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 7. Relación entre los artistas y el evento
+CREATE TABLE public.subcategoria_artistas (
+    subcategoria_id INT NOT NULL,
+    artista_id BIGINT NOT NULL,
+    PRIMARY KEY (subcategoria_id, artista_id),
+    CONSTRAINT fk_subcategoria FOREIGN KEY (subcategoria_id) 
+        REFERENCES public.subcategorias (subcategoria_id) ON DELETE CASCADE,
+    CONSTRAINT fk_artista FOREIGN KEY (artista_id) 
+        REFERENCES public.artistas (artista_id) ON DELETE CASCADE
+);
+
 -- 6. Tabla de Unión Subcategoría-Roles (Define qué roles de jugador aplican a cada subcategoría)
 CREATE TABLE public.subcategoria_roles (
     subcategoria_id INT NOT NULL,

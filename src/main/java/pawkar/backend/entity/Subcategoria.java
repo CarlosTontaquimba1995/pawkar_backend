@@ -53,6 +53,10 @@ public class Subcategoria {
     @JoinTable(name = "subcategoria_roles", joinColumns = @JoinColumn(name = "subcategoria_id"), inverseJoinColumns = @JoinColumn(name = "rol_id"))
     private Set<Role> roles = new HashSet<>();
 
+    @ManyToMany
+    @JoinTable(name = "subcategoria_artistas", joinColumns = @JoinColumn(name = "subcategoria_id"), inverseJoinColumns = @JoinColumn(name = "artista_id"))
+    private Set<Artista> artistas = new HashSet<>();
+
     public Subcategoria() {
     }
 
@@ -177,11 +181,30 @@ public class Subcategoria {
         role.getSubcategorias().remove(this);
     }
 
+    // 3. Métodos helper para gestionar la relación cómodamente
+    public void addArtista(Artista artista) {
+        this.artistas.add(artista);
+        artista.getSubcategorias().add(this);
+    }
+
+    public void removeArtista(Artista artista) {
+        this.artistas.remove(artista);
+        artista.getSubcategorias().remove(this);
+    }
+
     public List<Encuentro> getEncuentros() {
         return encuentros;
     }
     
     public void setEncuentros(List<Encuentro> encuentros) {
         this.encuentros = encuentros;
+    }
+
+    public Set<Artista> getArtistas() {
+        return artistas;
+    }
+
+    public void setArtistas(Set<Artista> artistas) {
+        this.artistas = artistas;
     }
 }
