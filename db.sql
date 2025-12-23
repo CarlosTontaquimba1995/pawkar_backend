@@ -79,7 +79,18 @@ CREATE TABLE public.artistas (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- 7. Tabla de Unión Subcategoría-Roles (Define qué roles de jugador aplican a cada subcategoría)
+-- 7. Relación entre los artistas y el evento
+CREATE TABLE public.subcategoria_artistas (
+    subcategoria_id INT NOT NULL,
+    artista_id BIGINT NOT NULL,
+    PRIMARY KEY (subcategoria_id, artista_id),
+    CONSTRAINT fk_subcategoria FOREIGN KEY (subcategoria_id) 
+        REFERENCES public.subcategorias (subcategoria_id) ON DELETE CASCADE,
+    CONSTRAINT fk_artista FOREIGN KEY (artista_id) 
+        REFERENCES public.artistas (artista_id) ON DELETE CASCADE
+);
+
+-- 8. Tabla de Unión Subcategoría-Roles (Define qué roles de jugador aplican a cada subcategoría)
 CREATE TABLE public.subcategoria_roles (
     subcategoria_id INT NOT NULL,
     rol_id BIGINT NOT NULL,
@@ -90,7 +101,7 @@ CREATE TABLE public.subcategoria_roles (
     FOREIGN KEY (rol_id) REFERENCES roles (id) ON DELETE RESTRICT
 );
 
--- 8. Tabla de Series (Grupos dentro de una subcategoría, ej: Serie A, Serie B de Fútbol)
+-- 9. Tabla de Series (Grupos dentro de una subcategoría, ej: Serie A, Serie B de Fútbol)
 CREATE TABLE public.series (
     serie_id BIGSERIAL PRIMARY KEY,
     subcategoria_id INT NOT NULL,
@@ -103,7 +114,7 @@ CREATE TABLE public.series (
 );
 
 
--- 9. Creación de la nueva tabla de estadios
+-- 10. Creación de la nueva tabla de estadios
 CREATE TABLE public.estadios (
     estadio_id BIGSERIAL PRIMARY KEY, -- Clave primaria para identificar el estadio
     nombre VARCHAR(150) NOT NULL UNIQUE, -- Nombre del estadio
@@ -113,7 +124,7 @@ CREATE TABLE public.estadios (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- 10. Equipos (Asociados a un deporte/subcategoría)
+-- 11. Equipos (Asociados a un deporte/subcategoría)
 CREATE TABLE public.equipos (
     equipo_id BIGSERIAL PRIMARY KEY,
     subcategoria_id INT NOT NULL,
@@ -131,7 +142,7 @@ CREATE TABLE public.equipos (
 -- TABLAS DE PERSONAS, ROLES Y PLANTILLA
 ----------------------------------------------------------------------------------------------------
 
--- 11. Jugadores (Registro maestro de personas)
+-- 12. Jugadores (Registro maestro de personas)
 CREATE TABLE public.jugadores (
     jugador_id BIGSERIAL PRIMARY KEY,
     nombre VARCHAR(50) NOT NULL,
@@ -143,7 +154,7 @@ CREATE TABLE public.jugadores (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- 12. Plantilla (Jugadores por equipo)
+-- 13. Plantilla (Jugadores por equipo)
 CREATE TABLE public.plantilla (
     equipo_id INT NOT NULL,
     jugador_id INT NOT NULL,
@@ -161,7 +172,7 @@ CREATE TABLE public.plantilla (
 -- TABLAS DE ENCUENTROS Y RESULTADOS
 ----------------------------------------------------------------------------------------------------
 
--- 13. Encuentros (Partidos, Horarios, Degustaciones, Presentaciones)
+-- 14. Encuentros (Partidos, Horarios, Degustaciones, Presentaciones)
 
 CREATE TABLE public.encuentros (
     encuentro_id BIGSERIAL PRIMARY KEY,
@@ -196,7 +207,7 @@ CREATE TABLE public.encuentros (
         REFERENCES public.equipos (equipo_id) ON DELETE RESTRICT
 );
 
--- 14. Participacion_Encuentro (Quién juega contra quién, resultados del partido)
+-- 15. Participacion_Encuentro (Quién juega contra quién, resultados del partido)
 CREATE TABLE public.participacion_encuentro (
     encuentro_id INT NOT NULL,
     equipo_id INT NOT NULL,
@@ -209,7 +220,7 @@ CREATE TABLE public.participacion_encuentro (
     FOREIGN KEY (equipo_id) REFERENCES equipos (equipo_id) ON DELETE RESTRICT
 );
 
--- 15. Tabla_Posiciones (Resultados acumulados por subcategoría/deporte)
+-- 16. Tabla_Posiciones (Resultados acumulados por subcategoría/deporte)
 CREATE TABLE public.tabla_posiciones (
     subcategoria_id INT NOT NULL,
     equipo_id INT NOT NULL,
@@ -228,7 +239,7 @@ CREATE TABLE public.tabla_posiciones (
     FOREIGN KEY (equipo_id) REFERENCES equipos (equipo_id) ON DELETE CASCADE
 );
 
--- 16. Sanciones (Tarjetas, penalizaciones)
+-- 17. Sanciones (Tarjetas, penalizaciones)
 CREATE TABLE public.sanciones (
     sancion_id BIGSERIAL PRIMARY KEY,
     jugador_id INT NOT NULL,
@@ -243,7 +254,7 @@ CREATE TABLE public.sanciones (
     FOREIGN KEY (encuentro_id) REFERENCES encuentros (encuentro_id) ON DELETE SET NULL
 );
 
--- 17. Configuraciones
+-- 18. Configuraciones
 CREATE TABLE public.configuraciones (
     configuracion_id BIGSERIAL PRIMARY KEY,
     primario VARCHAR(20) NOT NULL,
@@ -254,7 +265,7 @@ CREATE TABLE public.configuraciones (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
---18. Ubicacion
+--19. Ubicacion
 CREATE TABLE public.ubicacion (
     id BIGSERIAL PRIMARY KEY,
     descripcion VARCHAR(100) NOT NULL,
