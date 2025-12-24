@@ -66,11 +66,10 @@ public class WebSecurityConfig {
                 "http://localhost:3000",
                 "https://694c1443440e5c00080e9fb4--rococo-pie-a53d5a.netlify.app"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(Arrays.asList("*"));
+        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "x-auth-token"));
         configuration.setExposedHeaders(Arrays.asList("x-auth-token"));
-        configuration.setAllowCredentials(true); // Allow credentials
+        configuration.setAllowCredentials(true);
         configuration.setMaxAge(3600L);
-        
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
