@@ -1,5 +1,5 @@
 # Build stage
-FROM maven:3.8.6-openjdk-17-slim AS build
+FROM maven:3.9.6-eclipse-temurin-21-alpine AS build
 WORKDIR /app
 
 # Copy pom.xml and download dependencies
@@ -10,10 +10,10 @@ RUN mvn dependency:go-offline -B
 COPY src ./src
 
 # Build the application
-RUN mvn package -DskipTests
+RUN mvn clean package -DskipTests
 
 # Runtime stage
-FROM openjdk:17-jdk-slim
+FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
 
 # Copy the JAR file from the build stage
