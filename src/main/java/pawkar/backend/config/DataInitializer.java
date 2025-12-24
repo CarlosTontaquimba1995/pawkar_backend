@@ -1,5 +1,10 @@
 package pawkar.backend.config;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,14 +18,30 @@ public class DataInitializer {
     @Bean
     public CommandLineRunner loadData(RoleRepository roleRepository) {
         return args -> {
-            // Create roles if they don't exist
+            // First, get all existing roles from the database
+            List<Role> existingRoles = roleRepository.findAll();
+
+            // Create a set of existing role names for quick lookup
+            Set<String> existingRoleNames = existingRoles.stream()
+                    .map(Role::getName)
+                    .collect(Collectors.toSet());
+
+            // Only create roles that are defined in the ERole enum and don't exist in the
+            // database
             for (ERole role : ERole.values()) {
-                if (!roleRepository.existsByName(role.name())) {
+                if (!existingRoleNames.contains(role.name())) {
                     String detail = getRoleDetail(role);
                     Role newRole = new Role(role.name(), detail);
                     roleRepository.save(newRole);
                 }
             }
+
+            // Log any roles in the database that aren't in the ERole enum
+            existingRoles.stream()
+                    .filter(role -> !Arrays.asList(ERole.values()).stream()
+                            .anyMatch(e -> e.name().equals(role.getName())))
+                    .forEach(role -> System.out
+                            .println("Warning: Role in database not found in ERole enum: " + role.getName()));
         };
     }
 
@@ -43,7 +64,7 @@ public class DataInitializer {
             case EXTREMO_DERECHO -> "Extremo derecho";
             case EXTREMO_IZQUIERDO -> "Extremo izquierdo";
             case SEGUNDO_DELANTERO -> "Segundo delantero";
-            default -> "Rol: " + role.name();
+            default -> "Rol sin descripción específica: " + role;
         };
     }
 }

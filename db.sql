@@ -124,6 +124,11 @@ CREATE TABLE public.estadios (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
+INSERT INTO estadios (nombre, detalle, estado, created_at, updated_at)
+VALUES 
+('Estadio de Peguche', 'Ubicado en l comunidad de Peguche', true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('Estadio de Agato', 'Ubicado en l comunidad de Agato', true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
 -- 11. Equipos (Asociados a un deporte/subcategoría)
 CREATE TABLE public.equipos (
     equipo_id BIGSERIAL PRIMARY KEY,
