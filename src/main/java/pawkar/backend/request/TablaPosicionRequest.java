@@ -8,6 +8,8 @@ public class TablaPosicionRequest {
     private Integer derrotas = 0;
     private Integer empates = 0;
     private Integer puntos = 0;
+    private Integer golesAFavor = 0;
+    private Integer golesEnContra = 0;
 
     // Getters and Setters
     public Integer getSubcategoriaId() {
@@ -64,5 +66,21 @@ public class TablaPosicionRequest {
 
     public void setPuntos(Integer puntos) {
         this.puntos = puntos;
+    }
+
+    public Integer getGolesAFavor() {
+        return golesAFavor;
+    }
+
+    public void setGolesAFavor(Integer golesAFavor) {
+        this.golesAFavor = golesAFavor;
+    }
+
+    public Integer getGolesEnContra() {
+        return golesEnContra;
+    }
+
+    public void setGolesEnContra(Integer golesEnContra) {
+        this.golesEnContra = golesEnContra;
     }
 }

@@ -140,6 +140,9 @@ public class TablaPosicionService {
         posicion.setDerrotas(request.getDerrotas());
         posicion.setEmpates(request.getEmpates());
         posicion.setPuntos(request.getPuntos());
+        posicion.setGolesAFavor(request.getGolesAFavor());
+        posicion.setGolesEnContra(request.getGolesEnContra());
+        posicion.setDiferenciaGoles(request.getGolesAFavor() - request.getGolesEnContra());
         
         return tablaPosicionRepository.save(posicion);
     }
