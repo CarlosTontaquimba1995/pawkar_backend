@@ -9,14 +9,16 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import pawkar.backend.entity.Role;
+import pawkar.backend.entity.Configuracion;
 import pawkar.backend.enums.ERole;
 import pawkar.backend.repository.RoleRepository;
+import pawkar.backend.repository.ConfiguracionRepository;
 
 @Configuration
 public class DataInitializer {
     
     @Bean
-    public CommandLineRunner loadData(RoleRepository roleRepository) {
+    public CommandLineRunner loadData(RoleRepository roleRepository, ConfiguracionRepository configuracionRepository) {
         return args -> {
             // First, get all existing roles from the database
             List<Role> existingRoles = roleRepository.findAll();
@@ -42,6 +44,18 @@ public class DataInitializer {
                             .anyMatch(e -> e.name().equals(role.getName())))
                     .forEach(role -> System.out
                             .println("Warning: Role in database not found in ERole enum: " + role.getName()));
+
+            // Initialize default configuration if none exists
+            List<Configuracion> existingConfigs = configuracionRepository.findAll();
+            if (existingConfigs.isEmpty()) {
+                Configuracion defaultConfig = new Configuracion();
+                defaultConfig.setPrimario("#1f0d4a");
+                defaultConfig.setSecundario("#482e76");
+                defaultConfig.setAcento1("#e00099");
+                defaultConfig.setAcento2("#f5c000");
+                configuracionRepository.save(defaultConfig);
+                System.out.println("Default configuration created successfully");
+            }
         };
     }
 

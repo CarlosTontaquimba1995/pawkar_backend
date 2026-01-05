@@ -3,7 +3,6 @@ package pawkar.backend.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pawkar.backend.dto.ConfiguracionDTO;
@@ -20,7 +19,6 @@ public class ConfiguracionService {
 
     private final ConfiguracionRepository configuracionRepository;
 
-    @Cacheable(value = CACHE_NAME, key = CACHE_KEY, unless = "#result == null")
     public ConfiguracionDTO obtenerConfiguracion() {
         Configuracion configuracion = configuracionRepository.findFirst();
         if (configuracion == null) {
@@ -31,6 +29,7 @@ public class ConfiguracionService {
 
     @Transactional
     @CachePut(value = CACHE_NAME, key = CACHE_KEY)
+    @CacheEvict(value = CACHE_NAME, allEntries = true)
     public ConfiguracionDTO actualizarConfiguracion(ConfiguracionDTO configuracionDTO) {
         Configuracion configuracion = configuracionRepository.findFirst();
 
