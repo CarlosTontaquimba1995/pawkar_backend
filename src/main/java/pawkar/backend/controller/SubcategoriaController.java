@@ -56,15 +56,15 @@ public class SubcategoriaController {
         try {
             List<Subcategoria> subcategorias = subcategoriaService.listarSubcategorias();
             List<SubcategoriaResponse> response = subcategorias.stream()
-                .map(this::toSubcategoriaResponse)
-                .collect(Collectors.toList());
+                    .map(this::toSubcategoriaResponse)
+                    .collect(Collectors.toList());
             return ApiResponseStandard.success(response, "Lista de subcategorías obtenida exitosamente");
         } catch (Exception e) {
-            return ApiResponseStandard.error("Error al listar subcategorías: " + e.getMessage(), 
-                "/api/subcategorias", "Internal Server Error", 500);
+            return ApiResponseStandard.error("Error al listar subcategorías: " + e.getMessage(),
+                    "/api/subcategorias", "Internal Server Error", 500);
         }
     }
-    
+
     private SubcategoriaResponse toSubcategoriaResponse(Subcategoria subcategoria) {
         SubcategoriaResponse response = new SubcategoriaResponse();
         response.setSubcategoriaId(subcategoria.getSubcategoriaId());
@@ -76,6 +76,7 @@ public class SubcategoriaController {
         response.setUbicacion(subcategoria.getUbicacion());
         response.setLatitud(subcategoria.getLatitud());
         response.setLongitud(subcategoria.getLongitud());
+        response.setPrecio(subcategoria.getPrecio());
 
         if (subcategoria.getCategoria() != null) {
             Categoria categoria = subcategoria.getCategoria();
@@ -83,19 +84,19 @@ public class SubcategoriaController {
             response.setCategoriaNombre(categoria.getNombre());
         }
 
-    // Add artistas to the response
-    if (subcategoria.getArtistas() != null && !subcategoria.getArtistas().isEmpty()) {
-        Set<ArtistaResponse> artistasResponse = subcategoria.getArtistas().stream()
-                .map(artista -> new ArtistaResponse(
-                        artista.getArtistaId(),
-                        artista.getNombre(),
-                        artista.getGenero()))
-                .collect(Collectors.toSet());
-        response.setArtistas(artistasResponse);
-    }
+        // Add artistas to the response
+        if (subcategoria.getArtistas() != null && !subcategoria.getArtistas().isEmpty()) {
+            Set<ArtistaResponse> artistasResponse = subcategoria.getArtistas().stream()
+                    .map(artista -> new ArtistaResponse(
+                            artista.getArtistaId(),
+                            artista.getNombre(),
+                            artista.getGenero()))
+                    .collect(Collectors.toSet());
+            response.setArtistas(artistasResponse);
+        }
 
-    return response;
-}
+        return response;
+    }
 
     @GetMapping("/categoria/{categoriaId}")
     public ApiResponseStandard<List<SubcategoriaResponse>> listarSubcategoriasPorCategoria(
@@ -122,8 +123,8 @@ public class SubcategoriaController {
             SubcategoriaResponse response = toSubcategoriaResponse(subcategoria);
             return ApiResponseStandard.success(response, "Subcategoría encontrada exitosamente");
         } catch (Exception e) {
-            return ApiResponseStandard.error(e.getMessage(), 
-                "/api/subcategorias/" + id, "Not Found", 404);
+            return ApiResponseStandard.error(e.getMessage(),
+                    "/api/subcategorias/" + id, "Not Found", 404);
         }
     }
 
@@ -137,8 +138,8 @@ public class SubcategoriaController {
             SubcategoriaResponse response = toSubcategoriaResponse(subcategoria);
             return ApiResponseStandard.success(response, "Subcategoría actualizada exitosamente");
         } catch (Exception e) {
-            return ApiResponseStandard.error(e.getMessage(), 
-                "/api/subcategorias/" + id, "Bad Request", 400);
+            return ApiResponseStandard.error(e.getMessage(),
+                    "/api/subcategorias/" + id, "Bad Request", 400);
         }
     }
 
@@ -197,8 +198,8 @@ public class SubcategoriaController {
             subcategoriaService.eliminarSubcategoria(id);
             return ApiResponseStandard.success("Subcategoría eliminada exitosamente");
         } catch (Exception e) {
-            return ApiResponseStandard.error(e.getMessage(), 
-                "/api/subcategorias/" + id, "Bad Request", 400);
+            return ApiResponseStandard.error(e.getMessage(),
+                    "/api/subcategorias/" + id, "Bad Request", 400);
         }
     }
 

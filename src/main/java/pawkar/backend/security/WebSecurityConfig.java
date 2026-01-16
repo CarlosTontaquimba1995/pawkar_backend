@@ -64,7 +64,7 @@ public class WebSecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Arrays.asList(
-                "http://localhost:3000",
+                "http://localhost:4000",
                 "https://rococo-pie-a53d5a.netlify.app",
             "https://pawkar-administracion.onrender.com"));      
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));

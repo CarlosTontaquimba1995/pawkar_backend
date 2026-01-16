@@ -65,6 +65,7 @@ CREATE TABLE public.subcategorias (
     estado BOOLEAN default true, -- CAMPO AÑADIDO: Para indicar si el equipo está activo
     latitud DECIMAL(9,6),
     longitud DECIMAL(10,6),
+    precio DECIMAL(19,4),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (categoria_id) REFERENCES categorias (categoria_id) ON DELETE CASCADE

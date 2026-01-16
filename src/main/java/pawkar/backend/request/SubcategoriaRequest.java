@@ -2,6 +2,8 @@ package pawkar.backend.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,9 +23,11 @@ public class SubcategoriaRequest {
 
     private String ubicacion;
 
-    private java.math.BigDecimal latitud;
+    private BigDecimal latitud;
 
-    private java.math.BigDecimal longitud;
+    private BigDecimal longitud;
+
+    private BigDecimal precio;
 
     private List<ArtistaRequest> artistas = new ArrayList<>();
 
@@ -76,20 +80,28 @@ public class SubcategoriaRequest {
         this.ubicacion = ubicacion;
     }
 
-    public java.math.BigDecimal getLatitud() {
+    public BigDecimal getLatitud() {
         return latitud;
     }
 
-    public void setLatitud(java.math.BigDecimal latitud) {
+    public void setLatitud(BigDecimal latitud) {
         this.latitud = latitud;
     }
 
-    public java.math.BigDecimal getLongitud() {
+    public BigDecimal getLongitud() {
         return longitud;
     }
 
-    public void setLongitud(java.math.BigDecimal longitud) {
+    public void setLongitud(BigDecimal longitud) {
         this.longitud = longitud;
+    }
+
+    public void setPrecio(BigDecimal precio) {
+        this.precio = precio;
+    }
+
+    public BigDecimal getPrecio() {
+        return precio;
     }
 
     public List<ArtistaRequest> getArtistas() {

@@ -43,6 +43,9 @@ public class Subcategoria {
     @Column(precision = 10, scale = 6)
     private BigDecimal longitud;
 
+    @Column(precision = 19, scale = 4)
+    private BigDecimal precio;
+
     @Column(nullable = false, length = 100, unique = true)
     private String nemonico;
 
@@ -61,7 +64,7 @@ public class Subcategoria {
     }
 
     public Subcategoria(String nombre, String descripcion, LocalDateTime fechaHora, Boolean estado, Boolean proximo,
-            String ubicacion, String nemonico, BigDecimal latitud, BigDecimal longitud) {
+            String ubicacion, String nemonico, BigDecimal latitud, BigDecimal longitud, BigDecimal precio) {
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.fechaHora = fechaHora;
@@ -71,6 +74,7 @@ public class Subcategoria {
         this.nemonico = nemonico;
         this.latitud = latitud;
         this.longitud = longitud;
+        this.precio = precio;
     }
 
     // Getters and Setters
@@ -168,6 +172,14 @@ public class Subcategoria {
 
     public void setLongitud(BigDecimal longitud) {
         this.longitud = longitud;
+    }
+
+    public void setPrecio(BigDecimal precio) {
+        this.precio = precio;
+    }
+
+    public BigDecimal getPrecio() {
+        return precio;
     }
 
     // Helper methods for managing the relationship

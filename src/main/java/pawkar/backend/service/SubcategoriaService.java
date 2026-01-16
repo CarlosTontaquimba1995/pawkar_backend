@@ -119,95 +119,103 @@ public class SubcategoriaService {
                                 .map(SubcategoriaRequest::getCategoriaId)
                                 .collect(Collectors.toSet());
 
-    Map<Long, Categoria> categorias = categoriaRepository.findAllById(categoriaIds).stream()
-                    .collect(Collectors.toMap(
-                                    c -> Long.valueOf(c.getCategoriaId()),
-                                    c -> c,
-                                    (a, b) -> a));
+                Map<Long, Categoria> categorias = categoriaRepository.findAllById(categoriaIds).stream()
+                                .collect(Collectors.toMap(
+                                                c -> Long.valueOf(c.getCategoriaId()),
+                                                c -> c,
+                                                (a, b) -> a));
 
-    // Verificar que todas las categorías existen
-    Set<Long> missingCategorias = categoriaIds.stream()
-                    .filter(id -> !categorias.containsKey(id))
-                    .collect(Collectors.toSet());
+                // Verificar que todas las categorías existen
+                Set<Long> missingCategorias = categoriaIds.stream()
+                                .filter(id -> !categorias.containsKey(id))
+                                .collect(Collectors.toSet());
 
-    if (!missingCategorias.isEmpty()) {
-            throw new ResourceNotFoundException("No se encontraron las siguientes categorías: " + missingCategorias);
-    }
-
-    // Crear las subcategorías
-    for (SubcategoriaRequest subcategoriaRequest : request.getSubcategorias()) {
-            // Verificar si ya existe una subcategoría con el mismo nombre en la misma
-            // categoría
-            if (subcategoriaRepository.existsByCategoriaCategoriaIdAndNombreIgnoreCase(
-                            subcategoriaRequest.getCategoriaId().intValue(),
-                            subcategoriaRequest.getNombre())) {
-            throw new BadRequestException(
-                            "Ya existe una subcategoría con el nombre '" + subcategoriaRequest.getNombre()
-                                            + "' en la categoría con ID " + subcategoriaRequest.getCategoriaId());
-        }
-
-        Subcategoria subcategoria = new Subcategoria();
-        Categoria categoria = categorias.get(subcategoriaRequest.getCategoriaId());
-        subcategoria.setCategoria(categoria);
-        subcategoria.setNombre(subcategoriaRequest.getNombre());
-        subcategoria.setDescripcion(subcategoriaRequest.getDescripcion());
-        subcategoria.setFechaHora(subcategoriaRequest.getFechaHora());
-        subcategoria.setProximo(subcategoriaRequest.getProximo() != null ? subcategoriaRequest.getProximo() : true);
-        subcategoria.setUbicacion(subcategoriaRequest.getUbicacion());
-        subcategoria.setLatitud(subcategoriaRequest.getLatitud());
-        subcategoria.setLongitud(subcategoriaRequest.getLongitud());
-
-        // Generar y establecer el nemonico
-        String nemonico = generateNemonico(subcategoriaRequest.getNombre());
-        subcategoria.setNemonico(nemonico);
-
-        // Manejar artistas
-        if (subcategoriaRequest.getArtistas() != null && !subcategoriaRequest.getArtistas().isEmpty()) {
-                Set<Artista> artistas = new HashSet<>();
-                for (ArtistaRequest artistaRequest : subcategoriaRequest.getArtistas()) {
-                        // Find the existing artist or create a new one and save it
-                        Artista artista = artistaRepository.findByNombreIgnoreCase(artistaRequest.getNombre())
-                                        .orElseGet(() -> {
-                                                Artista newArtista = new Artista();
-                                                newArtista.setNombre(artistaRequest.getNombre());
-                                                newArtista.setGenero(artistaRequest.getGenero());
-                                                return artistaRepository.save(newArtista); // Save the new artist
-                                                                                           // immediately
-                                        });
-                        artistas.add(artista);
+                if (!missingCategorias.isEmpty()) {
+                        throw new ResourceNotFoundException(
+                                        "No se encontraron las siguientes categorías: " + missingCategorias);
                 }
-                subcategoria.setArtistas(artistas);
+
+                // Crear las subcategorías
+                for (SubcategoriaRequest subcategoriaRequest : request.getSubcategorias()) {
+                        // Verificar si ya existe una subcategoría con el mismo nombre en la misma
+                        // categoría
+                        if (subcategoriaRepository.existsByCategoriaCategoriaIdAndNombreIgnoreCase(
+                                        subcategoriaRequest.getCategoriaId().intValue(),
+                                        subcategoriaRequest.getNombre())) {
+                                throw new BadRequestException(
+                                                "Ya existe una subcategoría con el nombre '"
+                                                                + subcategoriaRequest.getNombre()
+                                                                + "' en la categoría con ID "
+                                                                + subcategoriaRequest.getCategoriaId());
+                        }
+
+                        Subcategoria subcategoria = new Subcategoria();
+                        Categoria categoria = categorias.get(subcategoriaRequest.getCategoriaId());
+                        subcategoria.setCategoria(categoria);
+                        subcategoria.setNombre(subcategoriaRequest.getNombre());
+                        subcategoria.setDescripcion(subcategoriaRequest.getDescripcion());
+                        subcategoria.setFechaHora(subcategoriaRequest.getFechaHora());
+                        subcategoria.setProximo(
+                                        subcategoriaRequest.getProximo() != null ? subcategoriaRequest.getProximo()
+                                                        : true);
+                        subcategoria.setUbicacion(subcategoriaRequest.getUbicacion());
+                        subcategoria.setLatitud(subcategoriaRequest.getLatitud());
+                        subcategoria.setLongitud(subcategoriaRequest.getLongitud());
+                        subcategoria.setPrecio(subcategoriaRequest.getPrecio());
+
+                        // Generar y establecer el nemonico
+                        String nemonico = generateNemonico(subcategoriaRequest.getNombre());
+                        subcategoria.setNemonico(nemonico);
+
+                        // Manejar artistas
+                        if (subcategoriaRequest.getArtistas() != null && !subcategoriaRequest.getArtistas().isEmpty()) {
+                                Set<Artista> artistas = new HashSet<>();
+                                for (ArtistaRequest artistaRequest : subcategoriaRequest.getArtistas()) {
+                                        // Find the existing artist or create a new one and save it
+                                        Artista artista = artistaRepository
+                                                        .findByNombreIgnoreCase(artistaRequest.getNombre())
+                                                        .orElseGet(() -> {
+                                                                Artista newArtista = new Artista();
+                                                                newArtista.setNombre(artistaRequest.getNombre());
+                                                                newArtista.setGenero(artistaRequest.getGenero());
+                                                                return artistaRepository.save(newArtista); // Save the
+                                                                                                           // new artist
+                                                                                                           // immediately
+                                                        });
+                                        artistas.add(artista);
+                                }
+                                subcategoria.setArtistas(artistas);
+                        }
+
+                        subcategorias.add(subcategoria);
+                }
+
+                return subcategoriaRepository.saveAll(subcategorias);
         }
 
-        subcategorias.add(subcategoria);
-}
+        private String generateNemonico(String nombre) {
+                if (nombre == null) {
+                        return null;
+                }
+                // Normalize to NFD to separate base characters from diacritics
+                String normalized = java.text.Normalizer.normalize(nombre.trim(), java.text.Normalizer.Form.NFD)
+                                .replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
 
-return subcategoriaRepository.saveAll(subcategorias);
-}
-
-private String generateNemonico(String nombre) {
-        if (nombre == null) {
-                return null;
+                // Convert to uppercase and replace spaces and special characters with
+                // underscores
+                return normalized.toUpperCase()
+                                .replaceAll("[^A-Z0-9]", "_")
+                                .replaceAll("_+", "_")
+                                .replaceAll("^_|_$", "");
         }
-        // Normalize to NFD to separate base characters from diacritics
-        String normalized = java.text.Normalizer.normalize(nombre.trim(), java.text.Normalizer.Form.NFD)
-                        .replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
 
-        // Convert to uppercase and replace spaces and special characters with
-        // underscores
-        return normalized.toUpperCase()
-                        .replaceAll("[^A-Z0-9]", "_")
-                        .replaceAll("_+", "_")
-                        .replaceAll("^_|_$", "");
-}
+        public List<Subcategoria> listarSubcategorias() {
+                return subcategoriaRepository.findAll();
+        }
 
-public List<Subcategoria> listarSubcategorias() {
-        return subcategoriaRepository.findAll();
-}
-
-public List<Subcategoria> listarSubcategoriasPorCategoria(Integer categoriaId) {
-        return subcategoriaRepository.findByCategoria_CategoriaId(categoriaId);
-}
+        public List<Subcategoria> listarSubcategoriasPorCategoria(Integer categoriaId) {
+                return subcategoriaRepository.findByCategoria_CategoriaId(categoriaId);
+        }
 
         public Subcategoria obtenerSubcategoriaPorNemonico(String nemonico) {
                 return subcategoriaRepository.findByNemonico(nemonico)

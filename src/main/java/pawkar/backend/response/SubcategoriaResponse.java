@@ -1,5 +1,6 @@
 package pawkar.backend.response;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.HashSet;
@@ -14,8 +15,9 @@ public class SubcategoriaResponse {
     private LocalDateTime fechaHora;
     private Boolean proximo;
     private String ubicacion;
-    private java.math.BigDecimal latitud;
-    private java.math.BigDecimal longitud;
+    private BigDecimal latitud;
+    private BigDecimal longitud;
+    private BigDecimal precio;
     private Set<ArtistaResponse> artistas = new HashSet<>();
 
     public SubcategoriaResponse() {
@@ -23,7 +25,7 @@ public class SubcategoriaResponse {
 
     public SubcategoriaResponse(Integer subcategoriaId, Integer categoriaId, String categoriaNombre, String nombre,
             String descripcion, Boolean estado, java.time.LocalDateTime fechaHora, Boolean proximo, String ubicacion,
-            java.math.BigDecimal latitud, java.math.BigDecimal longitud) {
+            BigDecimal latitud, BigDecimal longitud, BigDecimal precio) {
         this.subcategoriaId = subcategoriaId;
         this.categoriaId = categoriaId;
         this.categoriaNombre = categoriaNombre;
@@ -33,6 +35,9 @@ public class SubcategoriaResponse {
         this.fechaHora = fechaHora;
         this.proximo = proximo;
         this.ubicacion = ubicacion;
+        this.latitud = latitud;
+        this.longitud = longitud;
+        this.precio = precio;
     }
 
     // Getters and Setters
@@ -108,20 +113,28 @@ public class SubcategoriaResponse {
         this.ubicacion = ubicacion;
     }
 
-    public java.math.BigDecimal getLatitud() {
+    public BigDecimal getLatitud() {
         return latitud;
     }
 
-    public void setLatitud(java.math.BigDecimal latitud) {
+    public void setLatitud(BigDecimal latitud) {
         this.latitud = latitud;
     }
 
-    public java.math.BigDecimal getLongitud() {
+    public BigDecimal getLongitud() {
         return longitud;
     }
 
-    public void setLongitud(java.math.BigDecimal longitud) {
+    public void setLongitud(BigDecimal longitud) {
         this.longitud = longitud;
+    }
+
+    public void setPrecio(BigDecimal precio) {
+        this.precio = precio;
+    }
+
+    public BigDecimal getPrecio() {
+        return precio;
     }
 
     public Set<ArtistaResponse> getArtistas() {
