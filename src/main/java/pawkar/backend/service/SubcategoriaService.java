@@ -72,6 +72,7 @@ public class SubcategoriaService {
                 subcategoria.setUbicacion(request.getUbicacion());
                 subcategoria.setLatitud(request.getLatitud());
                 subcategoria.setLongitud(request.getLongitud());
+                subcategoria.setPrecio(request.getPrecio());
 
                 // Generar y establecer el nemonico
                 String nemonico = generateNemonico(request.getNombre());
