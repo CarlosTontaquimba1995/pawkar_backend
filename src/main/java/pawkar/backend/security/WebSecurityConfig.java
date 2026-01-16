@@ -65,8 +65,10 @@ public class WebSecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Arrays.asList(
                 "http://localhost:4000",
+                "http://localhost:4200",
                 "https://rococo-pie-a53d5a.netlify.app",
-            "https://pawkar-administracion.onrender.com"));      
+                "https://venta-voletos.onrender.com",
+                "https://pawkar-administracion.onrender.com"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "x-auth-token"));
         configuration.setExposedHeaders(Arrays.asList("x-auth-token"));
